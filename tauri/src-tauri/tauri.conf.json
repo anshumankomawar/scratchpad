@@ -59,8 +59,7 @@
         "resizable": true,
         "title": "tauri",
         "hiddenTitle": true,
-        "width": 800,
-        "titleBarStyle": "Overlay"
+        "width": 800
       }
     ],
     "macOSPrivateApi": true
