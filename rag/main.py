@@ -24,7 +24,6 @@ user_query = input("Enter your query: ")
 matched_docs = vector_store.similarity_search(user_query)
 injected_docs = "\n\n".join([doc.page_content for doc in matched_docs])
 
-
 completion_messages = [
     {
         "role": "system",

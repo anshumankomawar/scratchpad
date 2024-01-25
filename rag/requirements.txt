@@ -4,3 +4,5 @@ langchain
 supabase
 tiktoken
 pypdf
+fastapi[all]
+uvicorn[standard]
