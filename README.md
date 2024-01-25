@@ -13,7 +13,7 @@ Our goal is to create both a web-app and an iPad app, similar to existing note t
 ```source .venv/bin/activate```
 
 3. **(Optional)** Check virtual environment activation
-```which python``` -> should point to *.venv/bin/activate*
+```which python``` -> should point to *.venv/bin/python*
 
 3. Install python dependencies from requirements.txt
 ```python3 -m pip install -r requirements.txt```
