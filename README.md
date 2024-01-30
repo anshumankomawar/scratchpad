@@ -37,6 +37,22 @@ Since we would like to work on the web-app version of ScratchPad first, we were 
 
 We’d start by using OpenAi apis. We think that their text generation functionality along with text indexing might be enough for what we are trying to achieve with our project. If this doesn’t work/isn’t specific enough to our project then we are more than happy to write a custom nlp text generation and summarization workflows.
 
+## TODO
+
+API
+1. /v1/login -- send email and password to API and get back JWT 
+2. /v1/register -- send email, password, and name to API and get back JWT
+3. /v1/user -- get user data, pass token to API
+4. /v1/user/docs -- get all user documents, pass token to API
+5. /v1/user/doc?doc_id=X -- parameter for doc_id
+
+Frontend
+1. Setup routing
+2. ^ login, register placeholders
+3. Structure to call API endpoints
+4. OAuth cookie handling and state management
+5. Home page - list of your documents, if document is selected open in document page
+
 ## Members
 Anshuman Komawar
 Sameera Balijepali
