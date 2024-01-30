@@ -2,14 +2,22 @@ from auth.oauth import create_access_token
 from db.user import get_user
 from dependencies import get_db
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from models.user import User
 from models.auth import Token
-from repo import fake_users_db
 from routers import documents, user
 from typing import Annotated
 
 app = FastAPI(dependencies=[Depends(get_db)])
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(documents.router)
 app.include_router(user.router)
 
