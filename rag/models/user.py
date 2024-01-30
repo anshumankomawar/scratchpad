@@ -6,4 +6,8 @@ class User(BaseModel):
     email: str | None = None
     password: str | None = None
     full_name: str | None = None
-    doc: Optional[list]
+
+class UserPerm(BaseModel):
+    email: str
+    perm: str
+    doc_id: str

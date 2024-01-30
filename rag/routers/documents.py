@@ -12,3 +12,13 @@ def get_documents(db: Annotated[dict, Depends(get_db)]):
     except Exception as e:
         print("Error", e)
         return {"message": "couldnt get documents"}
+
+
+@router.get("/get_document_users", tags = ["documents"])
+def get_document_users(db: Annotated[dict, Depends(get_db)], doc_id: str):
+    try:
+        doc_users = db["client"].from_("user_perms").select("*").eq("doc_id", doc_id).execute()
+        return doc_users
+    except Exception as e:
+        print("Error", e)
+        return {"message": "couldnt get documents"}

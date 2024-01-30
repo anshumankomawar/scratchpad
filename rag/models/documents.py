@@ -6,3 +6,4 @@ class Document(BaseModel):
     content: str
     metadata: str
     embedding: List[float]
+    # owner (doesn't change, not null)
