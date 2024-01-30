@@ -7,3 +7,4 @@ pypdf
 fastapi[all]
 uvicorn[standard]
 python-multipart
+python-jose[cryptography]
