@@ -7,7 +7,7 @@ router = APIRouter(tags = ["documents"], dependencies=[Depends(get_db)])
 @router.post("/documents", tags = ["documents"])
 def get_documents(db: Annotated[dict, Depends(get_db)]):
     try:
-        documents = db.from_("documents").select("*").execute()
+        documents = db["client"].from_("documents").select("*").execute()
         return {"message":documents}
     except Exception as e:
         print("Error", e)
