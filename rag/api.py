@@ -39,8 +39,7 @@ def login(userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(
     # if not utils.verify_password(userdetails.password, user.password):
     # raise HTTPException(status_code=status.HTTP._401_UNAUTHORIZED, detail="The Passwords do not match")
 
-    print("user found", user)
-    access_token = create_access_token(data={"email": "email"})
+    access_token = create_access_token(data={"email": user["email"]})
     return {"access_token": access_token, "token_type": "bearer"}
 
 

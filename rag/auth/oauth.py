@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from db.user import get_user
 from dependencies import get_db
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -43,8 +44,5 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: dict = Depends(get
         headers={"WWW-Authenticate": "Bearer"},
     )
     token = verify_token_access(token, credentials_exception)
-
-    # user = db["client"].query("users").eq("email", token.id).first()
-    print(token)
-    user = fake_users_db.get(token.id)
+    user = get_user(token.id, db)
     return user
