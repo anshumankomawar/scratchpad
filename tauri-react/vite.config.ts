@@ -1,6 +1,8 @@
+import path from "path"
 import { defineConfig } from "vite";
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import react from "@vitejs/plugin-react";
+import tailwindcss from "tailwindcss";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -8,6 +10,18 @@ export default defineConfig(async () => ({
     react(),
     TanStackRouterVite(),
   ],
+
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+
+  css: {
+    postcss: {
+      plugins: [tailwindcss()],
+    },
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
