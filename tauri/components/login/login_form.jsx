@@ -18,8 +18,31 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import Link from "next/link"
+import { setCookie, getCookies, getCookie } from 'cookies-next';
+import { redirect, useRouter } from 'next/navigation'
+import { getUser, authorizedFetch } from "@/lib/api_helpers"
 
 export function LoginForm() {
+
+  const router = useRouter()
+
+  const handleSubmit = async () => {
+    let formData = new FormData();
+    formData.append('username', 'noah@gmail.com');
+    formData.append('password', '123');
+    const res = await fetch('http://localhost:8000/login', {
+      method: 'POST',
+      body: formData,
+      cache: 'no-store'
+    })
+    const tokenData = await res.json();
+    setCookie('token', tokenData.access_token);
+    router.push("/home")
+    const data = await authorizedFetch(getUser)
+    if (!data) {
+      router.push("/")
+    }
+  };
 
   return (
     <Tabs defaultValue="login" className="w-3/5">
@@ -46,8 +69,9 @@ export function LoginForm() {
             </div>
           </CardContent>
           <CardFooter>
-          <Button asChild>
-              <Link className={buttonVariants({variant: 'outline'})} href="/home">Get Scratchin</Link>
+          <Button onClick={() => handleSubmit()}>
+              Login
+              {/* <Link className={buttonVariants({variant: 'outline'})} href="/home">Get Scratchin</Link> */}
             </Button>
           </CardFooter>
         </Card>
@@ -75,8 +99,9 @@ export function LoginForm() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button asChild>
-              <Link className={buttonVariants({variant: 'outline'})} href="/home">Get Scratchin</Link>
+            <Button onClick={() => submitForm()}>
+              Signup
+              {/* <Link className={buttonVariants({variant: 'outline'})} href="/home">Get Scratchin</Link> */}
             </Button>
           </CardFooter>
         </Card>
