@@ -16,7 +16,7 @@ function RootComponent() {
   const auth = useAuth()
   return (
     <>
-      <div className="p-2 flex gap-2 text-lg">
+      <div className="mt-8 px-2 flex gap-2 text-lg">
         <Link
           to="/"
           activeProps={{

@@ -1,9 +1,7 @@
-import * as React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from "@/components/ui/button"
 
 import { useAuth } from '../auth'
-import "../styles.css"
 export const Route = createFileRoute('/')({
   component: HomeComponent,
 })

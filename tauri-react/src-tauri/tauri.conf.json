@@ -1,45 +1,68 @@
 {
   "build": {
-    "beforeDevCommand": "bun run dev",
-    "beforeBuildCommand": "bun run build",
+    "beforeBuildCommand": "bun --bun run build",
+    "beforeDevCommand": "bun --bun run dev",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "distDir": "../out"
   },
   "package": {
-    "productName": "tauri-react",
-    "version": "0.0.0"
+    "productName": "tauri",
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
+      "all": true 
     },
     "bundle": {
       "active": true,
-      "targets": "all",
-      "identifier": "com.tauri.dev",
+      "category": "DeveloperTool",
+      "copyright": "",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
         "icons/icon.icns",
         "icons/icon.ico"
-      ]
+      ],
+      "identifier": "com.tauri.dev",
+      "longDescription": "",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [],
+      "shortDescription": "",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
     },
     "security": {
       "csp": null
     },
+    "updater": {
+      "active": false
+    },
     "windows": [
       {
         "fullscreen": false,
-        "resizable": true,
-        "title": "tauri-react",
+        "height": 600,
         "width": 800,
-        "height": 600
+        "resizable": true,
+        "title": "scratchpad",
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay"
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }
