@@ -1,6 +1,4 @@
-import * as React from 'react'
 import { Link, Outlet, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 
 import { useAuth, type AuthContext } from '../auth'
 
@@ -49,7 +47,6 @@ function RootComponent() {
       </div>
       <hr />
       <Outlet />
-      <TanStackRouterDevtools position="bottom-right" initialIsOpen={false} />
     </>
   )
 }

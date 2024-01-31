@@ -39,7 +39,7 @@ function LoginComponent() {
   }
 
   return (
-    <div className="p-2 w-screen h-screen">
+    <div className="p-2">
       <h3>Login page</h3>
       <form className="mt-4" onSubmit={handleLogin}>
         <fieldset

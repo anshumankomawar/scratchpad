@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
 function HomeComponent() {
   const auth = useAuth()
   return (
-    <div className="p-2 bg-white w-screen h-screen">
+    <div className="p-2 bg-white">
       <h3>Welcome Home!</h3>
       <Button>Click me</Button>
       <p>
