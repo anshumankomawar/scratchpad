@@ -41,6 +41,7 @@ def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends()
 
     access_token = create_access_token(data={"email": user["email"]})
     response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
+    response.set_cookie(key="active_session", value="1")
     return {"access_token": access_token, "token_type": "bearer"}
 
 
