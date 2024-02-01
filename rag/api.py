@@ -10,10 +10,9 @@ from routers import documents, user
 from typing import Annotated
 
 app = FastAPI(dependencies=[Depends(get_db)])
-origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,8 +39,8 @@ def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends()
     # raise HTTPException(status_code=status.HTTP._401_UNAUTHORIZED, detail="The Passwords do not match")
 
     access_token = create_access_token(data={"email": user["email"]})
-    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
-    response.set_cookie(key="active_session", value="1")
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, samesite=None)
+    response.set_cookie(key="active_session", value="1", samesite=None)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
