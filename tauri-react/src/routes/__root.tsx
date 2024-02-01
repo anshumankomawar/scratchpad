@@ -4,6 +4,7 @@ import { useAuth, type AuthContext } from '../auth'
 
 interface MyRouterContext {
   auth: AuthContext
+  cookies: any
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
