@@ -1,13 +1,12 @@
-import * as React from 'react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-
 import { useAuth } from '../auth'
+import { useCookies } from 'react-cookie'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: ({ context, location }) => {
     if (context.cookies.active_session !== 1) {
       throw redirect({
-        to: '/login',
+        to: '/',
         search: {
           redirect: location.href,
         },
@@ -20,10 +19,12 @@ export const Route = createFileRoute('/dashboard')({
 function DashboardComponent() {
   const navigate = useNavigate({ from: '/dashboard' })
   const auth = useAuth()
+  const [cookies, setCookie] = useCookies(['active_session'])
 
   const handleLogout = () => {
     auth.setUser(null)
     auth.isAuthenticated = false
+    setCookie('active_session', 0)
     navigate({ to: '/' })
   }
 
