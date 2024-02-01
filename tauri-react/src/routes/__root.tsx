@@ -4,6 +4,7 @@ import { type AuthContext } from '../auth'
 import { useCookies } from 'react-cookie'
 import axios from 'axios'
 import { useState } from 'react'
+import LoginComponent from '@/components/login/login'
 
 interface MyRouterContext {
   auth: AuthContext
@@ -68,35 +69,12 @@ function RootComponent() {
         <Outlet />
       </>
     ) : (
-      <div className="p-2">
-        <h3>Login page</h3>
-        <form className="mt-4" onSubmit={handleLogin}>
-          <fieldset
-            disabled={isSubmitting}
-            className="flex flex-col gap-2 max-w-sm"
-          >
-            <div className="flex gap-2 items-center">
-              <label htmlFor="username-input" className="text-sm font-medium">
-                Username
-              </label>
-              <input
-                id="username-input"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="border border-gray-300 rounded-md p-2 w-full"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-md"
-            >
-              {isSubmitting ? 'Loading...' : 'Login'}
-            </button>
-          </fieldset>
-        </form>
-      </div>
+      <LoginComponent
+        handleLogin={handleLogin}
+        isSubmitting={isSubmitting}
+        name={name}
+        setName={setName}
+      />
     )}
       </>
   )

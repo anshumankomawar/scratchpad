@@ -19,7 +19,7 @@ export const Route = createFileRoute('/dashboard')({
 function DashboardComponent() {
   const navigate = useNavigate({ from: '/dashboard' })
   const auth = useAuth()
-  const [cookies, setCookie] = useCookies(['active_session'])
+  const [_, setCookie] = useCookies(['active_session'])
 
   const handleLogout = () => {
     auth.setUser(null)

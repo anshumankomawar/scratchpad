@@ -3,7 +3,7 @@
     "beforeBuildCommand": "bun --bun run build",
     "beforeDevCommand": "bun --bun run dev",
     "devPath": "http://localhost:1420",
-    "distDir": "../out"
+    "distDir": "../dist"
   },
   "package": {
     "productName": "tauri",
@@ -28,7 +28,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.scratchpad.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
