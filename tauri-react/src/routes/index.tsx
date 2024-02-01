@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from '../auth'
 export const Route = createFileRoute('/')({
   beforeLoad: ({ context, location }) => {
+    console.log(context.cookies.active_session)
     if (context.cookies.active_session !== 1) {
       throw redirect({
         to: '/login',
