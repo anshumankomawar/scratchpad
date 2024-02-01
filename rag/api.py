@@ -1,7 +1,7 @@
 from auth.oauth import create_access_token
 from db.user import get_user
 from dependencies import get_db
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from models.user import User
@@ -28,7 +28,7 @@ async def root():
 
 
 @app.post("/login", response_model=Token)
-def login(userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(get_db)):
+def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(get_db)):
     user = get_user(userdetails.username, db)
 
     if not user:
@@ -40,6 +40,7 @@ def login(userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(
     # raise HTTPException(status_code=status.HTTP._401_UNAUTHORIZED, detail="The Passwords do not match")
 
     access_token = create_access_token(data={"email": user["email"]})
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
