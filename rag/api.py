@@ -12,7 +12,7 @@ from typing import Annotated
 app = FastAPI(dependencies=[Depends(get_db)])
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "http://localhost:1420"],
+    allow_origins=["http://localhost:8000", "http://localhost:1420", "tauri://localhost"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +30,7 @@ async def root():
 @app.post("/login", response_model=Token)
 def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(get_db)):
     user = get_user(userdetails.username, db)
+    print(user)
 
     if not user:
         raise HTTPException(
