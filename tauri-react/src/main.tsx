@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { useCookies } from 'react-cookie';
 
 import { routeTree } from './routeTree.gen'
 import { AuthProvider, useAuth } from './auth'
@@ -11,6 +12,7 @@ const router = createRouter({
   defaultPreload: 'intent',
   context: {
     auth: undefined!, // This will be set after we wrap the app in an AuthProvider
+    cookies: undefined!
   },
 })
 
@@ -23,7 +25,9 @@ declare module '@tanstack/react-router' {
 
 function InnerApp() {
   const auth = useAuth()
-  return <RouterProvider router={router} context={{ auth }} />
+  const [cookies] = useCookies(["active_session"])
+  console.log(cookies.active_session)
+  return <RouterProvider router={router} context={{ auth, cookies }} />
 }
 
 function App() {

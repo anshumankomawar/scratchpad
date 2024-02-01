@@ -5,7 +5,7 @@ import { useAuth } from '../auth'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: ({ context, location }) => {
-    if (!context.auth.isAuthenticated) {
+    if (context.cookies.active_session !== 1) {
       throw redirect({
         to: '/login',
         search: {
