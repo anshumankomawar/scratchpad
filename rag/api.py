@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from models.user import User
 from models.auth import Token
-from routers import documents, user
+from routers import documents, user, document_data
 from typing import Annotated
 
 app = FastAPI(dependencies=[Depends(get_db)])
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 app.include_router(documents.router)
 app.include_router(user.router)
+app.include_router(document_data.router)
 
 
 @app.get("/")
