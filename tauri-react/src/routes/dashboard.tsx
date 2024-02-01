@@ -23,6 +23,7 @@ function DashboardComponent() {
 
   const handleLogout = () => {
     auth.setUser(null)
+    auth.isAuthenticated = false
     navigate({ to: '/' })
   }
 
