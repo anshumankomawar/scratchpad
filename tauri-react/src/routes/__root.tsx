@@ -1,10 +1,12 @@
 import { Link, Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 
+import { QueryClient } from '@tanstack/react-query'
 import { useAuth, type AuthContext } from '../auth'
 
 interface MyRouterContext {
   auth: AuthContext
-  cookies: any
+  cookies: any,
+  queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
