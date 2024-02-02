@@ -46,7 +46,11 @@ function RootComponent() {
             headers: headers,
             withCredentials: true,
           })
+        console.log(r)
         console.log(r.data)
+        console.log(document.cookie)
+
+        console.log(cookies.active_session)
         return r.data
       } catch (err: any) {
         console.log(err);
@@ -59,36 +63,6 @@ function RootComponent() {
       }
     },
   })
-
-  //const mutation = useMutation({
-    //mutationFn: async () => {
-      //try {
-        //let body = Body.form({
-          //username: email,
-          //password: password,
-        //});
-
-        //let response = await fetch("http://localhost:8000/login", {
-          //method: "POST",
-          //body: body,
-          //timeout: 30,
-          //responseType: ResponseType.JSON,
-        //});
-        
-        //console.log(response.data);
-        //return response.data
-      //} catch (err: any) {
-        //console.log(err);
-        //toast({
-          //variant: "destructive",
-          //title: "Uh oh! Something went wrong.",
-          //description: err.code,
-          //action: <ToastAction altText="Try again">Try again</ToastAction>,
-        //})
-      //}
-    //},
-  //})
-
 
   const handleLogin = async () => {
     setIsSubmitting(true)
