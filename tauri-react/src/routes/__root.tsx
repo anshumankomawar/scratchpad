@@ -9,10 +9,27 @@ import { ToastAction } from '@/components/ui/toast'
 import { invoke } from '@tauri-apps/api/tauri'
 import { Button } from '@/components/ui/button'
 import {
+  AlertCircle,
+  Archive,
+  ArchiveX,
+  File,
+  Home,
+  Inbox,
+  LayoutDashboard,
+  MessagesSquare,
+  PenBox,
+  Search,
+  Send,
+  ShoppingCart,
+  Trash2,
+  Users2,
+} from "lucide-react"
+import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import { SidebarNav } from '@/components/nav/nav'
 
 export interface MyRouterContext {
   auth: StoreContext
@@ -90,31 +107,35 @@ function PublicRoute() {
   )
 }
 
+const sidebarItems = [
+  {
+    title: "Home",
+    label: "",
+    icon: Home,
+    href: "/",
+    variant: "default",
+  },
+  {
+    title: "Dashboard",
+    label: "",
+    icon: LayoutDashboard,
+    href: "/dashboard",
+    variant: "ghost",
+  }
+]
+
 function ProtectedRoute() {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
   return (
       <div className="pt-8 w-full h-full">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={20} maxSize={30}>
-            <div className="px-2 flex gap-2 flex-col">
-              <Link
-                to="/"
-                activeProps={{
-                  className: 'font-bold',
-                }}
-                activeOptions={{ exact: true }}
-              >
-                Home
-              </Link>{' '}
-              <Link
-                to="/dashboard"
-                activeProps={{
-                  className: 'font-bold',
-                }}
-                activeOptions={{ exact: true }}
-              >
-                Dashboard
-              </Link>
-            </div>
+            <SidebarNav
+            //  isCollapsed={isCollapsed}
+              items={sidebarItems}
+             >
+            </SidebarNav>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel>
