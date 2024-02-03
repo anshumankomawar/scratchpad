@@ -1,4 +1,4 @@
-import { Link, Outlet, Router, createRootRouteWithContext, useRouter } from '@tanstack/react-router'
+import { Outlet, createRootRouteWithContext, useRouter } from '@tanstack/react-router'
 import { QueryClient, useMutation } from '@tanstack/react-query'
 import { type StoreContext } from '../auth'
 import { useState } from 'react'
@@ -7,22 +7,9 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from '@/components/ui/toast'
 import { invoke } from '@tauri-apps/api/tauri'
-import { Button } from '@/components/ui/button'
 import {
-  AlertCircle,
-  Archive,
-  ArchiveX,
-  File,
   Home,
-  Inbox,
   LayoutDashboard,
-  MessagesSquare,
-  PenBox,
-  Search,
-  Send,
-  ShoppingCart,
-  Trash2,
-  Users2,
 } from "lucide-react"
 import {
   ResizableHandle,
@@ -46,9 +33,9 @@ interface LoaderData {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  loader: async ({context}) => {
+  loader: async ({ context }) => {
     const token = await context.auth.store.get("token")
-    return {token}
+    return { token }
   },
   component: () => {
     const { token } = Route.useLoaderData<LoaderData>();
@@ -70,7 +57,7 @@ function PublicRoute() {
     mutationFn: async () => {
       invoke("login", { username: email, password: password })
         .then((_) => {
-          router.invalidate() 
+          router.invalidate()
           console.log("Successfully logged in!")
         })
         .catch((error) => {
@@ -93,17 +80,17 @@ function PublicRoute() {
   }
 
   return (
-      <>
-        <LoginComponent
-          handleLogin={handleLogin}
-          isSubmitting={isSubmitting}
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-        />
-        <Toaster/>
-      </>
+    <>
+      <LoginComponent
+        handleLogin={handleLogin}
+        isSubmitting={isSubmitting}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+      />
+      <Toaster />
+    </>
   )
 }
 
@@ -128,23 +115,30 @@ function ProtectedRoute() {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-      <div className="pt-8 w-full h-full">
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={20} maxSize={30}>
-            <SidebarNav
-            //  isCollapsed={isCollapsed}
-              items={sidebarItems}
-             >
-            </SidebarNav>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel>
-            <div className="px-4">
-              <Outlet />
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-        <Toaster/>
-      </div>
+    <div className="pt-8 w-full h-full">
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel
+          defaultSize={15}
+          minSize={15}
+          collapsedSize={5}
+          collapsible={true}
+          onCollapse={() => setIsCollapsed(true)}
+          onExpand={() => setIsCollapsed(false)}
+        >
+          <SidebarNav
+            isCollapsed={isCollapsed}
+            items={sidebarItems}
+          >
+          </SidebarNav>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel>
+          <div className="px-4">
+            <Outlet />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+      <Toaster />
+    </div>
   )
 }
