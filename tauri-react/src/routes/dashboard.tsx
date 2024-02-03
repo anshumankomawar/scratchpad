@@ -26,7 +26,7 @@ function DashboardComponent() {
   }
 
   return (
-    <div className="p-2">
+    <div className="">
       <h3>Dashboard page</h3>
       <p>If you can see this, that means you are authenticated.</p>
       <div className="mt-4">

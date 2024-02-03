@@ -8,6 +8,11 @@ import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from '@/components/ui/toast'
 import { invoke } from '@tauri-apps/api/tauri'
 import { Button } from '@/components/ui/button'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 export interface MyRouterContext {
   auth: StoreContext
@@ -87,21 +92,38 @@ function PublicRoute() {
 
 function ProtectedRoute() {
   return (
-      <>
-        <div className="mt-8 px-2 flex gap-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>{' '}
-        </div>
-        <hr />
-        <Outlet />
+      <div className="pt-8 w-full h-full">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={20} maxSize={30}>
+            <div className="px-2 flex gap-2 flex-col">
+              <Link
+                to="/"
+                activeProps={{
+                  className: 'font-bold',
+                }}
+                activeOptions={{ exact: true }}
+              >
+                Home
+              </Link>{' '}
+              <Link
+                to="/dashboard"
+                activeProps={{
+                  className: 'font-bold',
+                }}
+                activeOptions={{ exact: true }}
+              >
+                Dashboard
+              </Link>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel>
+            <div className="px-4">
+              <Outlet />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
         <Toaster/>
-      </>
+      </div>
   )
 }
