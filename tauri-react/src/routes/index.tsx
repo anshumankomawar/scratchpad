@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from "@/components/ui/button"
 
-import { useAuth } from '../auth'
+import { useStore } from '../auth'
 export const Route = createFileRoute('/')({
   component: HomeComponent,
 })
 
 function HomeComponent() {
-  const auth = useAuth()
+  const auth = useStore()
   return (
     <div className="p-2 bg-white">
       <h3>Welcome Home!</h3>

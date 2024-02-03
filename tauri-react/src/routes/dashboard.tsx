@@ -1,6 +1,5 @@
-import { Router, createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useAuth } from '../auth'
-import { useCookies } from 'react-cookie'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { useStore } from '../auth'
 
 export const Route = createFileRoute('/dashboard')({
   loader: async ({ context, location }) => {
@@ -19,21 +18,16 @@ export const Route = createFileRoute('/dashboard')({
 
 function DashboardComponent() {
   const navigate = useNavigate({ from: '/dashboard' })
-  const auth = useAuth()
-  const [_, setCookie] = useCookies(['active_session'])
+  const store = useStore()
 
   const handleLogout = async () => {
-    await auth.store.delete("token")
-    auth.setUser(null)
-    auth.isAuthenticated = false
-    setCookie('active_session', 0)
+    await store.store.delete("token")
     navigate({ to: '/' })
   }
 
   return (
     <div className="p-2">
       <h3>Dashboard page</h3>
-      <p>Hi {auth.user}!</p>
       <p>If you can see this, that means you are authenticated.</p>
       <div className="mt-4">
         <button
