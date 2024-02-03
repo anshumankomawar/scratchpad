@@ -1,6 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Button } from "@/components/ui/button"
-
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   component: HomeComponent,
@@ -8,6 +6,8 @@ export const Route = createFileRoute('/')({
 
 function HomeComponent() {
   return (
-    <div>HOME</div>
+    <div>
+      
+    </div>
   )
 }

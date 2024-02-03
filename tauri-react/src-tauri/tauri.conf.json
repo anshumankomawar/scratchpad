@@ -73,7 +73,9 @@
         "resizable": true,
         "title": "scratchpad",
         "hiddenTitle": true,
-        "titleBarStyle": "Overlay"
+        "titleBarStyle": "Overlay",
+        "minHeight": 600,
+        "minWidth": 800
       }
     ],
     "macOSPrivateApi": true
