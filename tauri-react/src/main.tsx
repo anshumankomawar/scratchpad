@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from './auth'
 import "./index.css"
 
 // Set up a Router instance
+
 const queryClient = new QueryClient()
 const router = createRouter({
   routeTree,
@@ -19,7 +20,7 @@ const router = createRouter({
   context: {
     auth: undefined!, // This will be set after we wrap the app in an AuthProvider
     cookies: undefined!,
-    queryClient: queryClient
+    queryClient: queryClient,
   },
 })
 

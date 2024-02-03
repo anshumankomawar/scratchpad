@@ -12,10 +12,18 @@
   "tauri": {
     "allowlist": {
       "all": true,
+      "path": {
+        "all": true
+      },
        "http": {
         "all": true,
         "request": true,
         "scope": ["http://**"]
+      },
+      "fs": {
+        "scope": {
+          "allow": ["$APP/**", "$RESOURCE/**"]
+        }
       }
     },
     "bundle": {

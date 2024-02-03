@@ -1,10 +1,11 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { Router, createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '../auth'
 import { useCookies } from 'react-cookie'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: ({ context, location }) => {
-    if (context.cookies.active_session !== 1) {
+  loader: async ({ context, location }) => {
+    const token = await context.auth.store.get("token")
+    if (token == null) {
       throw redirect({
         to: '/',
         search: {
@@ -21,7 +22,8 @@ function DashboardComponent() {
   const auth = useAuth()
   const [_, setCookie] = useCookies(['active_session'])
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await auth.store.delete("token")
     auth.setUser(null)
     auth.isAuthenticated = false
     setCookie('active_session', 0)
