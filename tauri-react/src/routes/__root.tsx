@@ -133,7 +133,7 @@ function ProtectedRoute() {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel>
-          <div className="px-4">
+          <div className="px-4 h-full">
             <Outlet />
           </div>
         </ResizablePanel>

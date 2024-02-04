@@ -1,3 +1,4 @@
+import Tiptap from '@/components/tiptap/tiptap'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -6,8 +7,8 @@ export const Route = createFileRoute('/')({
 
 function HomeComponent() {
   return (
-    <div>
-      
+    <div className="h-full py-2 px-4">
+      <Tiptap /> 
     </div>
   )
 }
