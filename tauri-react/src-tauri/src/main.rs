@@ -1,13 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod auth;
 mod error;
+mod fetch;
 mod state;
 mod util;
 
-use auth::login;
 use error::Result; 
+use fetch::{auth::login, user::get_user};
 use state::TauriState;
 use util::check;
 
@@ -31,7 +31,7 @@ fn main() {
             app.manage(TauriState::new(path));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![login, check])
+        .invoke_handler(tauri::generate_handler![login, check, get_user])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

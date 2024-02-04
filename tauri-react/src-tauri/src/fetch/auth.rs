@@ -18,6 +18,7 @@ pub async fn login(username: &str, password: &str, state: State<'_, TauriState>,
     .await?;
 
     let token = res.get("access_token").ok_or_else(|| Error::AuthError("token not found".into()))?;
+    println!("recieved {:?}", &token);
 
     let stores = app.state::<StoreCollection<Wry>>();
     let _ = with_store(app.app_handle(), stores, &state.path, |store| {
