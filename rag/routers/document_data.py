@@ -4,12 +4,14 @@ from openai import OpenAI
 import json
 from fastapi import APIRouter, Depends
 from typing import Annotated
+from auth.oauth import get_current_user
 from dependencies import get_db
 from auth.oauth import get_current_user
 from models.user import User
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import SupabaseVectorStore
+
 
 router = APIRouter(tags=["document_data"], dependencies=[Depends(get_db)])
 client = OpenAI()
@@ -133,5 +135,14 @@ def search_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
     except Exception as e:
         print("Error", e)
         return {"message": "couldnt get results from search query"}
+      
 
-    
+@router.get("/document")
+async def get_user_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]):
+    print(current_user)
+    try:
+        result = db["client"].from_('document_data').select('filename, content').eq('email', current_user["email"]).execute()
+        return {"documents": result.data}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "couldnt get users documents"}

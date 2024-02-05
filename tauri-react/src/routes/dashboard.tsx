@@ -1,10 +1,13 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useAuth } from '../auth'
-import { useCookies } from 'react-cookie'
+import { useStore } from '../auth'
+import { invoke } from '@tauri-apps/api/tauri'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/use-toast'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: ({ context, location }) => {
-    if (context.cookies.active_session !== 1) {
+  loader: async ({ context, location }) => {
+    const token = await context.auth.store.get("token")
+    if (token == null) {
       throw redirect({
         to: '/',
         search: {
@@ -18,20 +21,33 @@ export const Route = createFileRoute('/dashboard')({
 
 function DashboardComponent() {
   const navigate = useNavigate({ from: '/dashboard' })
-  const auth = useAuth()
-  const [_, setCookie] = useCookies(['active_session'])
+  const store = useStore()
+  const { toast } = useToast()
 
-  const handleLogout = () => {
-    auth.setUser(null)
-    auth.isAuthenticated = false
-    setCookie('active_session', 0)
+  const handleLogout = async () => {
+    await store.store.delete("token")
     navigate({ to: '/' })
   }
 
+  const getUser = async () => {
+    invoke("get_user")
+      .then((res) => {
+        console.log("frontend: ", res)
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: error.code,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        })
+      })
+  }
+
   return (
-    <div className="p-2">
+    <div className="">
       <h3>Dashboard page</h3>
-      <p>Hi {auth.user}!</p>
       <p>If you can see this, that means you are authenticated.</p>
       <div className="mt-4">
         <button
@@ -40,6 +56,14 @@ function DashboardComponent() {
           className="bg-slate-500 text-white py-2 px-4 rounded-md"
         >
           Logout
+        </button>
+
+        <button
+          type="button"
+          onClick={getUser}
+          className="bg-slate-500 text-white py-2 px-4 rounded-md"
+        >
+          get user 
         </button>
       </div>
     </div>

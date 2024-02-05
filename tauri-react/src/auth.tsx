@@ -1,27 +1,25 @@
 import * as React from 'react'
+import { Store } from 'tauri-plugin-store-api'
 
-export interface AuthContext {
-  isAuthenticated: boolean
-  setUser: (username: string | null) => void
-  user: string | null
+export interface StoreContext {
+  store: Store
 }
 
-const AuthContext = React.createContext<AuthContext | null>(null)
+const StoreContext = React.createContext<StoreContext | null>(null)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<string | null>(null)
-  const isAuthenticated = !!user
+export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const store = new Store("config.json")
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, setUser }}>
+    <StoreContext.Provider value={{ store }}>
       {children}
-    </AuthContext.Provider>
+    </StoreContext.Provider>
   )
 }
 
-export function useAuth() {
-  const context = React.useContext(AuthContext)
+export function useStore() {
+  const context = React.useContext(StoreContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useStore must be used within an StoreProvider')
   }
   return context
 }

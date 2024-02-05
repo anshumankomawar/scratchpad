@@ -1,40 +1,22 @@
-type LoginComponentProps = {
-  handleLogin: (evt: React.FormEvent<HTMLFormElement>) => void,
+import { LoginForm } from "./login_form"
+import { LoginLogo } from "./login_logo"
+
+export type LoginComponentProps = {
+  handleLogin: () => void,
   isSubmitting: boolean,
-  name: string,
-  setName: (name: string) => void
+  email: string,
+  setEmail: (email: string) => void,
+  password: string,
+  setPassword: (password: string) => void
 }
 
 export default function LoginComponent(props: LoginComponentProps) {
   return (
-      <div className="p-2">
-        <h3>Login page</h3>
-        <form className="mt-4" onSubmit={props.handleLogin}>
-          <fieldset
-            disabled={props.isSubmitting}
-            className="flex flex-col gap-2 max-w-sm"
-          >
-            <div className="flex gap-2 items-center">
-              <label htmlFor="username-input" className="text-sm font-medium">
-                Username
-              </label>
-              <input
-                id="username-input"
-                type="text"
-                value={props.name}
-                onChange={(e) => props.setName(e.target.value)}
-                className="border border-gray-300 rounded-md p-2 w-full"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-md"
-            >
-              {props.isSubmitting ? 'Loading...' : 'Login'}
-            </button>
-          </fieldset>
-        </form>
+    <div className="flex h-full flex-col items-center justify-center ">
+      <div className='flex flex-row w-full h-full items-center justify-center'>
+        <div className='w-1/2 h-full flex justify-center items-center bg-black'><LoginLogo/></div>
+        <div className='mt-8 w-1/2 flex justify-center'><LoginForm {...props}/></div>
       </div>
+    </div>
   )
 }

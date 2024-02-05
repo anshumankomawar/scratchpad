@@ -1,14 +1,25 @@
-import { Link, Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import { Outlet, createRootRouteWithContext, useRouter } from '@tanstack/react-router'
 import { QueryClient, useMutation } from '@tanstack/react-query'
-import { type AuthContext } from '../auth'
-import { useCookies } from 'react-cookie'
-import axios from 'axios'
+import { type StoreContext } from '../auth'
 import { useState } from 'react'
 import LoginComponent from '@/components/login/login'
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from '@/components/ui/toast'
+import { invoke } from '@tauri-apps/api/tauri'
+import {
+  Home,
+  LayoutDashboard,
+} from "lucide-react"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import { SidebarNav } from '@/components/nav/nav'
 
-interface MyRouterContext {
-  auth: AuthContext
-  cookies: any,
+export interface MyRouterContext {
+  auth: StoreContext
   queryClient: QueryClient
 }
 
@@ -17,65 +28,117 @@ export type LoginType = {
   token_type: string
 }
 
+interface LoaderData {
+  token: string
+}
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: RootComponent,
+  loader: async ({ context }) => {
+    const token = await context.auth.store.get("token")
+    return { token }
+  },
+  component: () => {
+    const { token } = Route.useLoaderData<LoaderData>();
+    if (token !== null)
+      return <ProtectedRoute />
+    else
+      return <PublicRoute />
+  }
 })
 
-function RootComponent() {
-  const [cookies] = useCookies(['active_session'])
+function PublicRoute() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const { toast } = useToast()
+  const router = useRouter()
 
   const mutation = useMutation({
     mutationFn: async () => {
-      try {
-        const r = await axios
-          .postForm<LoginType>("http://localhost:8000/login", {
-            username: name,
-            password: "100"
-          }, {
-            withCredentials: true,
+      invoke("login", { username: email, password: password })
+        .then((_) => {
+          router.invalidate()
+          console.log("Successfully logged in!")
+        })
+        .catch((error) => {
+          console.log(error);
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: error.code,
+            action: <ToastAction altText="Try again">Try again</ToastAction>,
           })
-        return r.data
-      } catch (err) {
-        console.log(err)
-      }
+        })
     },
   })
 
-  const handleLogin = async (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
+  const handleLogin = async () => {
+    // TODO: Don't let multiple requests go through when logging in
     setIsSubmitting(true)
     mutation.mutate()
     setIsSubmitting(false)
   }
 
   return (
-      <>
-    {cookies.active_session === 1 ? (
-      <>
-        <div className="mt-8 px-2 flex gap-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: 'font-bold',
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>{' '}
-        </div>
-        <hr />
-        <Outlet />
-      </>
-    ) : (
+    <>
       <LoginComponent
         handleLogin={handleLogin}
         isSubmitting={isSubmitting}
-        name={name}
-        setName={setName}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
       />
-    )}
-      </>
+      <Toaster />
+    </>
+  )
+}
+
+const sidebarItems = [
+  {
+    title: "Home",
+    label: "",
+    icon: Home,
+    href: "/",
+    variant: "default",
+  },
+  {
+    title: "Dashboard",
+    label: "",
+    icon: LayoutDashboard,
+    href: "/dashboard",
+    variant: "ghost",
+  }
+]
+
+function ProtectedRoute() {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
+  return (
+    <div className="pt-8 w-full h-full">
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel
+          defaultSize={15}
+          minSize={15}
+          collapsedSize={5}
+          collapsible={true}
+          onCollapse={() => setIsCollapsed(true)}
+          onExpand={() => setIsCollapsed(false)}
+        >
+          <SidebarNav
+            isCollapsed={isCollapsed}
+            items={sidebarItems}
+          >
+          </SidebarNav>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel>
+          <div className="px-4 h-full">
+            <Outlet />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+      <Toaster />
+    </div>
   )
 }
