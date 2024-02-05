@@ -11,7 +11,7 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import SupabaseVectorStore
 
-router = APIRouter(tags=["document_data"], dependencies=[Depends(get_db), Depends(get_current_user)])
+router = APIRouter(tags=["document_data"], dependencies=[Depends(get_db)])
 client = OpenAI()
 
 # Gets list of documents for the specific user that is logged in. 
@@ -24,6 +24,21 @@ async def get_documents(db: Annotated[dict, Depends(get_db)], current_user: Anno
     except Exception as e:
         print("Error", e)
         return {"message": "couldnt get documents for specified user"}
+    
+# Gets document of specified id. No user authentication necessary (endpoint for internal purposes). 
+@router.get("/get_document/{id}")
+def get_document_by_id(db: Annotated[dict, Depends(get_db)], id:str):
+    try:
+        document = (
+            db["client"].from_("document_data").select("*").eq("id", id).execute()
+        )
+        if document:
+            return {"document": document}
+        else:
+            return {"message": "Document not found"}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "Error getting document by ID"}
     
 # Add document, adds chunks and embeddings to chunks table
 @router.post("/add_document", tags=["documents"])
@@ -64,8 +79,7 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
         print("Error", e)
         return {"message": "Error adding document"}
 
-
-# search document endpoint
+# Search document/chunk database, calls open ai api and returns a response based on provided user query
 @router.post("/search")
 def search_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], query:str):
     try:
