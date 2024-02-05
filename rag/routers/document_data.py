@@ -1,3 +1,6 @@
+import os
+import openai
+from openai import OpenAI
 import json
 from fastapi import APIRouter, Depends
 from typing import Annotated
@@ -6,8 +9,10 @@ from auth.oauth import get_current_user
 from models.user import User
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import SupabaseVectorStore
 
 router = APIRouter(tags=["document_data"], dependencies=[Depends(get_db), Depends(get_current_user)])
+client = OpenAI()
 
 # Gets list of documents for the specific user that is logged in. 
 @router.get("/get_documents")
@@ -58,5 +63,61 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
     except Exception as e:
         print("Error", e)
         return {"message": "Error adding document"}
+
+
+# search document endpoint
+@router.post("/search")
+def search_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], query:str):
+    try:
+        embeddings = OpenAIEmbeddings()
+        embedded_query = embeddings.embed_query(query)
+        email = current_user["email"]
+        # created match_documents function as below (in supabase)
+        '''
+        create or replace function match_documents (
+        email varchar(255), query_embedding vector(1536), match_threshold float,match_count int)
+        returns table (
+        chunk_id uuid,document_id uuid,content text,similarity float
+        )
+        language sql stable
+        as $$
+        select
+            chunks.id,chunks.document_id,chunks.content,1 - (chunks.embedding <=> query_embedding) as similarity
+        from document_data
+        join chunks on chunks.document_id = document_data.id
+        where document_data.email = email and chunks.embedding <=> query_embedding < 1 - match_threshold
+        order by chunks.embedding <=> query_embedding
+        limit match_count;
+        $$;
+        '''
+        similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.5, 'match_count':10}).execute()
+        #can experiment with the above values 
+        similar_chunks_data = similar_chunks.data
+        all_chunks = "\n\n".join([chunk['content'] for chunk in similar_chunks_data])
+        completion_messages = [
+        {
+            "role": "system",
+            "content": "You are an AI assistant with unparalleled expertise. Your knowledge base is a description of a notes from a user.",
+        },
+        {
+            "role": "user",
+            "content": query,
+        },
+        {
+            "role": "assistant",
+            "content": all_chunks,
+        },
+    ]
+        response = openai.chat.completions.create(
+        model="gpt-3.5-turbo-0613",
+        messages=completion_messages,
+        max_tokens=400,
+        temperature=0.4,
+        )
+
+        return {"message":response.choices[0].message.content}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "couldnt get results from search query"}
 
     
