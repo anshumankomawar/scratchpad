@@ -4,3 +4,4 @@ class DocumentData(BaseModel):
     id:str
     email:str
     content:str
+    filename:str
