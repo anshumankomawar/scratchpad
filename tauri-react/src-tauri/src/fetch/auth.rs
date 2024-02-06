@@ -21,7 +21,7 @@ pub async fn login(username: &str, password: &str, state: State<'_, TauriState>,
     println!("recieved {:?}", &token);
 
     let stores = app.state::<StoreCollection<Wry>>();
-    let _ = with_store(app.app_handle(), stores, &state.path, |store| {
+    let _ = with_store(app.app_handle().clone(), stores, &state.path, |store| {
         store.insert("token".to_string(), json!(token))?;
         store.save()?;
         Ok(())

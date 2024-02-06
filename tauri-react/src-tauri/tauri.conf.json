@@ -1,83 +1,67 @@
 {
-  "build": {
-    "beforeBuildCommand": "bun --bun run build",
-    "beforeDevCommand": "bun --bun run dev",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
-  },
-  "package": {
-    "productName": "tauri",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": true,
-      "path": {
-        "all": true
-      },
-       "http": {
-        "all": true,
-        "request": true,
-        "scope": ["http://**"]
-      },
-      "fs": {
-        "scope": {
-          "allow": ["$APP/**", "$RESOURCE/**"]
-        }
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.scratchpad.dev",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
+  "app": {
     "security": {
       "csp": null
     },
-    "updater": {
-      "active": false
-    },
     "windows": [
       {
+        "label": "main",
         "fullscreen": false,
         "height": 600,
-        "width": 800,
-        "resizable": true,
-        "title": "scratchpad",
         "hiddenTitle": true,
-        "titleBarStyle": "Overlay",
-        "minHeight": 600,
-        "minWidth": 800
+        "minHeight": 400,
+        "minWidth": 600,
+        "resizable": true,
+        "width": 800,
+        "decorations": false,
+        "visible": false
       }
+    ]
+  },
+  "build": {
+    "beforeBuildCommand": "bun --bun run build",
+    "beforeDevCommand": "bun --bun run dev",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
     ],
-    "macOSPrivateApi": true
-  }
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "targets": "all",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    }
+  },
+  "identifier": "com.scratchpad.dev",
+  "plugins": {
+    "updater": {}
+  },
+  "productName": "tauri",
+  "version": "0.1.0"
 }

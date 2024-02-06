@@ -19,7 +19,7 @@ export function SidebarNav({ className, items, isCollapsed, ...props }: SidebarN
     <div data-collapsed={isCollapsed}>
       <nav
         className={cn(
-          "flex flex-col p-2 text-start",
+          "flex flex-col p-2 text-start space-y-1",
           className
         )}
         {...props}

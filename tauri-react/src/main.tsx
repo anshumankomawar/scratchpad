@@ -7,7 +7,13 @@ import {
 import { routeTree } from './routeTree.gen'
 import { StoreProvider, useStore } from './auth'
 import "./index.css"
+import { getCurrent } from '@tauri-apps/api/window';
 
+document.addEventListener('DOMContentLoaded', async function() {
+    await getCurrent().show();
+});
+
+//await getCurrent().listen('webview-loaded', async () => await getCurrent().show());
 const queryClient = new QueryClient()
 const router = createRouter({
   routeTree,
@@ -45,7 +51,7 @@ const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <div className="h-screen w-full">
+    <div className="h-screen w-full bg-white">
       <div className="fixed top-0 w-full h-8 bg-transparent z-10" data-tauri-drag-region/>
       <App />
     </div>

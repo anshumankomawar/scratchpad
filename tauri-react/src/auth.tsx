@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Store } from 'tauri-plugin-store-api'
+import { Store } from '@tauri-apps/plugin-store'
 
 export interface StoreContext {
   store: Store

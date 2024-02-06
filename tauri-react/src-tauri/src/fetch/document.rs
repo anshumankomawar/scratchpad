@@ -20,7 +20,7 @@ pub async fn save_document(username: &str, password: &str, state: State<'_, Taur
     let token = res.get("access_token").ok_or_else(|| Error::AuthError("token not found".into()))?;
 
     let stores = app.state::<StoreCollection<Wry>>();
-    let _ = with_store(app.app_handle(), stores, &state.path, |store| {
+    let _ = with_store(app.app_handle().clone(), stores, &state.path, |store| {
         store.insert("token".to_string(), json!(token))?;
         store.save()?;
         Ok(())

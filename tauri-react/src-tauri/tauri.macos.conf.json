@@ -1,0 +1,21 @@
+{
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "fullscreen": false,
+        "height": 600,
+        "hiddenTitle": true,
+        "minHeight": 400,
+        "minWidth": 600,
+        "resizable": true,
+        "width": 800,
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "visible": false
+      }
+    ]
+  }
+}
+

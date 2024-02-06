@@ -6,7 +6,7 @@ import LoginComponent from '@/components/login/login'
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from '@/components/ui/toast'
-import { invoke } from '@tauri-apps/api/tauri'
+import { invoke } from '@tauri-apps/api/core'
 import {
   Home,
   LayoutDashboard,
@@ -118,9 +118,10 @@ function ProtectedRoute() {
     <div className="pt-8 w-full h-full">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
-          defaultSize={15}
-          minSize={15}
-          collapsedSize={5}
+          defaultSize={20}
+          minSize={20}
+          maxSize={35}
+          collapsedSize={10}
           collapsible={true}
           onCollapse={() => setIsCollapsed(true)}
           onExpand={() => setIsCollapsed(false)}

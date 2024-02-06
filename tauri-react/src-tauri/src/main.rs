@@ -17,12 +17,13 @@ use tauri::{Manager, Wry, App};
 
 fn load_store(app: &mut App, path: &PathBuf) -> Result<()> {
     let stores = app.state::<StoreCollection<Wry>>();
-    with_store(app.handle(), stores, &path, |store| store.load())?;
+    with_store(app.handle().clone(), stores, &path, |store| store.load())?;
     Ok(())
 }
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             let path = PathBuf::from("config.json");
@@ -35,3 +36,4 @@ fn main() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
