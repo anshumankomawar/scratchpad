@@ -7,7 +7,7 @@ export const Route = createFileRoute('/')({
 
 function HomeComponent() {
   return (
-    <div className="h-full py-2 px-4">
+    <div className="h-full px-4">
       <Tiptap /> 
     </div>
   )

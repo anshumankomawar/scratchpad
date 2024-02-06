@@ -49,6 +49,10 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        grey: {
+          100: "#F5F7FA",
+          1000: "#1F2933"
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -71,5 +75,9 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require('@tailwindcss/typography'),
+    require("tailwindcss/nesting"),
+  ],
 }
