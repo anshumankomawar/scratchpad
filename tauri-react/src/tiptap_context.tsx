@@ -7,6 +7,8 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import BulletList from '@tiptap/extension-bullet-list'
 import ListItem from '@tiptap/extension-list-item'
 import TextAlign from '@tiptap/extension-text-align'
+import TaskItem from '@tiptap/extension-task-item'
+import TaskList from '@tiptap/extension-task-list'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
 import CharacterCount from '@tiptap/extension-character-count'
@@ -30,6 +32,10 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     StarterKit,
     Blockquote,
     Underline,
+    TaskList,
+    TaskItem.configure({
+      nested: true,
+    }),
     Placeholder.configure({
       placeholder: 'Write something …',
     }),

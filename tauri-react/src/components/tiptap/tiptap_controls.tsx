@@ -1,5 +1,5 @@
 import { Editor } from "@tiptap/react";
-import { AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, List, Quote, Strikethrough, Underline } from 'lucide-react'
+import { AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, List, ListTodo, Quote, Strikethrough, Underline } from 'lucide-react'
 import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
@@ -67,6 +67,13 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
           className={editor.isActive('bulletList') ? 'bg-accent' : ''}
           size="icon">
           <List className="w-4 h-4"/>
+        </Button>
+
+        <Button variant="ghost"
+          onClick={() => editor.chain().focus().toggleTaskList().run()}
+          className={editor.isActive('taskList') ? 'bg-accent' : ''}
+          size="icon">
+          <ListTodo className="w-4 h-4"/>
         </Button>
 
       <div className="col-span-3 w-full">

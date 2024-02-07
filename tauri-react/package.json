@@ -33,6 +33,8 @@
     "@tiptap/extension-font-family": "^2.2.2",
     "@tiptap/extension-list-item": "^2.2.1",
     "@tiptap/extension-placeholder": "^2.2.2",
+    "@tiptap/extension-task-item": "^2.2.2",
+    "@tiptap/extension-task-list": "^2.2.2",
     "@tiptap/extension-text-align": "^2.2.1",
     "@tiptap/extension-text-style": "^2.2.2",
     "@tiptap/extension-underline": "^2.2.1",
