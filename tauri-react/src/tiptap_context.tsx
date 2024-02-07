@@ -9,6 +9,7 @@ import ListItem from '@tiptap/extension-list-item'
 import TextAlign from '@tiptap/extension-text-align'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
+import CharacterCount from '@tiptap/extension-character-count'
 import './tiptap.scss'
 
 export interface TiptapContext {
@@ -31,6 +32,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
         class: 'list-disc pl-5'
       }
     }),
+    CharacterCount.configure(),
     ListItem,
     TextAlign.configure({
       types: ['heading', 'paragraph'],
