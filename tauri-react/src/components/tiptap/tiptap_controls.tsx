@@ -1,5 +1,5 @@
 import { Editor } from "@tiptap/react";
-import { AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, Quote, Strikethrough, Underline } from 'lucide-react'
+import { AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, List, Quote, Strikethrough, Underline } from 'lucide-react'
 import { Button } from "../ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
@@ -15,7 +15,7 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
     editor.commands.setTextAlign(value);
     setTab(value);
   }
-
+  console.log(editor.getHTML())
   return (
     <div className="grid grid-cols-3 gap-1 gap-y-2 justify-items-center items-end">
         <Button variant="ghost"
@@ -58,6 +58,13 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
           className={editor.isActive('blockquote') ? 'bg-accent' : ''}
           size="icon">
           <Quote className="w-4 h-4"/>
+        </Button>
+
+        <Button variant="ghost"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={editor.isActive('bulletList') ? 'bg-accent' : ''}
+          size="icon">
+          <List className="w-4 h-4"/>
         </Button>
 
       <div className="col-span-3 w-full">

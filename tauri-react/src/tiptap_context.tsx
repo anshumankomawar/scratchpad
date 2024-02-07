@@ -4,6 +4,8 @@ import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 import Blockquote from '@tiptap/extension-blockquote'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import BulletList from '@tiptap/extension-bullet-list'
+import ListItem from '@tiptap/extension-list-item'
 import TextAlign from '@tiptap/extension-text-align'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -24,6 +26,12 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     StarterKit,
     Blockquote,
     Underline,
+    BulletList.configure({
+      HTMLAttributes: {
+        class: 'list-disc pl-5'
+      }
+    }),
+    ListItem,
     TextAlign.configure({
       types: ['heading', 'paragraph'],
     }),
