@@ -2,7 +2,9 @@ import * as React from 'react'
 import { useEditor, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
+import Blockquote from '@tiptap/extension-blockquote'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import TextAlign from '@tiptap/extension-text-align'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
 import './tiptap.scss'
@@ -20,7 +22,11 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
   // define your extension array
   const extensions = [
     StarterKit,
+    Blockquote,
     Underline,
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+    }),
     CodeBlockLowlight.configure({
       lowlight,
     })
@@ -32,7 +38,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     content,
     editorProps: {
       attributes: {
-        class: 'h-full overflow-y-auto overflow-x-auto text-clip pt-4 outline-none rounded-md p-2',
+        class: 'h-full overflow-y-auto overflow-x-auto outline-none rounded-md',
       },
     },
   })

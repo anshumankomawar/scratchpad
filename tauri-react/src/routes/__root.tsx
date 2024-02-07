@@ -21,6 +21,7 @@ import RightPanel from '@/components/panels/rightpanel'
 import Header from '@/components/header/header'
 import TiptapControls from '@/components/tiptap/tiptap_controls'
 import { useTipTapEditor } from '@/tiptap_context'
+import LeftPanel from '@/components/panels/leftpanel'
 
 export interface MyRouterContext {
   auth: StoreContext
@@ -123,38 +124,29 @@ function RightPanelContent() {
   )
 }
 
+function LeftPanelContent() {
+  return (
+    <SidebarNav
+      isCollapsed={false}
+      items={sidebarItems}
+    >
+    </SidebarNav>
+  )
+}
+
 function ProtectedRoute() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false)
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false)
 
   return (
     <div className='h-full w-full'>
-      <Header isRightPanelOpen={isRightPanelOpen} setIsRightPanelOpen={setIsRightPanelOpen}/>
+      <Header isRightPanelOpen={isRightPanelOpen} setIsRightPanelOpen={setIsRightPanelOpen} isLeftPanelOpen={isLeftPanelOpen} setIsLeftPanelOpen={setIsLeftPanelOpen}/>
       <div className="pt-11 w-full h-full flex flex-row">
+        <LeftPanel isLeftPanelOpen={isLeftPanelOpen} children={LeftPanelContent()}/>
         <div className="overflow-x-scroll w-full h-full">
-          <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel
-              defaultSize={20}
-              minSize={20}
-              maxSize={35}
-              collapsedSize={10}
-              collapsible={true}
-              onCollapse={() => setIsCollapsed(true)}
-              onExpand={() => setIsCollapsed(false)}
-            >
-              <SidebarNav
-                isCollapsed={isCollapsed}
-                items={sidebarItems}
-              >
-              </SidebarNav>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel>
               <div className="px-4 h-full">
                 <Outlet />
               </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
           <Toaster />
         </div>
         <RightPanel isRightPanelOpen={isRightPanelOpen} children={RightPanelContent()}/>

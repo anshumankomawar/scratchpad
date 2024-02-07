@@ -16,7 +16,7 @@ function HomeComponent() {
 
   return (
     <div className="w-full h-full px-4">
-        <EditorContent className="h-full overflow-x-hidden" editor={tiptap.editor} />
+        <EditorContent className="h-full overflow-x-hidden pt-4" editor={tiptap.editor} />
     </div>
   )
 }
