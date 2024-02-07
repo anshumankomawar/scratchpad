@@ -8,6 +8,7 @@ import { routeTree } from './routeTree.gen'
 import { StoreProvider, useStore } from './auth'
 import "./index.css"
 import { getCurrent } from '@tauri-apps/api/window';
+import { TiptapProvider } from './tiptap_context'
 
 document.addEventListener('DOMContentLoaded', async function() {
     await getCurrent().show();
@@ -38,11 +39,13 @@ function InnerApp() {
 
 function App() {
   return (
-    <StoreProvider>
-        <QueryClientProvider client={queryClient}>
-          <InnerApp />
-        </QueryClientProvider>
-    </StoreProvider>
+    <TiptapProvider>
+      <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <InnerApp />
+          </QueryClientProvider>
+      </StoreProvider>
+    </TiptapProvider>
   )
 }
 
@@ -51,9 +54,8 @@ const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <div className="h-screen w-full bg-white">
-      <div className="fixed top-0 w-full h-10 bg-transparent z-10" data-tauri-drag-region></div>
-      <App />
+    <div className="h-screen w-full bg-white overflow-x-hidden">
+        <App />
     </div>
   )
 }

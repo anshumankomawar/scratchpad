@@ -17,6 +17,10 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { SidebarNav } from '@/components/nav/nav'
+import RightPanel from '@/components/panels/rightpanel'
+import Header from '@/components/header/header'
+import TiptapControls from '@/components/tiptap/tiptap_controls'
+import { useTipTapEditor } from '@/tiptap_context'
 
 export interface MyRouterContext {
   auth: StoreContext
@@ -111,35 +115,52 @@ const sidebarItems = [
   }
 ]
 
-function ProtectedRoute() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+function RightPanelContent() {
+  const tiptap = useTipTapEditor();
 
   return (
-    <div className="pt-10 w-full h-full">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel
-          defaultSize={20}
-          minSize={20}
-          maxSize={35}
-          collapsedSize={10}
-          collapsible={true}
-          onCollapse={() => setIsCollapsed(true)}
-          onExpand={() => setIsCollapsed(false)}
-        >
-          <SidebarNav
-            isCollapsed={isCollapsed}
-            items={sidebarItems}
-          >
-          </SidebarNav>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel>
-          <div className="px-4 pb-2 h-full">
-            <Outlet />
-          </div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
-      <Toaster />
+    <div className="text-clip">
+      <TiptapControls editor={tiptap.editor}/>
+    </div>
+  )
+}
+
+function ProtectedRoute() {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false)
+
+  return (
+    <div className='h-full w-full'>
+      <Header isRightPanelOpen={isRightPanelOpen} setIsRightPanelOpen={setIsRightPanelOpen}/>
+      <div className="pt-11 w-full h-full flex flex-row">
+        <div className="flex-grow w-full h-full">
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel
+              defaultSize={20}
+              minSize={20}
+              maxSize={35}
+              collapsedSize={10}
+              collapsible={true}
+              onCollapse={() => setIsCollapsed(true)}
+              onExpand={() => setIsCollapsed(false)}
+            >
+              <SidebarNav
+                isCollapsed={isCollapsed}
+                items={sidebarItems}
+              >
+              </SidebarNav>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel>
+              <div className="px-4 h-full">
+                <Outlet />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+          <Toaster />
+        </div>
+        <RightPanel isRightPanelOpen={isRightPanelOpen} children={RightPanelContent()}/>
+      </div>
     </div>
   )
 }
