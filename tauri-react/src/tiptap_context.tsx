@@ -5,6 +5,7 @@ import { Underline } from '@tiptap/extension-underline'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
+import './tiptap.scss'
 
 export interface TiptapContext {
   editor: Editor | null
@@ -25,13 +26,13 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     })
   ]
 
-  const content = `<p>Hello World!`
+  const content = `<p>Hello World!</p>`
   const editor = useEditor({
     extensions,
     content,
     editorProps: {
       attributes: {
-        class: 'h-full overflow-y-auto pt-4 outline-none rounded-md p-2',
+        class: 'h-full overflow-y-auto overflow-x-auto text-clip pt-4 outline-none rounded-md p-2',
       },
     },
   })

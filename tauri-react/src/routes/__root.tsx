@@ -119,9 +119,7 @@ function RightPanelContent() {
   const tiptap = useTipTapEditor();
 
   return (
-    <div className="text-clip">
-      <TiptapControls editor={tiptap.editor}/>
-    </div>
+    <TiptapControls editor={tiptap.editor}/>
   )
 }
 
@@ -133,7 +131,7 @@ function ProtectedRoute() {
     <div className='h-full w-full'>
       <Header isRightPanelOpen={isRightPanelOpen} setIsRightPanelOpen={setIsRightPanelOpen}/>
       <div className="pt-11 w-full h-full flex flex-row">
-        <div className="flex-grow w-full h-full">
+        <div className="overflow-x-scroll w-full h-full">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel
               defaultSize={20}

@@ -15,10 +15,8 @@ function HomeComponent() {
   }
 
   return (
-    <div className="h-full px-4">
-      <div className="h-full flex space-x-4">
-        <EditorContent className="h-full flex-1 " editor={tiptap.editor} />
-      </div>
+    <div className="w-full h-full px-4">
+        <EditorContent className="h-full overflow-x-hidden" editor={tiptap.editor} />
     </div>
   )
 }
