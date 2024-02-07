@@ -26,6 +26,10 @@ tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", 
 tauri-plugin-os = "2.0.0-beta.0"
 window-vibrancy = "0.4.3"
 
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.25.0"
+objc = "0.2.7"
+
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!

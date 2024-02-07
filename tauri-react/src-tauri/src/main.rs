@@ -1,6 +1,17 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[cfg(target_os = "macos")]
+#[macro_use]
+extern crate cocoa;
+
+#[cfg(target_os = "macos")]
+#[macro_use]
+extern crate objc;
+
+#[cfg(target_os = "macos")]
+mod mac;
+
 mod error;
 mod fetch;
 mod state;
@@ -26,6 +37,14 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
+            if cfg!(target_os = "macos") {
+                #[cfg(target_os = "macos")]
+                use mac::window::setup_mac_window;
+
+                #[cfg(target_os = "macos")]
+                setup_mac_window(app);
+            }
+
             let path = PathBuf::from("config.json");
             let _ = load_store(app, &path);
 

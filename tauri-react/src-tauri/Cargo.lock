@@ -3839,7 +3839,9 @@ dependencies = [
 name = "tauri-react"
 version = "0.0.0"
 dependencies = [
+ "cocoa",
  "hex_color",
+ "objc",
  "reqwest",
  "serde",
  "serde_json",

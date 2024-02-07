@@ -52,7 +52,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <div className="h-screen w-full bg-white">
-      <div className="fixed top-0 w-full h-8 bg-transparent z-10" data-tauri-drag-region/>
+      <div className="fixed top-0 w-full h-10 bg-transparent z-10" data-tauri-drag-region></div>
       <App />
     </div>
   )

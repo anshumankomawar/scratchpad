@@ -115,7 +115,7 @@ function ProtectedRoute() {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <div className="pt-8 w-full h-full">
+    <div className="pt-10 w-full h-full">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel
           defaultSize={20}
