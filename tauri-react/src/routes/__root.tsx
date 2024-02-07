@@ -135,7 +135,7 @@ function LeftPanelContent() {
 }
 
 function ProtectedRoute() {
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false)
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true)
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false)
 
   return (

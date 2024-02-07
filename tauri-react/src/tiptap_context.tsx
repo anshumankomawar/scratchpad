@@ -10,6 +10,8 @@ import TextAlign from '@tiptap/extension-text-align'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
 import CharacterCount from '@tiptap/extension-character-count'
+import FontFamily from '@tiptap/extension-font-family'
+import TextStyle from '@tiptap/extension-text-style'
 import './tiptap.scss'
 
 export interface TiptapContext {
@@ -27,6 +29,8 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     StarterKit,
     Blockquote,
     Underline,
+    FontFamily,
+    TextStyle,
     BulletList.configure({
       HTMLAttributes: {
         class: 'list-disc pl-5'

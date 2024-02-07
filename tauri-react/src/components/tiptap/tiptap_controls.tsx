@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
+import { FontSelector } from "./font-selector";
 
 export default function TiptapControls({ editor }: { editor: Editor | null }) {
   if(!editor) {
@@ -84,10 +85,12 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
         </Tabs>
       </div>
 
-      <Badge variant="secondary" className="col-span-3 w-full h-8 flex flex-row justify-between">
+      <Badge variant="secondary" className="font-normal col-span-3 w-full h-8 flex flex-row justify-between">
         <div>words:</div>
         <div>{editor.storage.characterCount.words()}</div>
       </Badge>
+
+      <FontSelector editor={editor} className="col-span-3 w-full h-8"/>
     </div>
   )
 }
