@@ -12,6 +12,7 @@ import javascript from 'highlight.js/lib/languages/javascript'
 import CharacterCount from '@tiptap/extension-character-count'
 import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
+import Placeholder from '@tiptap/extension-placeholder'
 import './tiptap.scss'
 
 export interface TiptapContext {
@@ -29,6 +30,9 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     StarterKit,
     Blockquote,
     Underline,
+    Placeholder.configure({
+      placeholder: 'Write something …',
+    }),
     FontFamily,
     TextStyle,
     BulletList.configure({
@@ -46,7 +50,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     })
   ]
 
-  const content = `<p>Hello World!</p>`
+  const content = ``
   const editor = useEditor({
     extensions,
     content,
