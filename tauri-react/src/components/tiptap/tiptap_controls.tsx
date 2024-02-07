@@ -9,17 +9,12 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
     return <>Loading...</>
   }
 
-  const [tab, setTab] = useState("tab1");
+  const [tab, setTab] = useState("left");
 
   const onTabChange = (value) => {
+    console.log(tab)
     // match the tab value to the editor command
-    if(value === "tab1") {
-      editor.commands.setTextAlign("left");
-    } else if(value === "tab2") {
-      editor.commands.setTextAlign("center");
-    } else if(value === "tab3") {
-      editor.commands.setTextAlign("right");
-    }
+    editor.commands.setTextAlign(value);
     setTab(value);
   }
 
@@ -70,13 +65,13 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
       <div className="col-span-3 w-full">
         <Tabs value={tab} onValueChange={onTabChange}>
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="tab1" className="data-[state=active]:bg-white">
+            <TabsTrigger value="left" className="data-[state=active]:bg-white">
               <AlignLeft className="w-4 h-4"/>
             </TabsTrigger>
-            <TabsTrigger value="tab2" className="data-[state=active]:bg-white">
+            <TabsTrigger value="center" className="data-[state=active]:bg-white">
               <AlignCenter className="w-4 h-4"/>
             </TabsTrigger>
-            <TabsTrigger value="tab3" className="data-[state=active]:bg-white">
+            <TabsTrigger value="right" className="data-[state=active]:bg-white">
               <AlignRight className="w-4 h-4"/>
             </TabsTrigger>
           </TabsList>
