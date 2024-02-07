@@ -12,8 +12,6 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
   const [tab, setTab] = useState("left");
 
   const onTabChange = (value) => {
-    console.log(tab)
-    // match the tab value to the editor command
     editor.commands.setTextAlign(value);
     setTab(value);
   }
@@ -63,7 +61,7 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
         </Button>
 
       <div className="col-span-3 w-full">
-        <Tabs value={tab} onValueChange={onTabChange}>
+        <Tabs value={editor.isActive({ textAlign: 'left' }) ? "left" : editor.isActive({ textAlign: 'right' }) ? "right" : "center"} onValueChange={onTabChange}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="left" className="data-[state=active]:bg-white">
               <AlignLeft className="w-4 h-4"/>

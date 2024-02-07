@@ -41,6 +41,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
         class: 'h-full overflow-y-auto overflow-x-auto outline-none rounded-md',
       },
     },
+    autofocus: 'end'
   })
 
   return (
