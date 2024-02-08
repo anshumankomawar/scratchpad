@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
 import { FontSelector } from "./font-selector";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 
 export default function TiptapControls({ editor }: { editor: Editor | null }) {
   if(!editor) {
