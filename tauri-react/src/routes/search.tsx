@@ -1,8 +1,4 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useStore } from '../auth'
-import { invoke } from '@tauri-apps/api/core'
-import { ToastAction } from '@/components/ui/toast'
-import { useToast } from '@/components/ui/use-toast'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { SearchPage } from '@/components/search/search'
 
 export const Route = createFileRoute('/search')({
