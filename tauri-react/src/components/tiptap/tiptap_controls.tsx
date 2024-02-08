@@ -1,11 +1,12 @@
 import { Editor } from "@tiptap/react";
-import { AArrowDown, AArrowUp, AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, List, ListTodo, Quote, Strikethrough, Subscript, Superscript, Underline } from 'lucide-react'
+import { AArrowDown, AArrowUp, AlignCenter, AlignLeft, AlignRight, BetweenHorizontalStart, BetweenVerticalStart, Bold, Code, Italic, List, ListTodo, Quote, SeparatorHorizontal, Strikethrough, Subscript, Superscript, Table, Underline } from 'lucide-react'
 import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
 import { FontSelector } from "./font-selector";
 import { HeadingSelector } from "./heading_selector";
+import { Separator } from "../ui/separator";
 
 export default function TiptapControls({ editor }: { editor: Editor | null }) {
   if(!editor) {
@@ -135,6 +136,36 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
 
       <HeadingSelector editor={editor} className="col-span-3 w-full h-8"/>
       <FontSelector editor={editor} className="col-span-3 w-full h-8"/>
+
+      <Separator className="col-span-3 w-full" orientation="horizontal"/>
+
+      <Button variant="ghost"
+        onClick={() => {
+          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() 
+        }}
+        className={editor.isActive('superscript') ? 'bg-accent' : ''}
+        size="icon">
+        <Table className="w-4 h-4"/>
+      </Button>
+
+      <Button variant="ghost"
+        onClick={() => {
+          editor.chain().focus().addRowAfter().run() 
+        }}
+        className={editor.isActive('superscript') ? 'bg-accent' : ''}
+        size="icon">
+        <BetweenHorizontalStart className="w-4 h-4"/>
+      </Button>
+
+      <Button variant="ghost"
+        onClick={() => {
+          editor.chain().focus().addColumnAfter().run() 
+        }}
+        className={editor.isActive('superscript') ? 'bg-accent' : ''}
+        size="icon">
+        <BetweenVerticalStart className="w-4 h-4"/>
+      </Button>
+
     </div>
   )
 }

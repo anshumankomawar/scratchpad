@@ -13,6 +13,10 @@ import TaskList from '@tiptap/extension-task-list'
 import { createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
 import CharacterCount from '@tiptap/extension-character-count'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -98,6 +102,10 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     Placeholder.configure({
       placeholder: 'Write something …',
     }),
+    Table,
+    TableRow,
+    TableHeader,
+    TableCell,
     FontFamily,
     TextStyleExtended,
     Heading.extend({
