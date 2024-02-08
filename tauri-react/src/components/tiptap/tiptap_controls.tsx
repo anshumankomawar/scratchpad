@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
 import { FontSelector } from "./font-selector";
+import { HeadingSelector } from "./heading_selector";
 
 export default function TiptapControls({ editor }: { editor: Editor | null }) {
   if(!editor) {
@@ -132,6 +133,7 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
         <div>{editor.storage.characterCount.words()}</div>
       </Badge>
 
+      <HeadingSelector editor={editor} className="col-span-3 w-full h-8"/>
       <FontSelector editor={editor} className="col-span-3 w-full h-8"/>
     </div>
   )

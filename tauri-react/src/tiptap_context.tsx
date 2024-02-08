@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { useEditor, Editor } from '@tiptap/react'
+import { useEditor, Editor, mergeAttributes } from '@tiptap/react'
+import Heading from '@tiptap/extension-heading'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 import Blockquote from '@tiptap/extension-blockquote'
@@ -99,6 +100,25 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     }),
     FontFamily,
     TextStyleExtended,
+    Heading.extend({
+      levels: [1, 2],
+      renderHTML({ node, HTMLAttributes }) {
+        const level = this.options.levels.includes(node.attrs.level)
+          ? node.attrs.level
+          : this.options.levels[0];
+        const classes: { [index: number]: string } = {
+          1: 'text-2xl',
+          2: 'text-xl',
+        };
+        return [
+          `h${level}`,
+          mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+            class: `${classes[level]}`,
+          }),
+          0,
+        ];
+      },
+    }).configure({ levels: [1, 2] }),
     BulletList.configure({
       HTMLAttributes: {
         class: 'list-disc pl-5'
