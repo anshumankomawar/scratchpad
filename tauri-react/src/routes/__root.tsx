@@ -10,6 +10,8 @@ import { invoke } from '@tauri-apps/api/core'
 import {
   Home,
   LayoutDashboard,
+  FileSearch,
+  NotebookPen
 } from "lucide-react"
 import {
   ResizableHandle,
@@ -103,9 +105,16 @@ const sidebarItems = [
   {
     title: "Home",
     label: "",
-    icon: Home,
+    icon: NotebookPen,
     href: "/",
     variant: "default",
+  },
+  {
+    title: "Search",
+    label: "",
+    icon: FileSearch,
+    href: "/search",
+    variant: "ghost",
   },
   {
     title: "Dashboard",
