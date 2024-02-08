@@ -7,8 +7,8 @@ use crate::state::TauriState;
 use crate::{error::Result, util::get_from_store};
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Root {
-    message: String,
+struct Response {
+    data: String,
 }
 
 #[tauri::command]
@@ -20,8 +20,8 @@ pub async fn search_user_documents(query: &str, state: State<'_, TauriState>, ap
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
     .await?
-    .json::<Root>()
+    .json::<Response>()
     .await?;
 
-    Ok(json!(res.message))
+    Ok(json!(res.data))
 }

@@ -87,33 +87,12 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
 # Search document/chunk database, calls open ai api and returns a response based on provided user query
 @router.post("/search")
 def search_document(request: Request, db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], query:str):
-    print(current_user)
-    print(query)
     try:
         embeddings = OpenAIEmbeddings()
         embedded_query = embeddings.embed_query(query)
         email = current_user["email"]
-        # created match_documents function as below (in supabase)
-        '''
-        create or replace function match_documents (
-        email varchar(255), query_embedding vector(1536), match_threshold float,match_count int)
-        returns table (
-        chunk_id uuid,document_id uuid,content text,similarity float
-        )
-        language sql stable
-        as $$
-        select
-            chunks.id,chunks.document_id,chunks.content,1 - (chunks.embedding <=> query_embedding) as similarity
-        from document_data
-        join chunks on chunks.document_id = document_data.id
-        where document_data.email = email and chunks.embedding <=> query_embedding < 1 - match_threshold
-        order by chunks.embedding <=> query_embedding
-        limit match_count;
-        $$;
-        '''
         similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.5, 'match_count':10}).execute()
         record_timing(request, "finished match documents")
-        #can experiment with the above values 
         similar_chunks_data = similar_chunks.data
         all_chunks = "\n\n".join([chunk['content'] for chunk in similar_chunks_data])
         completion_messages = [
@@ -139,10 +118,10 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
         )
         record_timing(request, "finished gpt")
 
-        return {"message":response.choices[0].message.content}
+        return {"data": response.choices[0].message.content}
     except Exception as e:
         print("Error", e)
-        return {"message": "couldnt get results from search query"}
+        return {"error": "couldnt get results from search query"}
       
 
 @router.get("/document")
