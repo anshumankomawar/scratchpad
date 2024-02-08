@@ -1,11 +1,10 @@
 import { Editor } from "@tiptap/react";
-import { AArrowDown, AArrowUp, AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, List, ListTodo, Quote, Strikethrough, Subscript, Superscript, Underline } from 'lucide-react'
+import { AArrowUp, AlignCenter, AlignLeft, AlignRight, Bold, Code, Italic, List, ListTodo, Quote, Strikethrough, Subscript, Superscript, Underline } from 'lucide-react'
 import { Button } from "../ui/button";
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
 import { FontSelector } from "./font-selector";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 
 export default function TiptapControls({ editor }: { editor: Editor | null }) {
   if(!editor) {
@@ -13,7 +12,6 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
   }
 
   const [tab, setTab] = useState("left");
-  const [fontSize, setFontSize] = useState("12");
 
   const onTabChange = (value) => {
     editor.commands.setTextAlign(value);
@@ -92,24 +90,24 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
           <Superscript className="w-4 h-4"/>
         </Button>
 
+
+        <div className="col-span-2 h-full w-full">
+          <div className="grid grid-cols-2 h-full justify-center">
+            <div className="bg-black col-span-1 w-full">
+            dadfs
+            </div>
+
+            <div className="bg-blue-500 col-span-1 w-full">
+            asdf
+            </div>
+          </div>
+        </div>
+
         <Button variant="ghost"
-          onClick={() => {
-            setFontSize(`${parseInt(fontSize) + 1}`)
-            editor.chain().focus().setFontSize(fontSize).run()
-          }}
+          onClick={() => editor.chain().focus().setFontSize("18").run()}
           className={editor.isActive('superscript') ? 'bg-accent' : ''}
           size="icon">
           <AArrowUp className="w-4 h-4"/>
-        </Button>
-
-        <Button variant="ghost"
-          onClick={() => {
-            setFontSize(`${parseInt(fontSize) - 1}`)
-            editor.chain().focus().setFontSize(fontSize).run()
-          }}
-          className={editor.isActive('superscript') ? 'bg-accent' : ''}
-          size="icon">
-          <AArrowDown className="w-4 h-4"/>
         </Button>
 
       <div className="col-span-3 w-full">

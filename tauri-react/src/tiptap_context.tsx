@@ -15,6 +15,8 @@ import CharacterCount from '@tiptap/extension-character-count'
 import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
 import Placeholder from '@tiptap/extension-placeholder'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import './tiptap.scss'
 
 export interface TiptapContext {
@@ -22,6 +24,60 @@ export interface TiptapContext {
 }
 
 const TiptapContext = React.createContext<TiptapContext | null>(null)
+
+declare module '@tiptap/core' {
+    interface Commands<ReturnType> {
+        fontSize: {
+            /**
+             * Set the font size
+             */
+            setFontSize: (size: string) => ReturnType;
+            /**
+             * Unset the font size
+             */
+            unsetFontSize: () => ReturnType;
+        };
+    }
+}
+
+export const TextStyleExtended = TextStyle.extend({
+    addAttributes() {
+        return {
+            ...this.parent?.(),
+            fontSize: {
+                default: null,
+                parseHTML: (element) => element.style.fontSize.replace('px', ''),
+                renderHTML: (attributes) => {
+                    if (!attributes['fontSize']) {
+                        return {};
+                    }
+                    return {
+                        style: `font-size: ${attributes['fontSize']}px`
+                    };
+                }
+            }
+        };
+    },
+
+    addCommands() {
+        return {
+            ...this.parent?.(),
+            setFontSize:
+                (fontSize) =>
+                ({ commands }) => {
+                    return commands.setMark(this.name, { fontSize: fontSize });
+                },
+            unsetFontSize:
+                () =>
+                ({ chain }) => {
+                    return chain()
+                        .setMark(this.name, { fontSize: null })
+                        .removeEmptyTextStyle()
+                        .run();
+                }
+        };
+    }
+});
 
 export function TiptapProvider({ children }: { children: React.ReactNode }) {
   const lowlight = createLowlight()
@@ -33,6 +89,8 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     Blockquote,
     Underline,
     TaskList,
+    Subscript,
+    Superscript,
     TaskItem.configure({
       nested: true,
     }),
@@ -40,7 +98,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
       placeholder: 'Write something …',
     }),
     FontFamily,
-    TextStyle,
+    TextStyleExtended,
     BulletList.configure({
       HTMLAttributes: {
         class: 'list-disc pl-5'
