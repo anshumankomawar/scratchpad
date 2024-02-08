@@ -4,12 +4,19 @@ from dependencies import get_db
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_utils.timing import add_timing_middleware
+from starlette.testclient import TestClient
 from models.user import User
 from models.auth import Token
 from routers import documents, user, document_data
 from typing import Annotated
+import asyncio
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 app = FastAPI(dependencies=[Depends(get_db)])
+add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8000", "http://localhost:1420", "tauri://localhost", "http://localhost:5173"],
@@ -21,11 +28,21 @@ app.include_router(documents.router)
 app.include_router(user.router)
 app.include_router(document_data.router)
 
+@app.get("/timed")
+async def get_timed() -> None:
+    await asyncio.sleep(0.05)
+
+
+@app.get("/untimed")
+async def get_untimed() -> None:
+    await asyncio.sleep(0.1)
+
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
+TestClient(app).get("/timed")
 
 @app.post("/login", response_model=Token)
 def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(get_db)):

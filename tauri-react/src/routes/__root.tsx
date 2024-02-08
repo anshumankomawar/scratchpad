@@ -8,16 +8,10 @@ import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from '@/components/ui/toast'
 import { invoke } from '@tauri-apps/api/core'
 import {
-  Home,
   LayoutDashboard,
   FileSearch,
   NotebookPen
 } from "lucide-react"
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
 import { SidebarNav } from '@/components/nav/nav'
 import RightPanel from '@/components/panels/rightpanel'
 import Header from '@/components/header/header'

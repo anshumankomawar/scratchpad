@@ -1,9 +1,12 @@
 import os
+from fastapi_utils.timing import record_timing
 import openai
 from openai import OpenAI
 import json
 from fastapi import APIRouter, Depends
 from typing import Annotated
+
+from starlette.requests import Request
 from auth.oauth import get_current_user
 from dependencies import get_db
 from auth.oauth import get_current_user
@@ -83,7 +86,9 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
 
 # Search document/chunk database, calls open ai api and returns a response based on provided user query
 @router.post("/search")
-def search_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], query:str):
+def search_document(request: Request, db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], query:str):
+    print(current_user)
+    print(query)
     try:
         embeddings = OpenAIEmbeddings()
         embedded_query = embeddings.embed_query(query)
@@ -107,29 +112,32 @@ def search_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
         $$;
         '''
         similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.5, 'match_count':10}).execute()
+        record_timing(request, "finished match documents")
         #can experiment with the above values 
         similar_chunks_data = similar_chunks.data
         all_chunks = "\n\n".join([chunk['content'] for chunk in similar_chunks_data])
         completion_messages = [
-        {
-            "role": "system",
-            "content": "You are an AI assistant with unparalleled expertise. Your knowledge base is a description of a notes from a user.",
-        },
-        {
-            "role": "user",
-            "content": query,
-        },
-        {
-            "role": "assistant",
-            "content": all_chunks,
-        },
-    ]
+            {
+                "role": "system",
+                "content": "You are an AI assistant with unparalleled expertise. Your knowledge base is a description of a notes from a user. Do not use knowledge outside of what you have been provided",
+            },
+            {
+                "role": "user",
+                "content": query,
+            },
+            {
+                "role": "assistant",
+                "content": all_chunks,
+            },
+        ]
+        record_timing(request, "started gpt")
         response = openai.chat.completions.create(
-        model="gpt-3.5-turbo-0613",
-        messages=completion_messages,
-        max_tokens=400,
-        temperature=0.4,
+            model="gpt-3.5-turbo-0125",
+            messages=completion_messages,
+            max_tokens=400,
+            temperature=0.4,
         )
+        record_timing(request, "finished gpt")
 
         return {"message":response.choices[0].message.content}
     except Exception as e:
