@@ -1,57 +1,68 @@
-import os
-import openai
-from supabase.client import Client, create_client
-from langchain_community.embeddings.openai import OpenAIEmbeddings
-from langchain_community.vectorstores import SupabaseVectorStore
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
-from dotenv import load_dotenv, find_dotenv
+from auth.oauth import create_access_token
+from db.user import get_user
+from dependencies import get_db
+from fastapi import FastAPI, Depends, HTTPException, status, Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_utils.timing import add_timing_middleware
+from starlette.testclient import TestClient
+from models.user import User
+from models.auth import Token
+from routers import user, document_data
+from typing import Annotated
+import asyncio
+import logging
 
-_ = load_dotenv(find_dotenv())
-
-openai.api_key = os.environ["OPENAI_API_KEY"]
-supabase_url = os.environ["SUPABASE_URL"]
-supabase_key = os.environ["SUPABASE_KEY"]
-
-supabase: Client = create_client(supabase_url, supabase_key)
-loader = PyPDFLoader("./Project 4.pdf")
-documents = loader.load()
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-docs = text_splitter.split_documents(documents)
-embeddings = OpenAIEmbeddings()
-vector_store = SupabaseVectorStore.from_documents(
-    docs,
-    embeddings,
-    client=supabase,
-    table_name="documents",
-    query_name="match_documents",
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+app = FastAPI(dependencies=[Depends(get_db)])
+add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000", "http://localhost:1420", "tauri://localhost", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+app.include_router(user.router)
+app.include_router(document_data.router)
 
-user_query = input("Enter your query: ")
-matched_docs = vector_store.similarity_search(user_query)
-injected_docs = "\n\n".join([doc.page_content for doc in matched_docs])
+@app.get("/timed")
+async def get_timed() -> None:
+    await asyncio.sleep(0.05)
 
-completion_messages = [
-    {
-        "role": "system",
-        "content": "You are an AI assistant with unparalleled expertise operating systems. Your knowledge base is a description of a project called Tiny FS.",
-    },
-    {
-        "role": "user",
-        "content": user_query,
-    },
-    {
-        "role": "assistant",
-        "content": injected_docs,
-    },
-]
 
-response = openai.chat.completions.create(
-    model="gpt-3.5-turbo-0613",
-    messages=completion_messages,
-    max_tokens=400,
-    temperature=0.4,
-)
+@app.get("/untimed")
+async def get_untimed() -> None:
+    await asyncio.sleep(0.1)
 
-print("Assistant's Response:")
-print(response.choices[0].message.content)
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+TestClient(app).get("/timed")
+
+@app.post("/login", response_model=Token)
+def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends(), db:dict = Depends(get_db)):
+    user = get_user(userdetails.username, db)
+    print(user)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=f"The User Does not exist"
+        )
+
+    # if not utils.verify_password(userdetails.password, user.password):
+    # raise HTTPException(status_code=status.HTTP._401_UNAUTHORIZED, detail="The Passwords do not match")
+
+    access_token = create_access_token(data={"email": user["email"]})
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True, samesite="none", secure=True)
+    response.set_cookie(key="active_session", value="1", samesite="none", secure=True)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.post("/register")
+async def register(user: User, db: Annotated[dict, Depends(get_db)]):
+    db["client"].from_("users").insert([user.dict()]).execute()
+    return {"message": "registered"}
