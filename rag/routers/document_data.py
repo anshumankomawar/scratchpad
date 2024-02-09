@@ -7,7 +7,7 @@ import json
 from fastapi import APIRouter, Depends
 from typing import Annotated
 import string
-from transformers import pipeline
+# from transformers import pipeline
 from starlette.requests import Request
 from auth.oauth import get_current_user
 from dependencies import get_db
@@ -67,7 +67,7 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
         new_document_id = response.data[0]['id']
 
         #creating chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=50, chunk_overlap=0)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
         #can experiment with above chunk_size and overlap values as needed
         chunks = text_splitter.split_text(doc.content)
         embeddings = OpenAIEmbeddings()
@@ -96,7 +96,24 @@ def generate_summary_openai(request: Request, all_chunks: str, query: str):
     completion_messages = [
         {
             "role": "system",
-            "content": "You are an AI assistant with unparalleled expertise. Your knowledge base is a description of a notes from a user. Do not use knowledge outside of what you have been provided. Compile a note based on the users query.",
+            "content": """ 
+                        As a professional summarizer, create a concise and comprehensive 50 WORD summary of the provided text, be it an article, post, conversation, or passage, while adhering to these guidelines:
+
+                            
+                            1. Craft a summary that is detailed, thorough, in-depth, and complex, while maintaining clarity and conciseness.
+
+                                                        
+                            2. Incorporate main ideas and essential information, eliminating extraneous language and focusing on critical aspects.
+
+                                                        
+                            3. Rely strictly on the provided text, without including external information.
+
+                                                        
+                            4. Format the summary in paragraph form for easy understanding.
+
+                        
+                        By following this optimized prompt, you will generate an effective summary that encapsulates the essence of the given text in a clear, concise, and reader-friendly manner.
+                        """
         },
         {
             "role": "user",
@@ -117,12 +134,12 @@ def generate_summary_openai(request: Request, all_chunks: str, query: str):
     record_timing(request, "finished gpt")
     return response.choices[0].message.content
 
-def generate_summary_falcon(request: Request, all_chunks: str, query: str):
-    summarizer = pipeline("summarization", model="Falconsai/text_summarization")
-    print("***************GENERATING SUMMARY**************\n")
-    result = summarizer(all_chunks, max_length=200, min_length=30, do_sample=False)
-    print("***************SUMMARY GENERATED**************\n")
-    return result[0]["summary_text"]
+# def generate_summary_falcon(request: Request, all_chunks: str, query: str):
+#     summarizer = pipeline("summarization", model="Falconsai/text_summarization")
+#     print("***************GENERATING SUMMARY**************\n")
+#     result = summarizer(all_chunks, max_length=200, min_length=30, do_sample=False)
+#     print("***************SUMMARY GENERATED**************\n")
+#     return result[0]["summary_text"]
 
 # Search document/chunk database, calls open ai api and returns a response based on provided user query
 @router.post("/search")
@@ -136,8 +153,9 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
 
         if similar_queries.data == []:
             print("***************NO SIMILAR QUERIES FOUND, GENERATING NEW DOCUMENT**************\n")
-            similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.55, 'match_count':10}).execute()
+            similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.5, 'match_count':10}).execute()
             similar_chunks_data = similar_chunks.data
+            print(similar_chunks_data)
             all_chunks = "\n\n".join([chunk['content'] for chunk in similar_chunks_data])
 
             data = generate_summary_openai(request, all_chunks, query)
