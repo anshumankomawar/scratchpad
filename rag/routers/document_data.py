@@ -54,7 +54,7 @@ class DocumentMetadata(BaseModel):
 
 
 # Add document, adds chunks and embeddings to chunks table
-@router.post("/add_document", tags=["documents"])
+@router.post("/add_document")
 def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata):
     try:
         email = current_user["email"]
@@ -191,4 +191,20 @@ async def get_user_documents(db: Annotated[dict, Depends(get_db)], current_user:
         return {"documents": result.data}
     except Exception as e:
         print("Error", e)
-        return {"message": "couldnt get users documents"}
+        return {"message": "could not get users documents"}
+
+@router.delete("/delete_document")
+def delete_document(doc_id: str, db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]):
+    try:
+        email = current_user["email"]
+        # Check if the document exists and belongs to the current user
+        existing_document = db["client"].from_("document_data").select("*").eq("email",email).eq("id", doc_id).execute()
+        if not existing_document:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+        # Delete document
+        db["client"].from_("document_data").delete().eq("email",email).eq("id", doc_id).execute()
+        #supabase set to cascading delete on foreign key so chunks and query data will get removed automatically
+        return {"message": "Document deleted successfully"}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "could not delete document"}
