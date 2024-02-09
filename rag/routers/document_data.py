@@ -7,7 +7,7 @@ import json
 from fastapi import APIRouter, Depends
 from typing import Annotated
 import string
-
+from transformers import pipeline
 from starlette.requests import Request
 from auth.oauth import get_current_user
 from dependencies import get_db
@@ -15,7 +15,6 @@ from auth.oauth import get_current_user
 from models.user import User
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import SupabaseVectorStore
 
 
 router = APIRouter(tags=["document_data"], dependencies=[Depends(get_db)])
@@ -93,6 +92,38 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
         print("Error", e)
         return {"message": "Error adding document"}
 
+def generate_summary_openai(request: Request, all_chunks: str, query: str):
+    completion_messages = [
+        {
+            "role": "system",
+            "content": "You are an AI assistant with unparalleled expertise. Your knowledge base is a description of a notes from a user. Do not use knowledge outside of what you have been provided. Compile a note based on the users query.",
+        },
+        {
+            "role": "user",
+            "content": query +  "Don’t give information not mentioned in the CONTEXT INFORMATION.",
+        },
+        {
+            "role": "assistant",
+            "content": all_chunks,
+        },
+    ]
+    record_timing(request, "started gpt")
+    response = openai.chat.completions.create(
+        model="gpt-3.5-turbo-0125",
+        messages=completion_messages,
+        max_tokens=400,
+        temperature=0.4,
+    )
+    record_timing(request, "finished gpt")
+    return response.choices[0].message.content
+
+def generate_summary_falcon(request: Request, all_chunks: str, query: str):
+    summarizer = pipeline("summarization", model="Falconsai/text_summarization")
+    print("***************GENERATING SUMMARY**************\n")
+    result = summarizer(all_chunks, max_length=200, min_length=30, do_sample=False)
+    print("***************SUMMARY GENERATED**************\n")
+    return result[0]["summary_text"]
+
 # Search document/chunk database, calls open ai api and returns a response based on provided user query
 @router.post("/search")
 def search_document(request: Request, db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], query:str):
@@ -101,56 +132,33 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
         embedded_query = embeddings.embed_query(query)
         email = current_user["email"]
 
-        record_timing(request, "DATABASE: function -> match_queries")
         similar_queries = db["client"].rpc('match_queries', {'email': email, 'query_embedding': embedded_query, 'match_threshold': 0.95, 'match_count':1}).execute()
-        record_timing(request, "DATABASE: function -> match_queries")
 
         if similar_queries.data == []:
-            # we couldn't find a similar enough query so we make a new generated document and save it
-            similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.5, 'match_count':10}).execute()
-            print("WHAT IS HTIS ", similar_chunks)
-            record_timing(request, "finished match documents")
+            print("***************NO SIMILAR QUERIES FOUND, GENERATING NEW DOCUMENT**************\n")
+            similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.55, 'match_count':10}).execute()
             similar_chunks_data = similar_chunks.data
             all_chunks = "\n\n".join([chunk['content'] for chunk in similar_chunks_data])
-            completion_messages = [
-                {
-                    "role": "system",
-                    "content": "You are an AI assistant with unparalleled expertise. Your knowledge base is a description of a notes from a user. Do not use knowledge outside of what you have been provided. Compile a note based on the users query.",
-                },
-                {
-                    "role": "user",
-                    "content": query,
-                },
-                {
-                    "role": "assistant",
-                    "content": all_chunks,
-                },
-            ]
-            record_timing(request, "started gpt")
-            response = openai.chat.completions.create(
-                model="gpt-3.5-turbo-0125",
-                messages=completion_messages,
-                max_tokens=400,
-                temperature=0.4,
-            )
-            record_timing(request, "finished gpt")
 
-            insert = DocumentMetadata(filename="generated", content=response.choices[0].message.content)
+            data = generate_summary_openai(request, all_chunks, query)
+            # data = generate_summary_falcon(request, all_chunks, query)
+
+            print("***************GENERATED DATA**************\n")
+            insert = DocumentMetadata(filename="generated", content=data)
+            print("***************TRYING TO INSERT DATA**************\n")
             document_created = add_documents(db, current_user, insert)
-            record_timing(request, "DATABASE: function -> added document to the database")
+            print("***************INSERTED DATA**************\n")
 
             document = db["client"].from_("document_data").select("*").eq("email", email).eq("id", document_created["doc_id"]).execute()
+            print("***************RETRIEVED DOCUMENT**************\n")
 
-            record_timing(request, "DATABASE: function -> got back document based on doc_id")
-            db["client"].from_("queries").insert([{"email": email, "query_content": query, "embedding": embedded_query, "metadata": {}, "doc": document.data[0]["id"]}]).execute()
+            db["client"].from_("queries").insert([{"email": email, "query_content": query, "embedding": embedded_query, "metadata": {}, "doc": document_created["doc_id"]}]).execute()
 
-            return {"data": response.choices[0].message.content}
+            return {"data": data}
         else:
-            # we found a similar enough query so we just return the response
+            print("***************FOUND SIMILAR QUERY, NO GENERATION REQUIRED**************\n")
             similar_query = similar_queries.data[0]
-            record_timing(request, "DATABASE: function -> match_similar_document")
             document = db["client"].from_("document_data").select("*").eq("id", similar_query["doc"]).execute()
-            record_timing(request, "DATABASE: function -> match_similar_document")
             return {"data": document.data[0]["content"]}
     except Exception as e:
         print("Error", e)

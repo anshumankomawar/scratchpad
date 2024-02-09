@@ -8,3 +8,6 @@ fastapi[all]
 uvicorn[standard]
 python-multipart
 python-jose[cryptography]
+huggingface_hub
+fastapi-utils
+transformers[torch]
