@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class DocumentData(BaseModel):
+class Document(BaseModel):
     id:str
     email:str
     content:str
