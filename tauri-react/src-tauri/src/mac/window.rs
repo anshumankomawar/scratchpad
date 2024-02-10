@@ -21,8 +21,8 @@ pub enum ToolbarThickness {
     Thin,
 }
 
-const WINDOW_CONTROL_PAD_X: f64 = 12.0;
-const WINDOW_CONTROL_PAD_Y: f64 = 20.0;
+const WINDOW_CONTROL_PAD_X: f64 = 16.0;
+const WINDOW_CONTROL_PAD_Y: f64 = 22.0;
 
 pub trait WindowExt {
     #[cfg(target_os = "macos")]
