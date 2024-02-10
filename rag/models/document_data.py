@@ -5,3 +5,4 @@ class DocumentData(BaseModel):
     email:str
     content:str
     filename:str
+    generated:bool

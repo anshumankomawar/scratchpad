@@ -1,9 +1,10 @@
 from typing import List
 from pydantic import BaseModel
 
-class Chunk(BaseModel):
+class Queries(BaseModel):
     id: str
-    doc_id:str
-    content: str
-    metadata: str
+    doc: str
+    email: str
+    query: str
+    metadat: str
     embedding: List[float]
