@@ -8,25 +8,17 @@ import {
   } from "@/components/ui/sheet"
 
 
-export default function LeftFloatingPanel() {
+export default function LeftFloatingPanel({open}) {
   return (
-    <Sheet side="left" classNamew="w-[400px]">
-        <SheetTrigger>Open</SheetTrigger>
-        <SheetContent side="left" className="bg-white">
-            <SheetHeader>
-            <SheetTitle>Are you absolutely sure?</SheetTitle>
-            <SheetDescription>
-                This action cannot be undone. This will permanently delete your account
-                and remove your data from our servers.
-            </SheetDescription>
-            </SheetHeader>
-        </SheetContent>
+        <Sheet side="left" open={open}>
+            <SheetContent side="left" className="bg-white w-1/5 pt-10">
+                <SheetHeader>
+                <SheetTitle className="font-virgil">Files</SheetTitle>
+                <SheetDescription className="font-virgil">
+                    Data about the different files will go here
+                </SheetDescription>
+                </SheetHeader>
+            </SheetContent>
         </Sheet>
   )
 }
-
-
-
-
-
-
