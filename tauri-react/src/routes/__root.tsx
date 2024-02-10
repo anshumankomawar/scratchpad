@@ -41,7 +41,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => {
     const { token } = Route.useLoaderData<LoaderData>();
     if (token !== null)
-      return <ProtectedRoute />
+      return <ProtectedRoute2 />
     else
       return <PublicRoute />
   }
@@ -134,6 +134,17 @@ function LeftPanelContent() {
       items={sidebarItems}
     >
     </SidebarNav>
+  )
+}
+
+function ProtectedRoute2() {
+  return (
+    <div className='h-full w-full'>
+      <div className="pt-6">
+        <Outlet />
+      </div>
+    </div>
+
   )
 }
 
