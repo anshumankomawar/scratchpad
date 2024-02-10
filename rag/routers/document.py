@@ -9,6 +9,7 @@ from models.user import User
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
+from fastapi.exceptions import HTTPException
 
 class DocumentMetadata(BaseModel):
     filename: str
@@ -32,9 +33,27 @@ def get_document_by_id(db: Annotated[dict, Depends(get_db)], current_user: Annot
         print("Error", e)
         return {"message": "Error getting document by ID"}
 
-# Add document, adds chunks and embeddings to chunks table
+# Update document, adds new chunks and embeddings to chunks table
+@router.patch("/document")
+def update_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata, id:str):
+    try:
+        email = current_user["email"]
+        document = (
+            db["client"].from_("documents").select("*").eq("email",email).eq("id", id).execute()
+        )
+        if document:
+            delete_document(db, current_user, id)
+            new_document_id = add_document(db, current_user, doc)['doc_id']
+            return {"message": "Documents updated successfully", "doc_id": str(new_document_id)}
+        else:
+            return {"message": "Document to update not found"}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "Error updating document"}
+
+# Adds document, adds chunks and embeddings to chunks table
 @router.post("/document")
-def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata):
+def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata):
     try:
         email = current_user["email"]
         document_to_insert = {
@@ -44,7 +63,6 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]['id']
-
         #creating chunks
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
         #can experiment with above chunk_size and overlap values as needed
@@ -66,7 +84,7 @@ def add_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[
             records_to_insert.append(record)
             current_page+=1
         db["client"].from_("chunks").insert(records_to_insert).execute()
-        return {"message": "Documents added successfully", "doc_id": str(new_document_id)}
+        return {"message": "Document added successfully", "doc_id": str(new_document_id)}
     except Exception as e:
         print("Error", e)
         return {"message": "Error adding document"}
@@ -79,7 +97,7 @@ def delete_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
         # Check if the document exists and belongs to the current user
         existing_document = db["client"].from_("documents").select("*").eq("email",email).eq("id", id).execute()
         if not existing_document:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+            raise HTTPException(404, detail="Document not found")
         # Delete document
         db["client"].from_("documents").delete().eq("email",email).eq("id", id).execute()
         #supabase set to cascading delete on foreign key so chunks and query data will get removed automatically
