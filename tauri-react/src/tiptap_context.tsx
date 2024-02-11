@@ -148,7 +148,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
     content,
     editorProps: {
       attributes: {
-        class: 'h-full overflow-y-auto overflow-x-auto outline-none rounded-md',
+        class: 'h-full overflow-none outline-none rounded-md mt-24 font-virgil',
       },
     },
     autofocus: 'end'

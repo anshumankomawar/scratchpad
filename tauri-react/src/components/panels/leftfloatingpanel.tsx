@@ -8,10 +8,10 @@ import {
   } from "@/components/ui/sheet"
 
 
-export default function LeftFloatingPanel({open}) {
+export default function LeftFloatingPanel({open, toggleLeftPanel}) {
   return (
-        <Sheet side="left" open={open}>
-            <SheetContent side="left" className="bg-white w-1/5 pt-10">
+        <Sheet open={open}>
+            <SheetContent side="left" className="bg-white lg:w-[200px] min-w-[150px] w-[150px] pt-10" onInteractOutside={() => toggleLeftPanel()}>
                 <SheetHeader>
                 <SheetTitle className="font-virgil">Files</SheetTitle>
                 <SheetDescription className="font-virgil">

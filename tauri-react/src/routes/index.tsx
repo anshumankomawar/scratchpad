@@ -15,26 +15,28 @@ function HomeComponent() {
   const tiptap = useTipTapEditor();
   const [open, setOpen] = useState(false);
 
+  function toggleLeftPanel() {
+    setOpen(!open)
+  }
+
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === 'ArrowLeft' && event.metaKey) {
-        console.log('Command + Left Arrow pressed', open, !open);
         setOpen(!open)
-        console.log(open)
       }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
-  // if(!tiptap.editor) {
-  //   return <div>Loading...</div>
-  // }
+   if(!tiptap.editor) {
+     return <div>Loading...</div>
+   }
 
   return (
     <div className="relative w-full h-full px-4 pb-4">
-        <LeftFloatingPanel open={open} />
-        <EditorContent className="h-full overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
+        <LeftFloatingPanel open={open} toggleLeftPanel={toggleLeftPanel}/>
+        <EditorContent className="mx-32 scroll-my-32 h-full overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
     </div>
   )
 }
