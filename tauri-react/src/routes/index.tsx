@@ -36,7 +36,7 @@ function HomeComponent() {
   return (
     <div className="relative w-full h-full px-4 pb-4">
         <LeftFloatingPanel open={open} toggleLeftPanel={toggleLeftPanel}/>
-        <EditorContent className="mx-32 scroll-my-32 h-full overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
+        <EditorContent className="lg:mx-[400px] mx-[100px] scroll-my-32 h-full overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
     </div>
   )
 }
