@@ -5,6 +5,7 @@ import LeftFloatingPanel from '@/components/panels/leftfloatingpanel'
 import { useEffect, useState } from 'react'
 import '../tiptap.scss'
 import '../index.css'
+import BottomFloatingPanel from '@/components/panels/bottomfloatingpanel';
 
 export const Route = createFileRoute('/')({
   component: HomeComponent,
@@ -13,21 +14,30 @@ export const Route = createFileRoute('/')({
 
 function HomeComponent() {
   const tiptap = useTipTapEditor();
-  const [open, setOpen] = useState(false);
+  const [openLeft, setOpenLeft] = useState(false);
+  const [openBottom, setOpenBottom] = useState(false);
 
   function toggleLeftPanel() {
-    setOpen(!open)
+    setOpenLeft(!openLeft)
+  }
+
+  function toggleBottomPanel() {
+    setOpenBottom(!openBottom)
   }
 
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === 'ArrowLeft' && event.metaKey) {
-        setOpen(!open)
+        event.preventDefault();
+        setOpenLeft(!openLeft)
+      } else if (event.key === 'ArrowDown' && event.metaKey) {
+        event.preventDefault();
+        setOpenBottom(!openBottom)
       }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open])
+  }, [openLeft, openBottom])
 
    if(!tiptap.editor) {
      return <div>Loading...</div>
@@ -35,8 +45,9 @@ function HomeComponent() {
 
   return (
     <div className="relative w-full h-full px-4 pb-4">
-        <LeftFloatingPanel open={open} toggleLeftPanel={toggleLeftPanel}/>
-        <EditorContent className="lg:mx-[400px] mx-[100px] scroll-my-32 h-full overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
+        <LeftFloatingPanel open={openLeft} toggleLeftPanel={toggleLeftPanel}/>
+        <BottomFloatingPanel open={openBottom} toggleBottomPanel={toggleBottomPanel}/>
+        <EditorContent className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
     </div>
   )
 }

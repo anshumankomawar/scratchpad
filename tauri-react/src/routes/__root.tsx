@@ -140,7 +140,7 @@ function LeftPanelContent() {
 function ProtectedRoute2() {
   return (
     <div className='h-full w-full'>
-      <div className='w-full z-1000 bg-transparent top-0 h-10' data-tauri-drag-region></div>
+      <div className='fixed w-full z-1000 bg-transparent top-0 h-12' data-tauri-drag-region></div>
       <div className="pt-6 h-full w-full">
         <Outlet />
       </div>
