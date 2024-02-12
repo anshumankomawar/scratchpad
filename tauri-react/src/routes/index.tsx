@@ -56,6 +56,7 @@ function HomeComponent() {
           action: <ToastAction altText="Try again">Try again</ToastAction>,
         })
       })
+  }
 
   function toggleRightPanel() {
     setOpenRight(!openRight)
@@ -75,20 +76,20 @@ function HomeComponent() {
       }
     }
 
-    document.addEventListener('keyup', handleKeyDown)
-    return () => document.removeEventListener('keyup', handleKeyDown)
+    document.addEventListener('keyup', handleKeyUp)
+    return () => document.removeEventListener('keyup', handleKeyUp)
   }, [openLeft, openBottom, openRight])
 
-  function onKeyDown(event) {
+  function onKeyUp(event) {
     if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === 'ArrowUp') && event.metaKey) {
       event.preventDefault();
     }
   }
 
   useEffect(() => {
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onKeyUp);
     };
   }, [])
 
@@ -103,8 +104,8 @@ function HomeComponent() {
   return (
     <div className="relative w-full h-full px-4 pb-4 items-center justify-center">
         <LeftFloatingPanel open={openLeft} toggleLeftPanel={toggleLeftPanel} documents={documents}/>
-        <BottomFloatingPanel open={openBottom} toggleBottomPanel={toggleBottomPanel}/>
-        <RightFloatingPanel open={openRight} toggleRightPanel={toggleRightPanel} editor={tiptap.editor} updateDocuments={updateDocuments}/>
+        <BottomFloatingPanel open={openBottom} toggleBottomPanel={toggleBottomPanel} updateDocuments={updateDocuments} editor={tiptap.editor}/>
+        <RightFloatingPanel open={openRight} toggleRightPanel={toggleRightPanel} editor={tiptap.editor}/>
         <EditorContent className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
     </div>
   )
