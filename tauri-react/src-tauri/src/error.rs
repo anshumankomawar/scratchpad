@@ -13,7 +13,8 @@ pub type Result<T> = core::result::Result<T, Error>;
 pub enum Error {
     ReqwestError(reqwest::Error),
     StoreError(tauri_plugin_store::Error),
-    AuthError(String)
+    AuthError(String),
+    SaveError(String)
 }
 
 impl Display for Error {
@@ -21,7 +22,8 @@ impl Display for Error {
         match self {
             Error::ReqwestError(e) => write!(f, "ReqwestError: {}", e),
             Error::StoreError(e) => write!(f, "StoreError: {}", e),
-            Error::AuthError(e) => write!(f, "AuthError: {}", e)
+            Error::AuthError(e) => write!(f, "AuthError: {}", e),
+            Error::SaveError(e) => write!(f, "SaveError: {}", e)
         }
     }
 }
@@ -32,7 +34,8 @@ impl Error {
         match self {
             Error::ReqwestError(_) => "ReqwestError",
             Error::StoreError(_) => "StoreError",
-            Error::AuthError(_) => "AuthError"
+            Error::AuthError(_) => "AuthError",
+            Error::SaveError(_) => "SaveError"
         }
     }
 }

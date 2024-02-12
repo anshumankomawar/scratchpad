@@ -3,8 +3,9 @@ import {
     SheetContent,
   } from "@/components/ui/sheet"
 import { Button } from "../ui/button"
+import Save from "../save/save"
 
-export default function BottomFloatingPanel({open, toggleBottomPanel}) {
+export default function BottomFloatingPanel({ open, toggleBottomPanel, editor, updateDocuments }) {
 
   async function cancelAutoFocus(event) {
     event.preventDefault()
@@ -27,11 +28,13 @@ export default function BottomFloatingPanel({open, toggleBottomPanel}) {
           >
             Night Mode 
           </Button>
+          |
+          <Save updateDocuments={updateDocuments} editor={editor}/>
 
           <div className="grow"></div>
           <div className="flex flex-col items-end space-y-1">
             <div className="text-end text-xs">
-              words 3000 | characters 20000
+              {editor.storage.characterCount.words()} | {editor.storage.characterCount.characters()}
             </div>
             <div className="text-end text-xs">
               Last sync 2 mins ago...

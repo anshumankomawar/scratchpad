@@ -14,8 +14,8 @@ router = APIRouter(tags=["documents"], dependencies=[Depends(get_db)])
 async def get_user_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]):
     print(current_user)
     try:
-        result = db["client"].from_('documents').select('filename, content').eq('email', current_user["email"]).execute()
+        result = db["client"].from_('documents').select('filename, id').eq('email', current_user["email"]).execute()
         return {"documents": result.data}
     except Exception as e:
         print("Error", e)
-        return {"message": "could not get users documents"}
+        return {"documents": []}

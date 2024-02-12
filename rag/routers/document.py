@@ -84,10 +84,10 @@ def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[U
             records_to_insert.append(record)
             current_page+=1
         db["client"].from_("chunks").insert(records_to_insert).execute()
-        return {"message": "Document added successfully", "doc_id": str(new_document_id)}
+        return {"doc_id": str(new_document_id)}
     except Exception as e:
         print("Error", e)
-        return {"message": "Error adding document"}
+        return {"doc_id": None}
 
 # Delete document
 @router.delete("/document")

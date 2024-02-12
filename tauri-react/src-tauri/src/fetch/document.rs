@@ -1,30 +1,60 @@
 use std::collections::HashMap;
+use reqwest::header::AUTHORIZATION;
 
 use serde_json::json;
 use tauri::{State, Wry, Manager};
 use tauri_plugin_store::{StoreCollection, with_store};
 
 use crate::state::TauriState;
+use crate::util::get_from_store;
 use crate::error::{Result, Error};
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+struct ResponseSaveDocument {
+    doc_id: Option<String>,
+}
 
 #[tauri::command]
-pub async fn save_document(username: &str, password: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<()> {
-    let params = [("username", &username), ("password", &password)];
-    let res = state.client.post("http://localhost:8000/login")
-    .form(&params)
+pub async fn save_document(filename: &str, content: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
+    let params = [("filename", &filename), ("content", &content)];
+    let token = get_from_store(&state, &app)?;
+
+    let res = state.client.post("http://localhost:8000/document")
+    .json(&params)
+    .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
     .await?
-    .json::<HashMap<String, String>>()
+    .json::<ResponseSaveDocument>()
     .await?;
 
-    let token = res.get("access_token").ok_or_else(|| Error::AuthError("token not found".into()))?;
+    match res.doc_id {
+        Some(doc_id) => Ok(doc_id),
+        None => Err(Error::SaveError("Couldn't save document".to_string()))
+    }
+}
 
-    let stores = app.state::<StoreCollection<Wry>>();
-    let _ = with_store(app.app_handle().clone(), stores, &state.path, |store| {
-        store.insert("token".to_string(), json!(token))?;
-        store.save()?;
-        Ok(())
-    })?;
+#[derive(Serialize, Deserialize, Debug)]
+struct ResponseGetDocumentsDocument {
+    id: String,
+    filename: String
+}
 
-    Ok(())
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ResponseGetDocuments {
+    documents: Vec<ResponseGetDocumentsDocument>,
+}
+
+#[tauri::command]
+pub async fn get_documents(state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<ResponseGetDocuments> {
+    let token = get_from_store(&state, &app)?;
+
+    let res = state.client.get("http://localhost:8000/documents")
+    .header(AUTHORIZATION, format!("Bearer {}", token))
+    .send()
+    .await?
+    .json::<ResponseGetDocuments>()
+    .await?;
+
+    Ok(res)
 }
