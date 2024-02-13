@@ -9,6 +9,7 @@ import { StoreProvider, useStore } from './auth'
 import "./index.css"
 import { getCurrent } from '@tauri-apps/api/window';
 import { TiptapProvider } from './tiptap_context'
+import { ThemeProvider } from './theme_context'
 
 document.addEventListener('DOMContentLoaded', async function() {
     await getCurrent().show();
@@ -39,13 +40,15 @@ function InnerApp() {
 
 function App() {
   return (
-    <TiptapProvider>
-      <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <InnerApp />
-          </QueryClientProvider>
-      </StoreProvider>
-    </TiptapProvider>
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <TiptapProvider>
+        <StoreProvider>
+            <QueryClientProvider client={queryClient}>
+              <InnerApp />
+            </QueryClientProvider>
+        </StoreProvider>
+      </TiptapProvider>
+    </ThemeProvider>
   )
 }
 
@@ -54,7 +57,7 @@ const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
-    <div className="h-screen w-full bg-white overflow-x-hidden">
+    <div className="h-screen w-full bg-white dark:bg-stone-900 overflow-x-hidden">
         <App />
     </div>
   )

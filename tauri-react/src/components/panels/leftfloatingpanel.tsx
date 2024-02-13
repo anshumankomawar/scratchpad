@@ -14,7 +14,7 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
 
   return (
     <Sheet open={open} modal={false}>
-      <SheetContent side="left" className="overflow-y-auto bg-white border-none drop-shadow-2xl shadow-2xl lg:w-[200px] min-w-[150px] w-[150px] pt-10" onOpenAutoFocus={cancelAutoFocus}>
+      <SheetContent side="left" className="overflow-y-auto bg-white dark:bg-stone-900 border-none drop-shadow-2xl shadow-2xl lg:w-[200px] min-w-[150px] w-[150px] pt-10" onOpenAutoFocus={cancelAutoFocus}>
         <SheetHeader>
         <SheetTitle className="font-virgil">Files</SheetTitle>
         <SheetDescription className="font-virgil">

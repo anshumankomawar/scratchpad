@@ -16,7 +16,7 @@ export default function RightFloatingPanel({open, toggleRightPanel, editor}) {
 
   return (
     <Sheet open={open} modal={false}>
-        <SheetContent side="right" className="overflow-y-auto mr-4 bg-white border-none drop-shadow-2xl shadow-2xl h-1/2 w-min" onOpenAutoFocus={cancelAutoFocus}>
+        <SheetContent side="right" className="overflow-y-auto mr-4 dark:bg-stone-900 bg-white border-none drop-shadow-2xl shadow-2xl h-1/2 w-min" onOpenAutoFocus={cancelAutoFocus}>
             <div className="flex flex-col space-y-2">
               <Button variant="ghost"
                 onClick={() => editor.chain().focus().toggleBold().run()}
