@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import '../tiptap.scss'
 import '../index.css'
 import BottomFloatingPanel from '@/components/panels/bottomfloatingpanel';
+import TopFloatingPanel from '@/components/panels/topfloatingpanel'
 import { invoke } from "@tauri-apps/api/core"
 import { ToastAction } from "@/components/ui/toast"
 import { toast } from '@/components/ui/use-toast';
@@ -36,8 +37,9 @@ function HomeComponent() {
   const { theme, setTheme } = useTheme()
   const [openLeft, setOpenLeft] = useState(false);
   const [openBottom, setOpenBottom] = useState(false);
-  const [documents, setDocuments] = useState([]);
+  const [openTop, setOpenTop] = useState(false);
   const [openRight, setOpenRight] = useState(false);
+  const [documents, setDocuments] = useState([]);
 
   function toggleLeftPanel() {
     setOpenLeft(!openLeft)
@@ -45,6 +47,10 @@ function HomeComponent() {
 
   function toggleBottomPanel() {
     setOpenBottom(!openBottom)
+  }
+
+  function toggleTopPanel() {
+    setOpenTop(!openTop)
   }
 
   async function updateDocuments() {
@@ -70,24 +76,30 @@ function HomeComponent() {
 
   useEffect(() => {
     function handleKeyUp(event) {
-      if (event.key === 'ArrowLeft' && event.metaKey) {
+      if (event.key === 'ArrowLeft' && event.ctrlKey) {
         event.preventDefault();
         setOpenLeft(!openLeft)
-      } else if (event.key === 'ArrowDown' && event.metaKey) {
+      } else if (event.key === 'ArrowDown' && event.ctrlKey) {
         event.preventDefault();
         setOpenBottom(!openBottom)
-      } else if (event.key === 'ArrowRight' && event.metaKey) {
+      } else if (event.key === 'ArrowRight' && event.ctrlKey) {
         event.preventDefault();
         setOpenRight(!openRight)
+      } else if (event.key === ' ' && event.ctrlKey) {
+        event.preventDefault();
+        setOpenTop(!openTop)
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpenTop(false)
       }
     }
 
     document.addEventListener('keyup', handleKeyUp)
     return () => document.removeEventListener('keyup', handleKeyUp)
-  }, [openLeft, openBottom, openRight])
+  }, [openLeft, openBottom, openRight, openTop])
 
   function onKeyUp(event) {
-    if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === 'ArrowUp') && event.metaKey) {
+    if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === ' ') && event.ctrlKey) {
       event.preventDefault();
     }
   }
@@ -112,6 +124,7 @@ function HomeComponent() {
         <LeftFloatingPanel open={openLeft} toggleLeftPanel={toggleLeftPanel} documents={documents}/>
         <BottomFloatingPanel open={openBottom} toggleBottomPanel={toggleBottomPanel} updateDocuments={updateDocuments} editor={tiptap.editor}/>
         <RightFloatingPanel open={openRight} toggleRightPanel={toggleRightPanel} editor={tiptap.editor}/>
+        <TopFloatingPanel open={openTop} toggleTopPanel={toggleTopPanel} /> 
         <EditorContent className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar" editor={tiptap.editor} />
         <div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full font-virgil items-center px-5 py-4 bg-white dark:bg-stone-900">
           <Popover>
