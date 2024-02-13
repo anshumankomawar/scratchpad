@@ -16,7 +16,7 @@ export default function BottomFloatingPanel({ open, toggleBottomPanel, editor, u
       <SheetContent side="bottom" className="bg-white dark:bg-stone-900 border-none drop-shadow-2xl shadow-2xl h-min p-4" onOpenAutoFocus={cancelAutoFocus}>
         <div className="flex flex-row w-full font-virgil items-center space-x-2">
           <Button variant="ghost"
-            onClick={() => {}}
+            onClick={() => setOpenDialog(true)}
             className=""
           >
             Settings
