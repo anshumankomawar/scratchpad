@@ -1,6 +1,7 @@
 import { useTipTapEditor } from '@/tiptap_context';
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { EditorContent } from '@tiptap/react'
+import { useStore } from '@/auth'
 import LeftFloatingPanel from '@/components/panels/leftfloatingpanel'
 import { useEffect, useState } from 'react'
 import '../tiptap.scss'
@@ -34,6 +35,8 @@ export const Route = createFileRoute('/')({
 
 function HomeComponent() {
   const tiptap = useTipTapEditor();
+  const store = useStore()
+  const navigate = useNavigate({ from: '/' })
   const { theme, setTheme } = useTheme()
   const [openLeft, setOpenLeft] = useState(false);
   const [openBottom, setOpenBottom] = useState(false);
@@ -76,16 +79,16 @@ function HomeComponent() {
 
   useEffect(() => {
     function handleKeyUp(event) {
-      if (event.key === 'ArrowLeft' && event.ctrlKey) {
+      if (event.key === 'ArrowLeft' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpenLeft(!openLeft)
-      } else if (event.key === 'ArrowDown' && event.ctrlKey) {
+      } else if (event.key === 'ArrowDown' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpenBottom(!openBottom)
-      } else if (event.key === 'ArrowRight' && event.ctrlKey) {
+      } else if (event.key === 'ArrowRight' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpenRight(!openRight)
-      } else if (event.key === ' ' && event.ctrlKey) {
+      } else if (event.key === ' ' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpenTop(!openTop)
       } else if (event.key === 'Escape') {
@@ -102,6 +105,10 @@ function HomeComponent() {
     if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === ' ') && event.ctrlKey) {
       event.preventDefault();
     }
+  }
+
+  const handleLogout = async () => {
+    await store.store.delete("token")
   }
 
   useEffect(() => {
@@ -131,6 +138,7 @@ function HomeComponent() {
             <PopoverContent className='p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32 font-virgil text-xs text-start dark:bg-stone-900'>
               <Button variant="ghost" size="menu" className="text-xs justify-start p-2" onClick={toggleLeftPanel}>Open</Button>
               <Button variant="ghost" size="menu" className="text-xs justify-start p-2" onClick={toggleBottomPanel}>Files</Button>
+              <Button variant="ghost" size="menu" className="text-xs justify-start p-2" onClick={handleLogout}>Logout</Button>
               <Button variant="ghost" size="menu" className="text-xs justify-between p-2" onClick={() => { 
                 setTheme(theme === "light" ? "dark" : "light") 
               }}>
