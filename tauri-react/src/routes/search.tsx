@@ -1,7 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { SearchPage } from '@/components/search/search'
-import { useState } from 'react'
-import { invoke } from '@tauri-apps/api/core'
 
 export const Route = createFileRoute('/search')({
   loader: async ({ context, location }) => {

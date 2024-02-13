@@ -109,6 +109,7 @@ function HomeComponent() {
 
   const handleLogout = async () => {
     await store.store.delete("token")
+    navigate({ to: '/' })
   }
 
   useEffect(() => {
