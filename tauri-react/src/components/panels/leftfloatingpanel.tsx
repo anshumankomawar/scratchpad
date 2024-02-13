@@ -5,14 +5,14 @@ import {
     SheetHeader,
     SheetTitle,
   } from "@/components/ui/sheet"
-  import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
-  import { GraduationCap, NotepadText } from "lucide-react";
+import { GraduationCap, NotepadText } from "lucide-react";
   
 
 export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) {
@@ -29,7 +29,7 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
         </SheetHeader>
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
-              <AccordionTrigger className="font-virgil space-x-2">
+              <AccordionTrigger className="font-virgil space-x-2 space-y-1">
                 <GraduationCap size={16} strokeWidth={1.5} style={{ transform: 'none' }}/>
                 <div>CSC366</div>
                 <div className="flex-grow"></div>
@@ -44,7 +44,7 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
           </Accordion>
           <Accordion type="single" collapsible>
           <AccordionItem value="item-2">
-            <AccordionTrigger className="font-virgil space-x-2">
+            <AccordionTrigger className="font-virgil space-x-2 space-y-1">
                 <GraduationCap size={16} strokeWidth={1.5} style={{ transform: 'none' }}/>
                 <div>English142</div>
                 <div className="flex-grow"></div>
@@ -59,7 +59,7 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
           </Accordion>
           <Accordion type="single" collapsible>
           <AccordionItem value="item-3">
-          <AccordionTrigger className="font-virgil space-x-2">
+          <AccordionTrigger className="font-virgil space-x-2 space-y-1">
                 <NotepadText size={16} strokeWidth={1.5} style={{ transform: 'none' }}/>
                 <div>Misc</div>
                 <div className="flex-grow"></div>
