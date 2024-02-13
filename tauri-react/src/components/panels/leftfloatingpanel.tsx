@@ -22,10 +22,10 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
   }
 
   return (
-    <Sheet open={open} modal={false}>
-      <SheetContent side="left" className="overflow-y-auto bg-white dark:bg-stone-900 border-none drop-shadow-2xl shadow-2xl lg:w-[300px] min-w-[150px] w-[200px] pt-10" onOpenAutoFocus={cancelAutoFocus}>
+    <Sheet open={open}>
+      <SheetContent side="left" className="overflow-y-auto bg-white dark:bg-stone-900 border-none drop-shadow-2xl shadow-2xl lg:w-[300px] min-w-[150px] w-[200px] pt-10" onOpenAutoFocus={cancelAutoFocus} onPointerDownOutside={() => toggleLeftPanel(!open)}>
         <SheetHeader>
-        <SheetTitle className="font-virgil">Files</SheetTitle>
+        <SheetTitle className="font-virgil mb-2">Files</SheetTitle>
         </SheetHeader>
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
