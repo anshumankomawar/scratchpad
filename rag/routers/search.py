@@ -93,7 +93,7 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
             print("***************GENERATED DATA**************\n")
             insert = DocumentMetadata(filename="generated", content=data)
             print("***************TRYING TO INSERT DATA**************\n")
-            document_created = add_document(db, current_user, insert)
+            document_created = add_document(db, current_user, insert, True)
             print("***************INSERTED DATA**************\n")
 
             document = db["client"].from_("documents").select("*").eq("email", email).eq("id", document_created["doc_id"]).execute()

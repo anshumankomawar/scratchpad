@@ -53,13 +53,14 @@ def update_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
 
 # Adds document, adds chunks and embeddings to chunks table
 @router.post("/document")
-def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata):
+def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata, generated:bool = False):
     try:
         email = current_user["email"]
         document_to_insert = {
             "email": email,
             "content": doc.content,
-            "filename": doc.filename
+            "filename": doc.filename,
+            "generated": generated
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]['id']
