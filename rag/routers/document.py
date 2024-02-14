@@ -14,6 +14,7 @@ from fastapi.exceptions import HTTPException
 class DocumentMetadata(BaseModel):
     filename: str
     content: str
+    foldername: str = "unfiled"
 
 router = APIRouter(tags=["document"], dependencies=[Depends(get_db)])
 
@@ -60,6 +61,7 @@ def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[U
             "email": email,
             "content": doc.content,
             "filename": doc.filename,
+            "foldername": doc.foldername,
             "generated": generated
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()

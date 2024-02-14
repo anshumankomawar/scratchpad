@@ -14,8 +14,15 @@ router = APIRouter(tags=["documents"], dependencies=[Depends(get_db)])
 async def get_user_documents(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]):
     print(current_user)
     try:
-        result = db["client"].from_('documents').select('filename, id').eq('email', current_user["email"]).execute()
-        return {"documents": result.data}
+        result = db["client"].from_('documents').select('*').eq('email', current_user["email"]).execute()
+        #group documents by foldername
+        documents_by_folder = {}
+        for document in result.data:
+            foldername = document['foldername']
+            if foldername not in documents_by_folder:
+                documents_by_folder[foldername] = []
+            documents_by_folder[foldername].append(document)
+        return {"documents": documents_by_folder}
     except Exception as e:
         print("Error", e)
         return {"documents": []}
