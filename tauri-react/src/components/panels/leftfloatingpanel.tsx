@@ -81,7 +81,7 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
           </Popover>
         </SheetTitle>
         </SheetHeader>
-        <Accordion type="single" collapsible>
+        <Accordion type="multiple" collapsible>
           {Object.entries(documents).map(([foldername, files], index) => (
               <AccordionItem value={foldername}>
                 <AccordionTrigger className="font-virgil space-x-2 space-y-1">
