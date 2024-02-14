@@ -40,7 +40,7 @@ function HomeComponent() {
   const [openBottom, setOpenBottom] = useState(false);
   const [openTop, setOpenTop] = useState(false);
   const [openRight, setOpenRight] = useState(false);
-  const [documents, setDocuments] = useState([]);
+  const [documents, setDocuments] = useState({});
 
   function toggleLeftPanel() {
     setOpenLeft(!openLeft)

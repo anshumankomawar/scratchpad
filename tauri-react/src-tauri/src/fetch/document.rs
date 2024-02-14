@@ -35,14 +35,18 @@ pub async fn save_document(filename: &str, content: &str, state: State<'_, Tauri
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct ResponseGetDocumentsDocument {
+struct Document {
     id: String,
-    filename: String
+    email: String,
+    content: String,
+    filename: String, 
+    generated: bool,
+    foldername: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ResponseGetDocuments {
-    documents: Vec<ResponseGetDocumentsDocument>,
+    documents: HashMap<String, Vec<Document>>,
 }
 
 #[tauri::command]
