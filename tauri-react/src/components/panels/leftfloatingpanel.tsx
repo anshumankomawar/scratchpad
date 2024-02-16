@@ -33,7 +33,7 @@ import { Button } from "@/components/ui/button"
 import { GraduationCap, NotepadText, FolderPlus, ShoppingBag, Bell, StickyNote } from "lucide-react";
   
 
-export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) {
+export default function LeftFloatingPanel({ open, toggleLeftPanel, documents, updateEditorContent}) {
 
   async function cancelAutoFocus(event) {
     event.preventDefault()
@@ -90,9 +90,11 @@ export default function LeftFloatingPanel({ open, toggleLeftPanel, documents }) 
                   <div className="flex-grow"></div>
                 </AccordionTrigger>
               <AccordionContent className="font-virgil text-xs">
-              <ul className="list-disc pl-4">
+              <ul className="list-disc pl-4 space-y-1">
                   {files.map((file) => (
-                    <li>{file.filename}</li>
+                    <li className="hover:cursor-pointer hover:underline hover:text-slate-700" key={index} onClick={() => updateEditorContent(file.content)}>
+                    {file.filename}
+                  </li>
                   ))}
               </ul>
               </AccordionContent>

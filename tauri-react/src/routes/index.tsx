@@ -125,9 +125,14 @@ function HomeComponent() {
      return <div>Loading...</div>
    }
 
+  function updateEditorContent(content) {
+    tiptap.editor.commands.setContent(content)
+  }
+
+
   return (
     <div className="relative w-full h-full px-4 pb-4 items-center justify-center">
-        <LeftFloatingPanel open={openLeft} toggleLeftPanel={toggleLeftPanel} documents={documents}/>
+        <LeftFloatingPanel open={openLeft} toggleLeftPanel={toggleLeftPanel} documents={documents} updateEditorContent={updateEditorContent}/>
         <BottomFloatingPanel open={openBottom} toggleBottomPanel={toggleBottomPanel} updateDocuments={updateDocuments} editor={tiptap.editor}/>
         <RightFloatingPanel open={openRight} toggleRightPanel={toggleRightPanel} editor={tiptap.editor}/>
         <TopFloatingPanel open={openTop} toggleTopPanel={toggleTopPanel} /> 
