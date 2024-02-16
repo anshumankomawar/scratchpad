@@ -37,6 +37,7 @@ import {
 	ShoppingBag,
 	Bell,
 	StickyNote,
+	FilePlus
 } from "lucide-react";
 
 export default function LeftFloatingPanel({
@@ -58,54 +59,91 @@ export default function LeftFloatingPanel({
 				onPointerDownOutside={() => toggleLeftPanel(!open)}
 			>
 				<SheetHeader>
-					<SheetTitle className="flex flex-row font-virgil mb-2 ">
+					<SheetTitle className="flex flex-row font-virgil mb-2">
 						<div>Files</div>
-						<div className="flex-grow"></div>
-						<Popover>
-							<PopoverTrigger>
-								<FolderPlus size={18} />
-							</PopoverTrigger>
-							<PopoverContent className="font-virgil">
-								<div className="grid gap-4 py-4">
-									<div className="grid grid-cols-4 items-center gap-4">
-										<Label htmlFor="name" className="text-right">
-											Name
-										</Label>
-										<Input id="name" value="Art101" className="col-span-3" />
+						<div className = "flex-grow"></div>
+						<div className = "flex space-x-4">
+							<Popover>
+								<PopoverTrigger>
+									<FolderPlus size={18} />
+								</PopoverTrigger>
+								<PopoverContent className="font-virgil">
+									<div className="grid gap-4 py-4">
+										<div className="grid grid-cols-4 items-center gap-4">
+											<Label htmlFor="name" className="text-right">
+												Name
+											</Label>
+											<Input id="name" placeholder="Folder Name" className="col-span-3" />
+										</div>
+										<div className="grid grid-cols-4 items-center gap-4">
+											<Label htmlFor="icon" className="text-right">
+												Icon
+											</Label>
+											<Select>
+												<SelectTrigger className="w-[180px]">
+													<SelectValue placeholder="select one" />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="one">
+														<GraduationCap size={20} />
+													</SelectItem>
+													<SelectItem value="two">
+														<NotepadText size={20} />
+													</SelectItem>
+													<SelectItem value="three">
+														<ShoppingBag size={20} />
+													</SelectItem>
+													<SelectItem value="four">
+														<Bell size={20} />
+													</SelectItem>
+													<SelectItem value="five">
+														<StickyNote size={20} />
+													</SelectItem>
+												</SelectContent>
+											</Select>
+										</div>
 									</div>
-									<div className="grid grid-cols-4 items-center gap-4">
-										<Label htmlFor="icon" className="text-right">
-											Icon
-										</Label>
-										<Select>
-											<SelectTrigger className="w-[180px]">
-												<SelectValue placeholder="select one" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="one">
-													<GraduationCap size={20} />
-												</SelectItem>
-												<SelectItem value="two">
-													<NotepadText size={20} />
-												</SelectItem>
-												<SelectItem value="three">
-													<ShoppingBag size={20} />
-												</SelectItem>
-												<SelectItem value="four">
-													<Bell size={20} />
-												</SelectItem>
-												<SelectItem value="five">
-													<StickyNote size={20} />
-												</SelectItem>
-											</SelectContent>
-										</Select>
+									<div className="flex justify-center text-sm">
+										<Button type="submit">Create Folder</Button>
 									</div>
-								</div>
-								<div className="flex justify-center text-sm">
-									<Button type="submit">Create Folder</Button>
-								</div>
-							</PopoverContent>
-						</Popover>
+								</PopoverContent>
+							</Popover>
+							<Popover>
+								<PopoverTrigger>
+									<FilePlus size={18} />
+								</PopoverTrigger>
+								<PopoverContent className="font-virgil">
+									<div className="grid gap-4 py-4">
+										<div className="grid grid-cols-4 items-center gap-4">
+											<Label htmlFor="name" className="text-right">
+												Name
+											</Label>
+											<Input id="name" placeholder="File Name" className="col-span-3" />
+										</div>
+										<div className="grid grid-cols-4 items-center gap-4">
+											<Label htmlFor="icon" className="text-right">
+												Folder
+											</Label>
+											<Select>
+												<SelectTrigger className="w-[180px] font-virgil">
+													<SelectValue placeholder="select folder" />
+												</SelectTrigger>
+												<SelectContent>
+													{Object.entries(documents).map(([foldername], index) => (
+														<SelectItem className="font-virgil" value={foldername} key={index}>
+															{foldername}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</div>
+									</div>
+									<div className="flex justify-center text-sm">
+										<Button type="submit">Create File</Button>
+									</div>
+								</PopoverContent>
+							</Popover>
+						</div>
 					</SheetTitle>
 				</SheetHeader>
 				<Accordion type="multiple" collapsible>
