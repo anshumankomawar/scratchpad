@@ -43,7 +43,7 @@ export default function LeftFloatingPanel({
 	open,
 	toggleLeftPanel,
 	documents,
-    updateEditorContent
+	updateEditorContent,
 }) {
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
@@ -110,7 +110,7 @@ export default function LeftFloatingPanel({
 				</SheetHeader>
 				<Accordion type="multiple" collapsible>
 					{Object.entries(documents).map(([foldername, files], index) => (
-						<AccordionItem value={foldername}>
+						<AccordionItem value={foldername} key={index}>
 							<AccordionTrigger className="font-virgil space-x-2 space-y-1">
 								<GraduationCap
 									size={16}
@@ -122,9 +122,15 @@ export default function LeftFloatingPanel({
 							</AccordionTrigger>
 							<AccordionContent className="font-virgil text-xs">
 								<ul className="list-disc pl-4">
-									<li className="hover:cursor-pointer hover:underline hover:text-slate-700" key={index} onClick={() => updateEditorContent(file.content)}>
-										{file.filename}
-									</li>
+									{files.map((file, index2) => (
+										<li
+											className="hover:cursor-pointer hover:underline hover:text-slate-700"
+											key={index2}
+											onClick={() => updateEditorContent(file.content)}
+										>
+											{file.filename}
+										</li>
+									))}
 								</ul>
 							</AccordionContent>
 						</AccordionItem>
@@ -134,4 +140,3 @@ export default function LeftFloatingPanel({
 		</Sheet>
 	);
 }
-
