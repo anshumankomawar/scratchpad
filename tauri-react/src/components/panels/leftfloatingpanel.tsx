@@ -62,7 +62,7 @@ export default function LeftFloatingPanel({
 					<SheetTitle className="flex flex-row font-virgil mb-2">
 						<div>Files</div>
 						<div className = "flex-grow"></div>
-						<div className = "flex space-x-4">
+						<div className = "flex space-x-2">
 							<Popover>
 								<PopoverTrigger>
 									<FolderPlus size={18} />
