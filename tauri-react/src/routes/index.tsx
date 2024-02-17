@@ -25,6 +25,8 @@ interface LoaderData {
 import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
 import { useTheme } from "@/theme_context";
 import BottomPanel from "@/components/panels/bottompanel";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import SearchPanel from "@/components/search/search_panel";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -39,6 +41,7 @@ function HomeComponent() {
 	const [openBottom, setOpenBottom] = useState(false);
 	const [openTop, setOpenTop] = useState(false);
 	const [openRight, setOpenRight] = useState(false);
+	const [openCenter, setOpenCenter] = useState(false);
 	const [documents, setDocuments] = useState({});
 
 	function toggleLeftPanel() {
@@ -135,43 +138,53 @@ function HomeComponent() {
 	if (!tiptap.editor) {
 		return <div>Loading...</div>;
 	}
-  
-  function updateEditorContent(content) {
-    tiptap.editor.commands.setContent(content)
-  }
+
+	function updateEditorContent(content) {
+		tiptap.editor.commands.setContent(content);
+	}
 
 	return (
-		<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
-			<LeftFloatingPanel
-				open={openLeft}
-				toggleLeftPanel={toggleLeftPanel}
-				documents={documents}
-        updateEditorContent={updateEditorContent}
-			/>
-			<BottomFloatingPanel
-				open={openBottom}
-				toggleBottomPanel={toggleBottomPanel}
-				updateDocuments={updateDocuments}
-				editor={tiptap.editor}
-			/>
-			<RightFloatingPanel
-				open={openRight}
-				toggleRightPanel={toggleRightPanel}
-				editor={tiptap.editor}
-			/>
-			<TopFloatingPanel open={openTop} toggleTopPanel={toggleTopPanel} />
-			<EditorContent
-				className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar"
-				editor={tiptap.editor}
-			/>
-			<BottomPanel
-				theme={theme}
-				setTheme={setTheme}
-				editor={tiptap.editor}
-				toggleLeftPanel={toggleLeftPanel}
-				toggleBottomPanel={toggleBottomPanel}
-				handleLogout={handleLogout}
-			/>
-		</div>
+		<Dialog open={openCenter} onOpenChange={setOpenCenter}>
+			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
+				<LeftFloatingPanel
+					open={openLeft}
+					toggleLeftPanel={toggleLeftPanel}
+					documents={documents}
+					updateEditorContent={updateEditorContent}
+				/>
+				<BottomFloatingPanel
+					open={openBottom}
+					toggleBottomPanel={toggleBottomPanel}
+					updateDocuments={updateDocuments}
+					editor={tiptap.editor}
+				/>
+				<RightFloatingPanel
+					open={openRight}
+					toggleRightPanel={toggleRightPanel}
+					editor={tiptap.editor}
+				/>
+				<TopFloatingPanel
+					open={openTop}
+					toggleTopPanel={toggleTopPanel}
+					openCenter={openCenter}
+					setOpenCenter={setOpenCenter}
+				/>
+				<EditorContent
+					className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar"
+					editor={tiptap.editor}
+				/>
+				<BottomPanel
+					theme={theme}
+					setTheme={setTheme}
+					editor={tiptap.editor}
+					toggleLeftPanel={toggleLeftPanel}
+					toggleBottomPanel={toggleBottomPanel}
+					handleLogout={handleLogout}
+				/>
+			</div>
+			<DialogContent className="bg-white h-3/4 w-3/4">
+				<SearchPanel />
+			</DialogContent>
+		</Dialog>
 	);
 }

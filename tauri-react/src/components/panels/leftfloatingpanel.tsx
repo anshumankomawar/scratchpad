@@ -37,7 +37,7 @@ import {
 	ShoppingBag,
 	Bell,
 	StickyNote,
-	FilePlus
+	FilePlus,
 } from "lucide-react";
 
 export default function LeftFloatingPanel({
@@ -61,8 +61,8 @@ export default function LeftFloatingPanel({
 				<SheetHeader>
 					<SheetTitle className="flex flex-row font-virgil mb-2">
 						<div>Files</div>
-						<div className = "flex-grow"></div>
-						<div className = "flex space-x-2">
+						<div className="flex-grow"></div>
+						<div className="flex space-x-2">
 							<Popover>
 								<PopoverTrigger>
 									<FolderPlus size={18} />
@@ -73,7 +73,11 @@ export default function LeftFloatingPanel({
 											<Label htmlFor="name" className="text-right">
 												Name
 											</Label>
-											<Input id="name" placeholder="Folder Name" className="col-span-3" />
+											<Input
+												id="name"
+												placeholder="Folder Name"
+												className="col-span-3"
+											/>
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="icon" className="text-right">
@@ -118,7 +122,11 @@ export default function LeftFloatingPanel({
 											<Label htmlFor="name" className="text-right">
 												Name
 											</Label>
-											<Input id="name" placeholder="File Name" className="col-span-3" />
+											<Input
+												id="name"
+												placeholder="File Name"
+												className="col-span-3"
+											/>
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="icon" className="text-right">
@@ -129,11 +137,17 @@ export default function LeftFloatingPanel({
 													<SelectValue placeholder="select folder" />
 												</SelectTrigger>
 												<SelectContent>
-													{Object.entries(documents).map(([foldername], index) => (
-														<SelectItem className="font-virgil" value={foldername} key={index}>
-															{foldername}
-														</SelectItem>
-													))}
+													{Object.entries(documents).map(
+														([foldername], index) => (
+															<SelectItem
+																className="font-virgil"
+																value={foldername}
+																key={index}
+															>
+																{foldername}
+															</SelectItem>
+														),
+													)}
 												</SelectContent>
 											</Select>
 										</div>

@@ -1,6 +1,3 @@
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Button } from "../ui/button";
-import Save from "../save/save";
 import {
 	Command,
 	CommandDialog,
@@ -10,13 +7,24 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-	CommandShortcut,
 } from "@/components/ui/command";
-import { useEffect } from "react";
+import { Dialog, DialogContent } from "@radix-ui/react-dialog";
+import { useState } from "react";
 
-export default function TopFloatingPanel({ open, toggleTopPanel }) {
+export default function TopFloatingPanel({
+	open,
+	toggleTopPanel,
+	openCenter,
+	setOpenCenter,
+}) {
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
+	}
+
+	function onCommandSelect() {
+		toggleTopPanel(false);
+		setOpenCenter(true);
+		console.log("Here");
 	}
 
 	return (
@@ -26,9 +34,10 @@ export default function TopFloatingPanel({ open, toggleTopPanel }) {
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="Suggestions">
-						<CommandItem>Calendar</CommandItem>
-						<CommandItem>Search Emoji</CommandItem>
-						<CommandItem>Calculator</CommandItem>
+						<CommandItem onSelect={() => onCommandSelect()}>
+							Collate
+						</CommandItem>
+						<CommandItem>Search</CommandItem>
 					</CommandGroup>
 					<CommandSeparator />
 					<CommandGroup heading="Settings">

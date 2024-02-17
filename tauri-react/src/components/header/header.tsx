@@ -21,7 +21,6 @@ export default function Header({
 			data-tauri-drag-region
 		>
 			<div className="flex flex-row p-2">
-				<CommandDialogDemo />
 				<Button
 					size="custom"
 					variant={"ghost"}
