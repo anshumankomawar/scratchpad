@@ -18,6 +18,7 @@ from pydantic import BaseModel
 class DocumentMetadata(BaseModel):
     filename: str
     content: str
+    foldername: str = "unfiled"
 
 router = APIRouter(tags=["search"], dependencies=[Depends(get_db)])
 
@@ -101,7 +102,7 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
 
             db["client"].from_("queries").insert([{"email": email, "query_content": query, "embedding": embedded_query, "metadata": {}, "doc": document_created["doc_id"]}]).execute()
 
-            return {"data": data}
+            return {"data": data, "references": similar_chunks_data}
         else:
             print("***************FOUND SIMILAR QUERY, NO GENERATION REQUIRED**************\n")
             similar_query = similar_queries.data[0]

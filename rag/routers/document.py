@@ -66,27 +66,28 @@ def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[U
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]['id']
-        #creating chunks
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-        #can experiment with above chunk_size and overlap values as needed
-        chunks = text_splitter.split_text(doc.content)
-        embeddings = OpenAIEmbeddings()
-        records_to_insert = []
-        current_page = 0
-        for chunk in chunks:
-            embedding = embeddings.embed_query(chunk)
-            record = {
-                "document_id": new_document_id,
-                "content": chunk,
-                "metadata": {
-                    "page": current_page,
-                    "source": doc.filename
-                }, 
-                "embedding": embedding
-            }
-            records_to_insert.append(record)
-            current_page+=1
-        db["client"].from_("chunks").insert(records_to_insert).execute()
+        if generated == False:
+        #creating chunks only for non generated data
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+            #can experiment with above chunk_size and overlap values as needed
+            chunks = text_splitter.split_text(doc.content)
+            embeddings = OpenAIEmbeddings()
+            records_to_insert = []
+            current_page = 0
+            for chunk in chunks:
+                embedding = embeddings.embed_query(chunk)
+                record = {
+                    "document_id": new_document_id,
+                    "content": chunk,
+                    "metadata": {
+                        "page": current_page,
+                        "source": doc.filename
+                    }, 
+                    "embedding": embedding
+                }
+                records_to_insert.append(record)
+                current_page+=1
+            db["client"].from_("chunks").insert(records_to_insert).execute()
         return {"doc_id": str(new_document_id)}
     except Exception as e:
         print("Error", e)
