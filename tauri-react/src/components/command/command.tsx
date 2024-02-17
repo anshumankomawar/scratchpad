@@ -49,11 +49,11 @@ export function CommandDialogDemo() {
 					<CommandGroup heading="Suggestions">
 						<CommandItem>
 							<CalendarIcon className="mr-2 h-4 w-4" />
-							<span>Calendar</span>
+							<span>Collate</span>
 						</CommandItem>
 						<CommandItem>
 							<FaceIcon className="mr-2 h-4 w-4" />
-							<span>Search Emoji</span>
+							<span>Search</span>
 						</CommandItem>
 						<CommandItem>
 							<RocketIcon className="mr-2 h-4 w-4" />
