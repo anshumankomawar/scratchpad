@@ -132,9 +132,12 @@ export default function LeftFloatingPanel({
 											<Label htmlFor="icon" className="text-right">
 												Folder
 											</Label>
-											<Select>
+											<Select onValueChange={(value) => console.log(value)}>
 												<SelectTrigger className="w-[180px] font-virgil">
-													<SelectValue placeholder="select folder" />
+													<SelectValue
+														placeholder="select folder"
+														onSelect={(value) => console.log(value)}
+													/>
 												</SelectTrigger>
 												<SelectContent>
 													{Object.entries(documents).map(

@@ -5,15 +5,9 @@ import {
 } from "@/components/ui/popover";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "../ui/dialog";
+import { Dialog, DialogContent } from "../ui/dialog";
 import { useState } from "react";
+import SettingsPage from "../settings/settings";
 
 export default function BottomPanel({
 	theme,
@@ -90,13 +84,7 @@ export default function BottomPanel({
 				className="bg-white h-5/6 w-5/6 font-virgil p-8"
 				onPointerDownOutside={() => setOpenDialog(false)}
 			>
-				<div className="flex flex-col">
-					<div className="text-bold text-lg pb-1">Settings</div>
-					<div className="text-sm text-gray-400">
-						Mange your account preferences.
-					</div>
-					<div className="flex-grow"></div>
-				</div>
+				<SettingsPage />
 			</DialogContent>
 		</Dialog>
 	);
