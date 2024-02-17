@@ -8,7 +8,7 @@ from fastapi_utils.timing import add_timing_middleware
 from starlette.testclient import TestClient
 from models.user import User
 from models.auth import Token
-from routers import user, document, documents, search
+from routers import user, document, documents, search, text_search
 from typing import Annotated
 import asyncio
 import logging
@@ -28,6 +28,7 @@ app.include_router(user.router)
 app.include_router(document.router)
 app.include_router(documents.router)
 app.include_router(search.router)
+app.include_router(text_search.router)
 
 @app.get("/timed")
 async def get_timed() -> None:
