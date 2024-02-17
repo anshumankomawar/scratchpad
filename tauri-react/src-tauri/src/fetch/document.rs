@@ -16,8 +16,8 @@ struct ResponseSaveDocument {
 }
 
 #[tauri::command]
-pub async fn save_document(filename: &str, content: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
-    let params = [("filename", &filename), ("content", &content)];
+pub async fn save_document(filename: &str, content: &str, foldername: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
+    let params = [("filename", &filename), ("content", &content), ("foldername", &foldername)];
     let token = get_from_store(&state, &app)?;
 
     let res = state.client.post("http://localhost:8000/document")

@@ -40,6 +40,10 @@ import {
 	FilePlus
 } from "lucide-react";
 
+import { invoke } from "@tauri-apps/api/core";
+import { toast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
+
 export default function LeftFloatingPanel({
 	open,
 	toggleLeftPanel,
@@ -49,6 +53,24 @@ export default function LeftFloatingPanel({
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
+	const[filename, setFileName] = useState("")
+	const[foldername, setFolderName] = useState("")
+
+	const handleNewDocument = async () => {
+		invoke("save_document", { filename: filename, content: "", foldername: foldername })
+			.then(() => {
+				console.log("worked")
+			})
+			.catch((error) => {
+				console.log(error);
+				toast({
+					variant: "destructive",
+					title: "Uh oh! Something went wrong.",
+					description: error.code,
+					action: <ToastAction altText="Try again">Try again</ToastAction>,
+				});
+			});
+	};
 
 	return (
 		<Sheet open={open}>
@@ -118,13 +140,13 @@ export default function LeftFloatingPanel({
 											<Label htmlFor="name" className="text-right">
 												Name
 											</Label>
-											<Input id="name" placeholder="File Name" className="col-span-3" />
+											<Input id="name" onChange={(e) => setFileName(e.target.value)} placeholder="File Name" className="col-span-3" />
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="icon" className="text-right">
 												Folder
 											</Label>
-											<Select>
+											<Select onValueChange={(value) => {setFolderName(value)}}>
 												<SelectTrigger className="w-[180px] font-virgil">
 													<SelectValue placeholder="select folder" />
 												</SelectTrigger>
@@ -139,7 +161,7 @@ export default function LeftFloatingPanel({
 										</div>
 									</div>
 									<div className="flex justify-center text-sm">
-										<Button type="submit">Create File</Button>
+										<Button onClick={() => handleNewDocument()} type="submit">Create File</Button>
 									</div>
 								</PopoverContent>
 							</Popover>
