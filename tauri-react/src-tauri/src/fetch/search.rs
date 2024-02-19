@@ -31,7 +31,6 @@ pub async fn search_user_documents(query: &str, state: State<'_, TauriState>, ap
     .await?
     .json::<Response>()
     .await?;
-    println!("{:?}", res);
 
     Ok(json!(res))
 }

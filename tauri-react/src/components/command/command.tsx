@@ -16,10 +16,9 @@ export default function CommandPanel({ editor }) {
 	const doc = useDocStore((state) => state.doc);
 	const panel = usePanelStore((state) => state);
 
-	function onCommandSelect() {
+	async function onCommandSelect() {
 		panel.togglePanel(Panel.COMMAND);
 		panel.setPanel(Panel.CENTER, true);
-		console.log("Here");
 	}
 
 	async function onCommandSave() {

@@ -46,7 +46,7 @@ function HomeComponent() {
 			) {
 				event.preventDefault();
 				panel.togglePanel(Panel.RIGHT);
-			} else if (event.key === " " && (event.metaKey || event.ctrlKey)) {
+			} else if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
 				panel.togglePanel(Panel.COMMAND);
 			} else if (event.key === "Escape") {
@@ -87,7 +87,7 @@ function HomeComponent() {
 				/>
 			</div>
 			<DialogContent className="bg-white h-3/4 w-3/4">
-        <CollatePanel />
+				<CollatePanel />
 			</DialogContent>
 		</Dialog>
 	);
