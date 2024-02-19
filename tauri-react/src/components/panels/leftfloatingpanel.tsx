@@ -37,6 +37,9 @@ import {
 	StickyNote,
 	FilePlus,
 } from "lucide-react";
+import { invoke } from "@tauri-apps/api/core";
+import { toast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
 
 export default function LeftFloatingPanel({
 	open,
@@ -44,18 +47,21 @@ export default function LeftFloatingPanel({
 	documents,
 	updateEditorContent,
 	document,
-	setDocument
+	setDocument,
 }) {
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 	const handleNewDocument = async () => {
-		invoke("save_document", { filename: document.filename, content: "", foldername: document.foldername })
+		console.log("HERE");
+		invoke("save_document", {
+			filename: document.filename,
+			content: "",
+			foldername: document.foldername,
+		})
 			.then(() => {
-				console.log("worked")
+				console.log("worked");
 			})
 			.catch((error) => {
 				console.log(error);
@@ -67,10 +73,6 @@ export default function LeftFloatingPanel({
 				});
 			});
 	};
-=======
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
-=======
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 
 	return (
 		<Sheet open={open}>
@@ -81,7 +83,7 @@ export default function LeftFloatingPanel({
 				onPointerDownOutside={() => toggleLeftPanel(!open)}
 			>
 				<SheetHeader>
-					<SheetTitle className="flex flex-row font-virgil mb-2">
+					<SheetTitle className="flex flex-row mb-2">
 						<div>Files</div>
 						<div className="flex-grow"></div>
 						<div className="flex space-x-2">
@@ -89,7 +91,7 @@ export default function LeftFloatingPanel({
 								<PopoverTrigger>
 									<FolderPlus size={18} />
 								</PopoverTrigger>
-								<PopoverContent className="font-virgil">
+								<PopoverContent className="">
 									<div className="grid gap-4 py-4">
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="name" className="text-right">
@@ -138,51 +140,38 @@ export default function LeftFloatingPanel({
 								<PopoverTrigger>
 									<FilePlus size={18} />
 								</PopoverTrigger>
-								<PopoverContent className="font-virgil">
+								<PopoverContent className="">
 									<div className="grid gap-4 py-4">
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="name" className="text-right">
 												Name
 											</Label>
-<<<<<<< HEAD
-<<<<<<< HEAD
-											<Input id="name"
-												onChange={(e) => setDocument(doc => ({
-													...doc,
-													filename: e.target.value
-												}))}
-												placeholder="File Name" className="col-span-3" />
-=======
-=======
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 											<Input
 												id="name"
+												onChange={(e) =>
+													setDocument((doc) => ({
+														...doc,
+														filename: e.target.value,
+													}))
+												}
 												placeholder="File Name"
 												className="col-span-3"
 											/>
-<<<<<<< HEAD
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
-=======
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="icon" className="text-right">
 												Folder
 											</Label>
-<<<<<<< HEAD
-<<<<<<< HEAD
-											<Select defaultValue={document.foldername}
-												onValueChange={(value) => setDocument(doc => ({
-													...doc,
-													foldername: value
-												}))}>
-=======
-											<Select onValueChange={(value) => console.log(value)}>
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
-=======
-											<Select onValueChange={(value) => console.log(value)}>
->>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
-												<SelectTrigger className="w-[180px] font-virgil">
+											<Select
+												defaultValue={document.foldername}
+												onValueChange={(value) =>
+													setDocument((doc) => ({
+														...doc,
+														foldername: value,
+													}))
+												}
+											>
+												<SelectTrigger className="w-[180px] ">
 													<SelectValue
 														placeholder="select folder"
 														onSelect={(value) => console.log(value)}
@@ -192,7 +181,7 @@ export default function LeftFloatingPanel({
 													{Object.entries(documents).map(
 														([foldername], index) => (
 															<SelectItem
-																className="font-virgil"
+																className=""
 																value={foldername}
 																key={index}
 															>
@@ -205,7 +194,9 @@ export default function LeftFloatingPanel({
 										</div>
 									</div>
 									<div className="flex justify-center text-sm">
-										<Button type="submit">Create File</Button>
+										<Button onClick={() => handleNewDocument()} type="submit">
+											Create File
+										</Button>
 									</div>
 								</PopoverContent>
 							</Popover>
@@ -215,7 +206,7 @@ export default function LeftFloatingPanel({
 				<Accordion type="multiple">
 					{Object.entries(documents).map(([foldername, files], index) => (
 						<AccordionItem value={foldername} key={index}>
-							<AccordionTrigger className="font-virgil space-x-2 space-y-1">
+							<AccordionTrigger className="space-x-2 space-y-1">
 								<GraduationCap
 									size={16}
 									strokeWidth={1.5}
@@ -224,15 +215,15 @@ export default function LeftFloatingPanel({
 								<div>{foldername}</div>
 								<div className="flex-grow"></div>
 							</AccordionTrigger>
-							<AccordionContent className="font-virgil text-xs">
+							<AccordionContent className="text-xs">
 								<ul className="list-disc pl-4">
 									{files.map((file, index2) => (
 										<li
 											className="hover:cursor-pointer hover:underline hover:text-slate-700"
 											key={index2}
 											onClick={() => {
-												updateEditorContent(file.content)
-												setDocument(file)
+												updateEditorContent(file.content);
+												setDocument(file);
 											}}
 										>
 											{file.filename}

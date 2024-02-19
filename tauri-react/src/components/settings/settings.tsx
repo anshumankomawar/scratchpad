@@ -17,6 +17,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { Separator } from "@radix-ui/react-separator";
+import { useFontFamily } from "@/context/font_context";
 
 const appearanceFormSchema = z.object({
 	theme: z.enum(["light", "dark"], {
@@ -36,6 +37,7 @@ const defaultValues: Partial<AppearanceFormValues> = {
 };
 
 export default function SettingsPage() {
+	const { fontFamily } = useFontFamily();
 	const form = useForm<AppearanceFormValues>({
 		resolver: zodResolver(appearanceFormSchema),
 		defaultValues,

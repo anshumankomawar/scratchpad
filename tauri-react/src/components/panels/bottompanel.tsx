@@ -21,7 +21,7 @@ export default function BottomPanel({
 
 	return (
 		<Dialog open={openDialog}>
-			<div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full font-virgil items-center px-5 py-4 bg-white dark:bg-stone-900">
+			<div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full items-center px-5 py-4 bg-white dark:bg-stone-900">
 				<Popover>
 					<PopoverContent className="p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32 font-virgil text-xs text-start dark:bg-stone-900">
 						<Button
