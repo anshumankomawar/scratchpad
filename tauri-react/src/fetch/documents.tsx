@@ -47,13 +47,12 @@ export const updateDocument = async (filename, foldername, content, id) => {
 		});
 };
 
-export const currDocument = () => (
-  useQuery({
+export const currDocument = () =>
+	useQuery({
 		queryKey: ["doc"],
 		initialData: {
-      filename: "",
-      foldername: "unfiled",
-      id: ""
-    },
-	})
-)
+			filename: "",
+			foldername: "unfiled",
+			id: "",
+		},
+	});

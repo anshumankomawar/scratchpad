@@ -54,7 +54,7 @@ export default function LeftFloatingPanel({ editor }) {
 		// TODO: Add error handling
 		await saveDocument(doc.filename, doc.foldername);
 		await documents.refetch();
-    editor.commands.setContent("");
+		editor.commands.setContent("");
 	};
 
 	return (

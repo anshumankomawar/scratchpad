@@ -15,10 +15,10 @@ export default function BottomPanel({
 	setTheme,
 	editor,
 	handleLogout,
-  filename
+	filename,
 }) {
 	const [openDialog, setOpenDialog] = useState(false);
-  const panel = usePanelStore((state) => state);
+	const panel = usePanelStore((state) => state);
 
 	return (
 		<Dialog open={openDialog}>
@@ -65,9 +65,7 @@ export default function BottomPanel({
 						Settings
 					</PopoverTrigger>
 				</Popover>
-				<div className="text-xs">
-          {filename}
-        </div>
+				<div className="text-xs">{filename}</div>
 				<div className="text-end text-xs w-12 text-nowrap">
 					{editor.storage.characterCount.words()} |{" "}
 					{editor.storage.characterCount.characters()}

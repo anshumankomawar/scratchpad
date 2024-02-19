@@ -27,10 +27,7 @@ export function LoginForm(props: LoginComponentProps) {
 					required
 				/>
 				<div className="w-full items-center justify-center flex pt-2">
-					<Button
-						className=" w-[80px] h-[24px]"
-						onClick={() => handleSubmit()}
-					>
+					<Button className=" w-[80px] h-[24px]" onClick={() => handleSubmit()}>
 						Login
 					</Button>
 				</div>

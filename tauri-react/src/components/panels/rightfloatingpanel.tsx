@@ -30,7 +30,7 @@ import { Button } from "../ui/button";
 import { usePanelStore } from "@/app_state";
 
 export default function RightFloatingPanel({ editor }) {
-  const panel = usePanelStore((state) => state);
+	const panel = usePanelStore((state) => state);
 
 	async function cancelAutoFocus(event) {
 		event.preventDefault();

@@ -46,9 +46,9 @@ export default function SettingsPage() {
 	});
 
 	function onSubmit(data: AppearanceFormValues) {
-		console.log(data)
-		setFontFamily(data.font)
-		setTheme(data.theme)
+		console.log(data);
+		setFontFamily(data.font);
+		setTheme(data.theme);
 	}
 
 	return (

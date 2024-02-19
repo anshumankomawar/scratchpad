@@ -36,23 +36,23 @@ function HomeComponent() {
 	const store = useStore();
 	const navigate = useNavigate({ from: "/" });
 	const { theme, setTheme } = useTheme();
-  const panel = usePanelStore((state) => state);
-  const doc = useDocStore((state) => state.doc);
+	const panel = usePanelStore((state) => state);
+	const doc = useDocStore((state) => state.doc);
 
 	useEffect(() => {
 		function handleKeyUp(event) {
 			if (event.key === "ArrowLeft" && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
-        panel.togglePanel(Panel.LEFT);
+				panel.togglePanel(Panel.LEFT);
 			} else if (
 				event.key === "ArrowRight" &&
 				(event.metaKey || event.ctrlKey)
 			) {
 				event.preventDefault();
-        panel.togglePanel(Panel.RIGHT);
+				panel.togglePanel(Panel.RIGHT);
 			} else if (event.key === " " && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
-        panel.togglePanel(Panel.COMMAND);
+				panel.togglePanel(Panel.COMMAND);
 			} else if (event.key === "Escape") {
 				event.preventDefault();
 				panel.setPanel(Panel.COMMAND, false);
@@ -75,15 +75,9 @@ function HomeComponent() {
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
-				<LeftFloatingPanel
-					editor={tiptap.editor}
-				/>
-				<RightFloatingPanel
-					editor={tiptap.editor}
-				/>
-				<CommandPanel
-					editor={tiptap.editor}
-				/>
+				<LeftFloatingPanel editor={tiptap.editor} />
+				<RightFloatingPanel editor={tiptap.editor} />
+				<CommandPanel editor={tiptap.editor} />
 				<EditorContent
 					className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar"
 					editor={tiptap.editor}
@@ -93,7 +87,7 @@ function HomeComponent() {
 					setTheme={setTheme}
 					editor={tiptap.editor}
 					handleLogout={handleLogout}
-          filename={doc.filename}
+					filename={doc.filename}
 				/>
 			</div>
 			<DialogContent className="bg-white h-3/4 w-3/4">

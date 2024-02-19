@@ -13,25 +13,25 @@ interface PanelState {
 	left: boolean;
 	command: boolean;
 	right: boolean;
-  center: boolean;
+	center: boolean;
 	togglePanel: (panel: Panel) => void;
-  setPanel: (panel: Panel, isOpen: boolean) => void;
-  changeCommand: (open: boolean) => void;
-  changeCenter: (open: boolean) => void;
+	setPanel: (panel: Panel, isOpen: boolean) => void;
+	changeCommand: (open: boolean) => void;
+	changeCenter: (open: boolean) => void;
 }
 
 export enum Panel {
 	LEFT = "left",
 	RIGHT = "right",
 	COMMAND = "command",
-  CENTER = "center"
+	CENTER = "center",
 }
 
 export const usePanelStore = create<PanelState>((set) => ({
 	left: false,
 	command: false,
 	right: false,
-  center: false,
+	center: false,
 	togglePanel: (panel: Panel) =>
 		set((state) => {
 			switch (panel) {
@@ -41,11 +41,11 @@ export const usePanelStore = create<PanelState>((set) => ({
 					return { left: !state.left };
 				case Panel.RIGHT:
 					return { right: !state.right };
-        case Panel.CENTER:
-          return { center: !state.center };
+				case Panel.CENTER:
+					return { center: !state.center };
 			}
 		}),
-  setPanel: (panel: Panel, open: boolean) =>
+	setPanel: (panel: Panel, open: boolean) =>
 		set((state) => {
 			switch (panel) {
 				case Panel.COMMAND:
@@ -54,10 +54,10 @@ export const usePanelStore = create<PanelState>((set) => ({
 					return { left: open };
 				case Panel.RIGHT:
 					return { right: open };
-        case Panel.CENTER:
-          return { center: open };
+				case Panel.CENTER:
+					return { center: open };
 			}
 		}),
-  changeCommand: (open: boolean) => set(() => ({command: open})),
-  changeCenter: (open: boolean) => set(() => ({center: open})),
+	changeCommand: (open: boolean) => set(() => ({ command: open })),
+	changeCenter: (open: boolean) => set(() => ({ center: open })),
 }));
