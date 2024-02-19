@@ -10,6 +10,8 @@ use crate::{error::Result, util::get_from_store};
 struct Reference {
     chunk_id: String,
     document_id: String,
+    filename: String,
+    foldername: String,
     content: String,
     similarity: f64
 }

@@ -14,15 +14,6 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 import CollatePanel from "@/components/collate/collate";
 
-interface Document {
-	id: string;
-	filename: string;
-}
-
-interface LoaderData {
-	documents: Document[];
-}
-
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
 });
