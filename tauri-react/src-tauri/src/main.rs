@@ -20,7 +20,7 @@ mod util;
 use error::Result; 
 use fetch::{auth::login, user::get_user};
 use fetch::search::search_user_documents;
-use fetch::document::{save_document, get_documents};
+use fetch::document::{save_document, get_documents, update_document};
 use state::TauriState;
 use util::check;
 
@@ -53,7 +53,7 @@ fn main() {
             app.manage(TauriState::new(path));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![login, check, get_user, search_user_documents, save_document, get_documents])
+        .invoke_handler(tauri::generate_handler![login, check, get_user, search_user_documents, save_document, get_documents, update_document])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

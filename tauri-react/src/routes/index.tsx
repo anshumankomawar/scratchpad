@@ -6,12 +6,10 @@ import LeftFloatingPanel from "@/components/panels/leftfloatingpanel";
 import { useEffect, useState } from "react";
 import "../tiptap.scss";
 import "../index.css";
-import BottomFloatingPanel from "@/components/panels/bottomfloatingpanel";
-import TopFloatingPanel from "@/components/panels/topfloatingpanel";
+import CommandPanel from "@/components/command/command";
 import { invoke } from "@tauri-apps/api/core";
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import Save from "@/components/save/save";
 
 interface Document {
 	id: string;
@@ -43,6 +41,11 @@ function HomeComponent() {
 	const [openRight, setOpenRight] = useState(false);
 	const [openCenter, setOpenCenter] = useState(false);
 	const [documents, setDocuments] = useState({});
+	const [currDoc, setCurrDoc] = useState({
+		"filename": "",
+		"foldername": "unfiled",
+		"id": ""
+	});
 
 	function toggleLeftPanel() {
 		setOpenLeft(!openLeft);
@@ -151,23 +154,21 @@ function HomeComponent() {
 					toggleLeftPanel={toggleLeftPanel}
 					documents={documents}
 					updateEditorContent={updateEditorContent}
-				/>
-				<BottomFloatingPanel
-					open={openBottom}
-					toggleBottomPanel={toggleBottomPanel}
-					updateDocuments={updateDocuments}
-					editor={tiptap.editor}
+					document={currDoc}
+					setDocument={setCurrDoc}
 				/>
 				<RightFloatingPanel
 					open={openRight}
 					toggleRightPanel={toggleRightPanel}
 					editor={tiptap.editor}
 				/>
-				<TopFloatingPanel
+				<CommandPanel
 					open={openTop}
 					toggleTopPanel={toggleTopPanel}
 					openCenter={openCenter}
 					setOpenCenter={setOpenCenter}
+					editor={tiptap.editor}
+					document={currDoc}
 				/>
 				<EditorContent
 					className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar"

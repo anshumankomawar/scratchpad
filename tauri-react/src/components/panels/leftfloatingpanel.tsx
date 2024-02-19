@@ -49,15 +49,15 @@ export default function LeftFloatingPanel({
 	toggleLeftPanel,
 	documents,
 	updateEditorContent,
+	document,
+	setDocument
 }) {
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
-	const[filename, setFileName] = useState("")
-	const[foldername, setFolderName] = useState("")
 
 	const handleNewDocument = async () => {
-		invoke("save_document", { filename: filename, content: "", foldername: foldername })
+		invoke("save_document", { filename: document.filename, content: "", foldername: document.foldername })
 			.then(() => {
 				console.log("worked")
 			})
@@ -144,13 +144,22 @@ export default function LeftFloatingPanel({
 											<Label htmlFor="name" className="text-right">
 												Name
 											</Label>
-											<Input id="name" onChange={(e) => setFileName(e.target.value)} placeholder="File Name" className="col-span-3" />
+											<Input id="name"
+												onChange={(e) => setDocument(doc => ({
+													...doc,
+													filename: e.target.value
+												}))}
+												placeholder="File Name" className="col-span-3" />
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="icon" className="text-right">
 												Folder
 											</Label>
-											<Select onValueChange={(value) => {setFolderName(value)}}>
+											<Select defaultValue={document.foldername}
+												onValueChange={(value) => setDocument(doc => ({
+													...doc,
+													foldername: value
+												}))}>
 												<SelectTrigger className="w-[180px] font-virgil">
 													<SelectValue placeholder="select folder" />
 												</SelectTrigger>
@@ -178,7 +187,7 @@ export default function LeftFloatingPanel({
 						</div>
 					</SheetTitle>
 				</SheetHeader>
-				<Accordion type="multiple" collapsible>
+				<Accordion type="multiple">
 					{Object.entries(documents).map(([foldername, files], index) => (
 						<AccordionItem value={foldername} key={index}>
 							<AccordionTrigger className="font-virgil space-x-2 space-y-1">
@@ -196,7 +205,10 @@ export default function LeftFloatingPanel({
 										<li
 											className="hover:cursor-pointer hover:underline hover:text-slate-700"
 											key={index2}
-											onClick={() => updateEditorContent(file.content)}
+											onClick={() => {
+												updateEditorContent(file.content)
+												setDocument(file)
+											}}
 										>
 											{file.filename}
 										</li>

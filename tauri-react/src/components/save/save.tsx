@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 
 export default function Save({ editor, updateDocuments }) {
 	const [isSaving, setIsSaving] = useState(false);
-	const [filename, setFilename] = useState("++++=++");
+	const [filename, setFilename] = useState();
 	const [content, setContent] = useState(editor.getHTML());
 
 	// const debouncedEditorState = useDebounce(content, 500);

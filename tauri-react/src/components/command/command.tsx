@@ -1,14 +1,5 @@
-import * as React from "react";
 import {
-	CalendarIcon,
-	EnvelopeClosedIcon,
-	FaceIcon,
-	GearIcon,
-	PersonIcon,
-	RocketIcon,
-} from "@radix-ui/react-icons";
-
-import {
+	Command,
 	CommandDialog,
 	CommandEmpty,
 	CommandGroup,
@@ -16,70 +7,68 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-	CommandShortcut,
 } from "@/components/ui/command";
+import { invoke } from "@tauri-apps/api/core";
+import { toast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
 
-export function CommandDialogDemo() {
-	const [open, setOpen] = React.useState(false);
+export default function CommandPanel({
+	open,
+	toggleTopPanel,
+	openCenter,
+	setOpenCenter,
+	document,
+	editor
+}) {
+	async function cancelAutoFocus(event) {
+		event.preventDefault();
+	}
 
-	React.useEffect(() => {
-		const down = (e: KeyboardEvent) => {
-			if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
-				e.preventDefault();
-				setOpen((open) => !open);
-			}
-		};
+	function onCommandSelect() {
+		toggleTopPanel(false);
+		setOpenCenter(true);
+		console.log("Here");
+	}
 
-		document.addEventListener("keydown", down);
-		return () => document.removeEventListener("keydown", down);
-	}, []);
+	function onCommandSave() {
+		invoke("update_document", { filename: document.filename, content: editor.getHTML(), foldername: document.foldername, currId: document.id })
+			.then((doc_id) => {
+				console.log(doc_id);
+			})
+			.catch((error) => {
+				console.log(error);
+				toast({
+					variant: "destructive",
+					title: "Uh oh! Something went wrong.",
+					description: error.code,
+					action: <ToastAction altText="Try again">Try again</ToastAction>,
+				});
+			})
+	}
 
 	return (
-		<div className="h-4 py-1 pr-2">
-			<p className="text-sm text-muted-foreground items-center">
-				Press{" "}
-				<kbd className="pointer-events-none inline-flex select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-					<span className="text-xs">⌘</span>J
-				</kbd>
-			</p>
-			<CommandDialog open={open} onOpenChange={setOpen}>
+		<CommandDialog open={open} modal={false}>
+			<Command className="dark:bg-stone-900 font-virgil">
 				<CommandInput placeholder="Type a command or search..." />
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="Suggestions">
-						<CommandItem>
-							<CalendarIcon className="mr-2 h-4 w-4" />
-							<span>Collate</span>
+						<CommandItem onSelect={() => onCommandSelect()}>
+							Collate
 						</CommandItem>
-						<CommandItem>
-							<FaceIcon className="mr-2 h-4 w-4" />
-							<span>Search</span>
+						<CommandItem onSelect={() => onCommandSave()}>
+							Save
 						</CommandItem>
-						<CommandItem>
-							<RocketIcon className="mr-2 h-4 w-4" />
-							<span>Launch</span>
-						</CommandItem>
+						<CommandItem>Search</CommandItem>
 					</CommandGroup>
 					<CommandSeparator />
 					<CommandGroup heading="Settings">
-						<CommandItem>
-							<PersonIcon className="mr-2 h-4 w-4" />
-							<span>Profile</span>
-							<CommandShortcut>⌘P</CommandShortcut>
-						</CommandItem>
-						<CommandItem>
-							<EnvelopeClosedIcon className="mr-2 h-4 w-4" />
-							<span>Mail</span>
-							<CommandShortcut>⌘B</CommandShortcut>
-						</CommandItem>
-						<CommandItem>
-							<GearIcon className="mr-2 h-4 w-4" />
-							<span>Settings</span>
-							<CommandShortcut>⌘S</CommandShortcut>
-						</CommandItem>
+						<CommandItem>Profile</CommandItem>
+						<CommandItem>Billing</CommandItem>
+						<CommandItem>Settings</CommandItem>
 					</CommandGroup>
 				</CommandList>
-			</CommandDialog>
-		</div>
+			</Command>
+		</CommandDialog>
 	);
 }

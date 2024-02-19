@@ -34,6 +34,25 @@ pub async fn save_document(filename: &str, content: &str, foldername: &str, stat
     }
 }
 
+#[tauri::command]
+pub async fn update_document(filename: &str, content: &str, foldername: &str, currId: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
+    let params = [("filename", &filename), ("content", &content), ("foldername", &foldername), ("id", &currId)];
+    let token = get_from_store(&state, &app)?;
+
+    let res = state.client.patch("http://localhost:8000/document")
+    .json(&params)
+    .header(AUTHORIZATION, format!("Bearer {}", token))
+    .send()
+    .await?
+    .json::<ResponseSaveDocument>()
+    .await?;
+
+    match res.doc_id {
+        Some(doc_id) => Ok(doc_id),
+        None => Err(Error::SaveError("Couldn't update document".to_string()))
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 struct Document {
     id: String,
