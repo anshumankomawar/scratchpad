@@ -10,6 +10,7 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
 from fastapi.exceptions import HTTPException
+from typing import List
 
 class DocumentMetadata(BaseModel):
     filename: str
@@ -58,6 +59,17 @@ def update_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
         print("Error", e)
         return {"message": "Error updating document"}
 
+def generate_chunks(content: str) -> List[str]:
+    if len(content) < 1000:
+        chunk_size = 200
+    elif len(content) < 5000:
+        chunk_size = 500
+    else:
+        chunk_size = 1000
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=100)
+    chunks = text_splitter.split_text(content)
+    return chunks
+
 # Adds document, adds chunks and embeddings to chunks table
 @router.post("/document")
 def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata, generated:bool = False):
@@ -76,7 +88,7 @@ def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[U
         #creating chunks only for non generated data
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
             #can experiment with above chunk_size and overlap values as needed
-            chunks = text_splitter.split_text(doc.content)
+            chunks = generate_chunks(doc.content)
             embeddings = OpenAIEmbeddings()
             records_to_insert = []
             current_page = 0
