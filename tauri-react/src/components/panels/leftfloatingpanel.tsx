@@ -37,41 +37,25 @@ import {
 	StickyNote,
 	FilePlus,
 } from "lucide-react";
-import { invoke } from "@tauri-apps/api/core";
-import { toast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
+import { saveDocument, useDocuments } from "@/fetch/documents";
 
 export default function LeftFloatingPanel({
 	open,
 	toggleLeftPanel,
-	documents,
 	updateEditorContent,
 	document,
 	setDocument,
 }) {
+	const documents = useDocuments();
+
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
 
 	const handleNewDocument = async () => {
-		console.log("HERE");
-		invoke("save_document", {
-			filename: document.filename,
-			content: "",
-			foldername: document.foldername,
-		})
-			.then(() => {
-				console.log("worked");
-			})
-			.catch((error) => {
-				console.log(error);
-				toast({
-					variant: "destructive",
-					title: "Uh oh! Something went wrong.",
-					description: error.code,
-					action: <ToastAction altText="Try again">Try again</ToastAction>,
-				});
-			});
+		// TODO: Add error handling
+		await saveDocument(document.filename, document.foldername);
+		await documents.refetch();
 	};
 
 	return (
@@ -178,7 +162,7 @@ export default function LeftFloatingPanel({
 													/>
 												</SelectTrigger>
 												<SelectContent>
-													{Object.entries(documents).map(
+													{Object.entries(documents.data).map(
 														([foldername], index) => (
 															<SelectItem
 																className=""
@@ -204,7 +188,7 @@ export default function LeftFloatingPanel({
 					</SheetTitle>
 				</SheetHeader>
 				<Accordion type="multiple">
-					{Object.entries(documents).map(([foldername, files], index) => (
+					{Object.entries(documents.data).map(([foldername, files], index) => (
 						<AccordionItem value={foldername} key={index}>
 							<AccordionTrigger className="space-x-2 space-y-1">
 								<GraduationCap

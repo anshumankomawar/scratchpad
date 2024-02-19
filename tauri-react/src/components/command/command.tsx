@@ -11,6 +11,7 @@ import {
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
+import { updateDocument, useDocuments } from "@/fetch/documents";
 
 export default function CommandPanel({
 	open,
@@ -20,6 +21,8 @@ export default function CommandPanel({
 	document,
 	editor
 }) {
+  const documents = useDocuments()
+
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
@@ -30,20 +33,9 @@ export default function CommandPanel({
 		console.log("Here");
 	}
 
-	function onCommandSave() {
-		invoke("update_document", { filename: document.filename, content: editor.getHTML(), foldername: document.foldername, currId: document.id })
-			.then((doc_id) => {
-				console.log(doc_id);
-			})
-			.catch((error) => {
-				console.log(error);
-				toast({
-					variant: "destructive",
-					title: "Uh oh! Something went wrong.",
-					description: error.code,
-					action: <ToastAction altText="Try again">Try again</ToastAction>,
-				});
-			})
+	async function onCommandSave() {
+		await updateDocument(document.filename, document.foldername, editor.getHTML(), document.id)
+    await documents.refetch()
 	}
 
 	return (

@@ -16,6 +16,7 @@ export default function BottomPanel({
 	toggleLeftPanel,
 	toggleBottomPanel,
 	handleLogout,
+  filename
 }) {
 	const [openDialog, setOpenDialog] = useState(false);
 
@@ -73,7 +74,9 @@ export default function BottomPanel({
 					</PopoverTrigger>
 				</Popover>
 				<div className="grow"></div>
-				<div className="text-xs">filename.txt</div>
+				<div className="text-xs">
+          {filename}
+        </div>
 				<div className="grow"></div>
 				<div className="text-end text-xs">
 					{editor.storage.characterCount.words()} |{" "}

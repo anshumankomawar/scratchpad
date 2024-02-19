@@ -15,6 +15,7 @@ import { useTheme } from "@/context/theme_context";
 import BottomPanel from "@/components/panels/bottompanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import SearchPanel from "@/components/search/search_panel";
+import { useDocuments } from "@/fetch/documents";
 
 interface Document {
 	id: string;
@@ -39,11 +40,10 @@ function HomeComponent() {
 	const [openTop, setOpenTop] = useState(false);
 	const [openRight, setOpenRight] = useState(false);
 	const [openCenter, setOpenCenter] = useState(false);
-	const [documents, setDocuments] = useState({});
 	const [currDoc, setCurrDoc] = useState({
-		"filename": "",
-		"foldername": "unfiled",
-		"id": ""
+		filename: "",
+		foldername: "unfiled",
+		id: ""
 	});
 
 	function toggleLeftPanel() {
@@ -56,23 +56,6 @@ function HomeComponent() {
 
 	function toggleTopPanel() {
 		setOpenTop(!openTop);
-	}
-
-	async function updateDocuments() {
-		invoke("get_documents")
-			.then((res) => {
-				console.log("updating documents");
-				setDocuments(res.documents);
-			})
-			.catch((error) => {
-				console.log(error);
-				toast({
-					variant: "destructive",
-					title: "Uh oh! Something went wrong.",
-					description: error.code,
-					action: <ToastAction altText="Try again">Try again</ToastAction>,
-				});
-			});
 	}
 
 	function toggleRightPanel() {
@@ -133,10 +116,6 @@ function HomeComponent() {
 		};
 	}, []);
 
-	useEffect(() => {
-		updateDocuments();
-	}, []);
-
 	if (!tiptap.editor) {
 		return <div>Loading...</div>;
 	}
@@ -151,7 +130,6 @@ function HomeComponent() {
 				<LeftFloatingPanel
 					open={openLeft}
 					toggleLeftPanel={toggleLeftPanel}
-					documents={documents}
 					updateEditorContent={updateEditorContent}
 					document={currDoc}
 					setDocument={setCurrDoc}
@@ -180,6 +158,7 @@ function HomeComponent() {
 					toggleLeftPanel={toggleLeftPanel}
 					toggleBottomPanel={toggleBottomPanel}
 					handleLogout={handleLogout}
+          filename={currDoc.filename}
 				/>
 			</div>
 			<DialogContent className="bg-white h-3/4 w-3/4">
