@@ -50,6 +50,7 @@ export default function LeftFloatingPanel({
 		event.preventDefault();
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	const handleNewDocument = async () => {
 		invoke("save_document", { filename: document.filename, content: "", foldername: document.foldername })
@@ -66,6 +67,8 @@ export default function LeftFloatingPanel({
 				});
 			});
 	};
+=======
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 =======
 >>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 
@@ -142,6 +145,7 @@ export default function LeftFloatingPanel({
 												Name
 											</Label>
 <<<<<<< HEAD
+<<<<<<< HEAD
 											<Input id="name"
 												onChange={(e) => setDocument(doc => ({
 													...doc,
@@ -149,11 +153,16 @@ export default function LeftFloatingPanel({
 												}))}
 												placeholder="File Name" className="col-span-3" />
 =======
+=======
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 											<Input
 												id="name"
 												placeholder="File Name"
 												className="col-span-3"
 											/>
+<<<<<<< HEAD
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
+=======
 >>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
@@ -161,11 +170,15 @@ export default function LeftFloatingPanel({
 												Folder
 											</Label>
 <<<<<<< HEAD
+<<<<<<< HEAD
 											<Select defaultValue={document.foldername}
 												onValueChange={(value) => setDocument(doc => ({
 													...doc,
 													foldername: value
 												}))}>
+=======
+											<Select onValueChange={(value) => console.log(value)}>
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 =======
 											<Select onValueChange={(value) => console.log(value)}>
 >>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
