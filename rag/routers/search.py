@@ -85,7 +85,6 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
             print("***************NO SIMILAR QUERIES FOUND, GENERATING NEW DOCUMENT**************\n")
             similar_chunks = db["client"].rpc('match_documents', {'email':email, 'query_embedding': embedded_query, 'match_threshold': 0.5, 'match_count':10}).execute()
             similar_chunks_data = similar_chunks.data
-            print(similar_chunks_data)
             all_chunks = "\n\n".join([chunk['content'] for chunk in similar_chunks_data])
 
             data = generate_summary_openai(request, all_chunks, query)
@@ -107,7 +106,7 @@ def search_document(request: Request, db: Annotated[dict, Depends(get_db)], curr
             print("***************FOUND SIMILAR QUERY, NO GENERATION REQUIRED**************\n")
             similar_query = similar_queries.data[0]
             document = db["client"].from_("documents").select("*").eq("id", similar_query["doc"]).execute()
-            return {"data": document.data[0]["content"]}
+            return {"data": document.data[0]["content"], "references": []}
     except Exception as e:
         print("Error", e)
         return {"error": "couldnt get results from search query"}
