@@ -7,8 +7,17 @@ use crate::state::TauriState;
 use crate::{error::Result, util::get_from_store};
 
 #[derive(Serialize, Deserialize, Debug)]
+struct Reference {
+    chunk_id: String,
+    document_id: String,
+    content: String,
+    similarity: f64
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 struct Response {
     data: String,
+    references: Vec<Reference>
 }
 
 #[tauri::command]
@@ -22,6 +31,7 @@ pub async fn search_user_documents(query: &str, state: State<'_, TauriState>, ap
     .await?
     .json::<Response>()
     .await?;
+    println!("{:?}", res);
 
-    Ok(json!(res.data))
+    Ok(json!(res))
 }

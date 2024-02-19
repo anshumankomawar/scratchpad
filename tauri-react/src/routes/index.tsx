@@ -3,20 +3,16 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { EditorContent } from "@tiptap/react";
 import { useStore } from "@/auth";
 import LeftFloatingPanel from "@/components/panels/leftfloatingpanel";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CommandPanel from "@/components/command/command";
 import "@/tiptap.scss";
 import "@/index.css";
-import { invoke } from "@tauri-apps/api/core";
-import { ToastAction } from "@/components/ui/toast";
-import { toast } from "@/components/ui/use-toast";
 import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
 import { useTheme } from "@/context/theme_context";
 import BottomPanel from "@/components/panels/bottompanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import SearchPanel from "@/components/search/search_panel";
-import { useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
+import CollatePanel from "@/components/collate/collate";
 
 interface Document {
 	id: string;
@@ -91,7 +87,7 @@ function HomeComponent() {
 				/>
 			</div>
 			<DialogContent className="bg-white h-3/4 w-3/4">
-				<SearchPanel />
+        <CollatePanel />
 			</DialogContent>
 		</Dialog>
 	);

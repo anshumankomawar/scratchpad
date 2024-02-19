@@ -8,9 +8,6 @@ import {
 	CommandList,
 	CommandSeparator,
 } from "@/components/ui/command";
-import { invoke } from "@tauri-apps/api/core";
-import { toast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
 import { updateDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
@@ -18,10 +15,6 @@ export default function CommandPanel({ editor }) {
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
 	const panel = usePanelStore((state) => state);
-
-	async function cancelAutoFocus(event) {
-		event.preventDefault();
-	}
 
 	function onCommandSelect() {
 		panel.togglePanel(Panel.COMMAND);
