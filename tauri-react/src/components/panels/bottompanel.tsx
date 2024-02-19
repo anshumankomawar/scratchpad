@@ -22,9 +22,9 @@ export default function BottomPanel({
 
 	return (
 		<Dialog open={openDialog}>
-			<div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full items-center px-5 py-4 bg-white dark:bg-stone-900">
+			<div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full justify-between items-center px-5 py-4 bg-white dark:bg-stone-900">
 				<Popover>
-					<PopoverContent className="p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32  text-xs text-start dark:bg-stone-900">
+					<PopoverContent className="w-12 p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32  text-xs text-start dark:bg-stone-900">
 						<Button
 							variant="ghost"
 							size="menu"
@@ -65,12 +65,10 @@ export default function BottomPanel({
 						Settings
 					</PopoverTrigger>
 				</Popover>
-				<div className="grow"></div>
 				<div className="text-xs">
           {filename}
         </div>
-				<div className="grow"></div>
-				<div className="text-end text-xs">
+				<div className="text-end text-xs w-12 text-nowrap">
 					{editor.storage.characterCount.words()} |{" "}
 					{editor.storage.characterCount.characters()}
 				</div>

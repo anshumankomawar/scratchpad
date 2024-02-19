@@ -40,15 +40,11 @@ import {
 import { currDocument, saveDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
-export default function LeftFloatingPanel({
-	updateEditorContent,
-	document,
-	setDocument,
-}) {
+export default function LeftFloatingPanel({ editor }) {
 	const documents = useDocuments();
-  const doc = useDocStore((state) => state.doc);
-  const updateDoc = useDocStore((state) => state.updateDoc)
-  const panel = usePanelStore((state) => state);
+	const doc = useDocStore((state) => state.doc);
+	const updateDoc = useDocStore((state) => state.updateDoc);
+	const panel = usePanelStore((state) => state);
 
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
@@ -58,6 +54,7 @@ export default function LeftFloatingPanel({
 		// TODO: Add error handling
 		await saveDocument(doc.filename, doc.foldername);
 		await documents.refetch();
+    editor.commands.setContent("");
 	};
 
 	return (
@@ -135,15 +132,10 @@ export default function LeftFloatingPanel({
 											<Input
 												id="name"
 												onChange={(e) =>
-													// setDocument((doc) => ({
-													// 	...doc,
-													// 	filename: e.target.value,
-													// }))
-                          updateDoc({
-                            	...doc,
-                            	filename: e.target.value,
-                            }
-                          )
+													updateDoc({
+														...doc,
+														filename: e.target.value,
+													})
 												}
 												placeholder="File Name"
 												className="col-span-3"
@@ -156,15 +148,10 @@ export default function LeftFloatingPanel({
 											<Select
 												defaultValue={document.foldername}
 												onValueChange={(value) =>
-													// setDocument((doc) => ({
-													// 	...doc,
-													// 	foldername: value,
-													// }))
-                          updateDoc({
-                            ...doc,
-                            foldername: value,
-                          }
-                        )
+													updateDoc({
+														...doc,
+														foldername: value,
+													})
 												}
 											>
 												<SelectTrigger className="w-[180px] ">
@@ -218,9 +205,9 @@ export default function LeftFloatingPanel({
 											className="hover:cursor-pointer hover:underline hover:text-slate-700"
 											key={index2}
 											onClick={() => {
-												updateEditorContent(file.content);
+												editor.commands.setContent(file.content);
 												// setDocument(file);
-                        updateDoc(file)
+												updateDoc(file);
 											}}
 										>
 											{file.filename}

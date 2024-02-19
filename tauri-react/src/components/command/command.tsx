@@ -14,32 +14,38 @@ import { ToastAction } from "../ui/toast";
 import { updateDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
-export default function CommandPanel({
-	document,
-	editor
-}) {
-  const documents = useDocuments();
-  const doc = useDocStore((state) => state.doc);
-  const panel = usePanelStore((state) => state)
+export default function CommandPanel({ editor }) {
+	const documents = useDocuments();
+	const doc = useDocStore((state) => state.doc);
+	const panel = usePanelStore((state) => state);
 
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
 
 	function onCommandSelect() {
-    panel.togglePanel(Panel.COMMAND);
-    panel.setPanel(Panel.CENTER, true);
+		panel.togglePanel(Panel.COMMAND);
+		panel.setPanel(Panel.CENTER, true);
 		console.log("Here");
 	}
 
 	async function onCommandSave() {
-    panel.togglePanel(Panel.COMMAND);
-		await updateDocument(doc.filename, doc.foldername, editor.getHTML(), doc.id)
-    await documents.refetch()
+		panel.togglePanel(Panel.COMMAND);
+		await updateDocument(
+			doc.filename,
+			doc.foldername,
+			editor.getHTML(),
+			doc.id,
+		);
+		await documents.refetch();
 	}
 
 	return (
-		<CommandDialog open={panel.command} modal={false} onOpenChange={panel.changeCommand}>
+		<CommandDialog
+			open={panel.command}
+			modal={false}
+			onOpenChange={panel.changeCommand}
+		>
 			<Command className="dark:bg-stone-900">
 				<CommandInput placeholder="Type a command or search..." />
 				<CommandList>
@@ -48,9 +54,7 @@ export default function CommandPanel({
 						<CommandItem onSelect={() => onCommandSelect()}>
 							Collate
 						</CommandItem>
-						<CommandItem onSelect={() => onCommandSave()}>
-							Save
-						</CommandItem>
+						<CommandItem onSelect={() => onCommandSave()}>Save</CommandItem>
 						<CommandItem>Search</CommandItem>
 					</CommandGroup>
 					<CommandSeparator />

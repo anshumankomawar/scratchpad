@@ -37,11 +37,6 @@ function HomeComponent() {
 	const navigate = useNavigate({ from: "/" });
 	const { theme, setTheme } = useTheme();
   const panel = usePanelStore((state) => state);
-	const [currDoc, setCurrDoc] = useState({
-		filename: "",
-		foldername: "unfiled",
-		id: ""
-	});
   const doc = useDocStore((state) => state.doc);
 
 	useEffect(() => {
@@ -60,7 +55,7 @@ function HomeComponent() {
         panel.togglePanel(Panel.COMMAND);
 			} else if (event.key === "Escape") {
 				event.preventDefault();
-				panel.togglePanel(Panel.COMMAND);
+				panel.setPanel(Panel.COMMAND, false);
 			}
 		}
 
@@ -68,52 +63,26 @@ function HomeComponent() {
 		return () => document.removeEventListener("keyup", handleKeyUp);
 	}, []);
 
-	function onKeyUp(event) {
-		if (
-			(event.key === "ArrowLeft" ||
-				event.key === "ArrowRight" ||
-				event.key === "ArrowDown" ||
-				event.key === " ") &&
-			event.ctrlKey
-		) {
-			event.preventDefault();
-		}
-	}
-
 	const handleLogout = async () => {
 		await store.store.delete("token");
 		navigate({ to: "/" });
 	};
 
-	useEffect(() => {
-		document.addEventListener("keyup", onKeyUp);
-		return () => {
-			document.removeEventListener("keyup", onKeyUp);
-		};
-	}, []);
-
 	if (!tiptap.editor) {
 		return <div>Loading...</div>;
-	}
-
-	function updateEditorContent(content) {
-		tiptap.editor.commands.setContent(content);
 	}
 
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
 				<LeftFloatingPanel
-					updateEditorContent={updateEditorContent}
-					document={currDoc}
-					setDocument={setCurrDoc}
+					editor={tiptap.editor}
 				/>
 				<RightFloatingPanel
 					editor={tiptap.editor}
 				/>
 				<CommandPanel
 					editor={tiptap.editor}
-					document={currDoc}
 				/>
 				<EditorContent
 					className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar"
