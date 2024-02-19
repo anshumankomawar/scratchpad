@@ -16,6 +16,7 @@ import BottomPanel from "@/components/panels/bottompanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import SearchPanel from "@/components/search/search_panel";
 import { useDocuments } from "@/fetch/documents";
+import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
 interface Document {
 	id: string;
@@ -35,62 +36,37 @@ function HomeComponent() {
 	const store = useStore();
 	const navigate = useNavigate({ from: "/" });
 	const { theme, setTheme } = useTheme();
-	const [openLeft, setOpenLeft] = useState(false);
-	const [openBottom, setOpenBottom] = useState(false);
-	const [openTop, setOpenTop] = useState(false);
-	const [openRight, setOpenRight] = useState(false);
-	const [openCenter, setOpenCenter] = useState(false);
+  const panel = usePanelStore((state) => state);
 	const [currDoc, setCurrDoc] = useState({
 		filename: "",
 		foldername: "unfiled",
 		id: ""
 	});
-
-	function toggleLeftPanel() {
-		setOpenLeft(!openLeft);
-	}
-
-	function toggleBottomPanel() {
-		setOpenBottom(!openBottom);
-	}
-
-	function toggleTopPanel() {
-		setOpenTop(!openTop);
-	}
-
-	function toggleRightPanel() {
-		setOpenRight(!openRight);
-	}
+  const doc = useDocStore((state) => state.doc);
 
 	useEffect(() => {
 		function handleKeyUp(event) {
 			if (event.key === "ArrowLeft" && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
-				setOpenLeft(!openLeft);
-			} else if (
-				event.key === "ArrowDown" &&
-				(event.metaKey || event.ctrlKey)
-			) {
-				event.preventDefault();
-				setOpenBottom(!openBottom);
+        panel.togglePanel(Panel.LEFT);
 			} else if (
 				event.key === "ArrowRight" &&
 				(event.metaKey || event.ctrlKey)
 			) {
 				event.preventDefault();
-				setOpenRight(!openRight);
+        panel.togglePanel(Panel.RIGHT);
 			} else if (event.key === " " && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
-				setOpenTop(!openTop);
+        panel.togglePanel(Panel.COMMAND);
 			} else if (event.key === "Escape") {
 				event.preventDefault();
-				setOpenTop(false);
+				panel.togglePanel(Panel.COMMAND);
 			}
 		}
 
 		document.addEventListener("keyup", handleKeyUp);
 		return () => document.removeEventListener("keyup", handleKeyUp);
-	}, [openLeft, openBottom, openRight, openTop]);
+	}, []);
 
 	function onKeyUp(event) {
 		if (
@@ -125,25 +101,17 @@ function HomeComponent() {
 	}
 
 	return (
-		<Dialog open={openCenter} onOpenChange={setOpenCenter}>
+		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
 				<LeftFloatingPanel
-					open={openLeft}
-					toggleLeftPanel={toggleLeftPanel}
 					updateEditorContent={updateEditorContent}
 					document={currDoc}
 					setDocument={setCurrDoc}
 				/>
 				<RightFloatingPanel
-					open={openRight}
-					toggleRightPanel={toggleRightPanel}
 					editor={tiptap.editor}
 				/>
 				<CommandPanel
-					open={openTop}
-					toggleTopPanel={toggleTopPanel}
-					openCenter={openCenter}
-					setOpenCenter={setOpenCenter}
 					editor={tiptap.editor}
 					document={currDoc}
 				/>
@@ -155,10 +123,8 @@ function HomeComponent() {
 					theme={theme}
 					setTheme={setTheme}
 					editor={tiptap.editor}
-					toggleLeftPanel={toggleLeftPanel}
-					toggleBottomPanel={toggleBottomPanel}
 					handleLogout={handleLogout}
-          filename={currDoc.filename}
+          filename={doc.filename}
 				/>
 			</div>
 			<DialogContent className="bg-white h-3/4 w-3/4">

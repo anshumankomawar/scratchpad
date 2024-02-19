@@ -8,17 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { useState } from "react";
 import SettingsPage from "../settings/settings";
+import { usePanelStore, Panel } from "@/app_state";
 
 export default function BottomPanel({
 	theme,
 	setTheme,
 	editor,
-	toggleLeftPanel,
-	toggleBottomPanel,
 	handleLogout,
   filename
 }) {
 	const [openDialog, setOpenDialog] = useState(false);
+  const panel = usePanelStore((state) => state);
 
 	return (
 		<Dialog open={openDialog}>
@@ -29,15 +29,7 @@ export default function BottomPanel({
 							variant="ghost"
 							size="menu"
 							className="text-xs justify-start p-2"
-							onClick={toggleLeftPanel}
-						>
-							Open
-						</Button>
-						<Button
-							variant="ghost"
-							size="menu"
-							className="text-xs justify-start p-2"
-							onClick={toggleBottomPanel}
+							onClick={() => panel.togglePanel(Panel.LEFT)}
 						>
 							Files
 						</Button>

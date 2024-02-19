@@ -27,14 +27,17 @@ import {
 	Underline,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { usePanelStore } from "@/app_state";
 
-export default function RightFloatingPanel({ open, toggleRightPanel, editor }) {
+export default function RightFloatingPanel({ editor }) {
+  const panel = usePanelStore((state) => state);
+
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
 
 	return (
-		<Sheet open={open} modal={false}>
+		<Sheet open={panel.right} modal={false}>
 			<SheetContent
 				side="right"
 				className="overflow-y-auto mr-4 dark:bg-stone-900 bg-white border-none drop-shadow-2xl shadow-2xl h-1/2 w-min"

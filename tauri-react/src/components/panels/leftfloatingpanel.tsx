@@ -37,16 +37,18 @@ import {
 	StickyNote,
 	FilePlus,
 } from "lucide-react";
-import { saveDocument, useDocuments } from "@/fetch/documents";
+import { currDocument, saveDocument, useDocuments } from "@/fetch/documents";
+import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
 export default function LeftFloatingPanel({
-	open,
-	toggleLeftPanel,
 	updateEditorContent,
 	document,
 	setDocument,
 }) {
 	const documents = useDocuments();
+  const doc = useDocStore((state) => state.doc);
+  const updateDoc = useDocStore((state) => state.updateDoc)
+  const panel = usePanelStore((state) => state);
 
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
@@ -54,17 +56,17 @@ export default function LeftFloatingPanel({
 
 	const handleNewDocument = async () => {
 		// TODO: Add error handling
-		await saveDocument(document.filename, document.foldername);
+		await saveDocument(doc.filename, doc.foldername);
 		await documents.refetch();
 	};
 
 	return (
-		<Sheet open={open}>
+		<Sheet open={panel.left}>
 			<SheetContent
 				side="left"
 				className="overflow-y-auto bg-white dark:bg-stone-900 border-none drop-shadow-2xl shadow-2xl lg:w-[300px] min-w-[150px] w-[200px] pt-10"
 				onOpenAutoFocus={cancelAutoFocus}
-				onPointerDownOutside={() => toggleLeftPanel(!open)}
+				onPointerDownOutside={() => panel.togglePanel(Panel.LEFT)}
 			>
 				<SheetHeader>
 					<SheetTitle className="flex flex-row mb-2">
@@ -133,10 +135,15 @@ export default function LeftFloatingPanel({
 											<Input
 												id="name"
 												onChange={(e) =>
-													setDocument((doc) => ({
-														...doc,
-														filename: e.target.value,
-													}))
+													// setDocument((doc) => ({
+													// 	...doc,
+													// 	filename: e.target.value,
+													// }))
+                          updateDoc({
+                            	...doc,
+                            	filename: e.target.value,
+                            }
+                          )
 												}
 												placeholder="File Name"
 												className="col-span-3"
@@ -149,10 +156,15 @@ export default function LeftFloatingPanel({
 											<Select
 												defaultValue={document.foldername}
 												onValueChange={(value) =>
-													setDocument((doc) => ({
-														...doc,
-														foldername: value,
-													}))
+													// setDocument((doc) => ({
+													// 	...doc,
+													// 	foldername: value,
+													// }))
+                          updateDoc({
+                            ...doc,
+                            foldername: value,
+                          }
+                        )
 												}
 											>
 												<SelectTrigger className="w-[180px] ">
@@ -207,7 +219,8 @@ export default function LeftFloatingPanel({
 											key={index2}
 											onClick={() => {
 												updateEditorContent(file.content);
-												setDocument(file);
+												// setDocument(file);
+                        updateDoc(file)
 											}}
 										>
 											{file.filename}
