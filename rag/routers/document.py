@@ -85,9 +85,6 @@ def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[U
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]['id']
         if generated == False:
-        #creating chunks only for non generated data
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-            #can experiment with above chunk_size and overlap values as needed
             chunks = generate_chunks(doc.content)
             embeddings = OpenAIEmbeddings()
             records_to_insert = []
@@ -117,15 +114,31 @@ def delete_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
     try:
         email = current_user["email"]
         # Check if the document exists and belongs to the current user
-        existing_document = db["client"].from_("documents").select("*").eq("email",email).eq("id", id).execute()
-        if not existing_document:
+        document = db["client"].from_("documents").select("*").eq("email",email).eq("id", id).execute()
+        if document:
+            # Delete document
+            #supabase set to cascading delete on foreign key so chunks and query data will get removed automatically
+            db["client"].from_("documents").delete().eq("email",email).eq("id", id).execute()
+        else:
             raise HTTPException(404, detail="Document not found")
-        # Delete document
-        db["client"].from_("documents").delete().eq("email",email).eq("id", id).execute()
-        #supabase set to cascading delete on foreign key so chunks and query data will get removed automatically
         return {"message": "Document deleted successfully"}
     except Exception as e:
         print("Error", e)
         return {"message": "could not delete document"}
+
+#Update foldername
+@router.post("/update_foldername")
+def update_document_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], id:str, foldername:str):
+    try:
+        email = current_user["email"]
+        document = db["client"].from_("documents").select("*").eq("email",email).eq("id", id).execute()
+        if document:
+            db["client"].from_("documents").update({'foldername':foldername}).eq("email", email).eq("id", id).execute()
+        else:
+            raise HTTPException(404, detail="Document not found")
+        return {"message": "foldername updated successfully"}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "could not update document foldername"}
 
 
