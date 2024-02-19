@@ -25,6 +25,25 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+  } from "@/components/ui/context-menu"
+
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+	} from "@/components/ui/alert-dialog"
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -201,17 +220,25 @@ export default function LeftFloatingPanel({ editor }) {
 							<AccordionContent className="text-xs">
 								<ul className="list-disc pl-4">
 									{files.map((file, index2) => (
-										<li
-											className="hover:cursor-pointer hover:underline hover:text-slate-700"
-											key={index2}
-											onClick={() => {
-												editor.commands.setContent(file.content);
-												// setDocument(file);
-												updateDoc(file);
-											}}
-										>
-											{file.filename}
-										</li>
+										<ContextMenu>
+											<ContextMenuTrigger>
+												<li
+													className="hover:cursor-pointer hover:underline hover:text-slate-700"
+													key={index2}
+													onClick={() => {
+														editor.commands.setContent(file.content);
+														// setDocument(file);
+														updateDoc(file);
+												}}>
+												{file.filename}
+												</li>
+											</ContextMenuTrigger>
+											<ContextMenuContent>
+												<ContextMenuItem>Rename</ContextMenuItem>
+												<ContextMenuItem>Delete</ContextMenuItem>
+												<ContextMenuItem>Move</ContextMenuItem>
+											</ContextMenuContent>
+										</ContextMenu>
 									))}
 								</ul>
 							</AccordionContent>
