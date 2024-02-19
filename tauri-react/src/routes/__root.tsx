@@ -4,7 +4,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { type StoreContext } from "../auth";
+import { type StoreContext } from "@/auth";
 import { useState } from "react";
 import LoginComponent from "@/components/login/login";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,7 +34,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	component: () => {
 		const { token } = Route.useLoaderData<LoaderData>();
 		if (token !== null) return <ProtectedRoute2 />;
-		else return <PublicRoute />;
+		return <PublicRoute />;
 	},
 });
 

@@ -1,15 +1,20 @@
-import { useTipTapEditor } from "@/tiptap_context";
+import { useTipTapEditor } from "@/context/tiptap_context";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { EditorContent } from "@tiptap/react";
 import { useStore } from "@/auth";
 import LeftFloatingPanel from "@/components/panels/leftfloatingpanel";
 import { useEffect, useState } from "react";
-import "../tiptap.scss";
-import "../index.css";
 import CommandPanel from "@/components/command/command";
+import "@/tiptap.scss";
+import "@/index.css";
 import { invoke } from "@tauri-apps/api/core";
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
+import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
+import { useTheme } from "@/context/theme_context";
+import BottomPanel from "@/components/panels/bottompanel";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import SearchPanel from "@/components/search/search_panel";
 
 interface Document {
 	id: string;
@@ -19,12 +24,6 @@ interface Document {
 interface LoaderData {
 	documents: Document[];
 }
-
-import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
-import { useTheme } from "@/theme_context";
-import BottomPanel from "@/components/panels/bottompanel";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import SearchPanel from "@/components/search/search_panel";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,

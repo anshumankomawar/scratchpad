@@ -16,6 +16,12 @@ class DocumentMetadata(BaseModel):
     content: str
     foldername: str = "unfiled"
 
+class UpdatedDocumentMetadata(BaseModel):
+    filename: str
+    content: str
+    foldername: str = "unfiled"
+    id: str
+
 router = APIRouter(tags=["document"], dependencies=[Depends(get_db)])
 
 # Gets document of specified id. No user authentication necessary (endpoint for internal purposes). 
@@ -36,14 +42,14 @@ def get_document_by_id(db: Annotated[dict, Depends(get_db)], current_user: Annot
 
 # Update document, adds new chunks and embeddings to chunks table
 @router.patch("/document")
-def update_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata, id:str):
+def update_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: UpdatedDocumentMetadata):
     try:
         email = current_user["email"]
         document = (
-            db["client"].from_("documents").select("*").eq("email",email).eq("id", id).execute()
+            db["client"].from_("documents").select("*").eq("email",email).eq("id", doc.id).execute()
         )
         if document:
-            delete_document(db, current_user, id)
+            delete_document(db, current_user, doc.id)
             new_document_id = add_document(db, current_user, doc)['doc_id']
             return {"message": "Documents updated successfully", "doc_id": str(new_document_id)}
         else:

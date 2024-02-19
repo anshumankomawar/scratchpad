@@ -1,8 +1,6 @@
-import { useState } from "react";
 import {
 	Sheet,
 	SheetContent,
-	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -40,10 +38,6 @@ import {
 	FilePlus,
 } from "lucide-react";
 
-import { invoke } from "@tauri-apps/api/core";
-import { toast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
-
 export default function LeftFloatingPanel({
 	open,
 	toggleLeftPanel,
@@ -55,6 +49,7 @@ export default function LeftFloatingPanel({
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
 	}
+<<<<<<< HEAD
 
 	const handleNewDocument = async () => {
 		invoke("save_document", { filename: document.filename, content: "", foldername: document.foldername })
@@ -71,6 +66,8 @@ export default function LeftFloatingPanel({
 				});
 			});
 	};
+=======
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 
 	return (
 		<Sheet open={open}>
@@ -144,24 +141,39 @@ export default function LeftFloatingPanel({
 											<Label htmlFor="name" className="text-right">
 												Name
 											</Label>
+<<<<<<< HEAD
 											<Input id="name"
 												onChange={(e) => setDocument(doc => ({
 													...doc,
 													filename: e.target.value
 												}))}
 												placeholder="File Name" className="col-span-3" />
+=======
+											<Input
+												id="name"
+												placeholder="File Name"
+												className="col-span-3"
+											/>
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 										</div>
 										<div className="grid grid-cols-4 items-center gap-4">
 											<Label htmlFor="icon" className="text-right">
 												Folder
 											</Label>
+<<<<<<< HEAD
 											<Select defaultValue={document.foldername}
 												onValueChange={(value) => setDocument(doc => ({
 													...doc,
 													foldername: value
 												}))}>
+=======
+											<Select onValueChange={(value) => console.log(value)}>
+>>>>>>> 20b8bcac45d2bdcd7972d0c859f980706a0673ab
 												<SelectTrigger className="w-[180px] font-virgil">
-													<SelectValue placeholder="select folder" />
+													<SelectValue
+														placeholder="select folder"
+														onSelect={(value) => console.log(value)}
+													/>
 												</SelectTrigger>
 												<SelectContent>
 													{Object.entries(documents).map(
@@ -180,7 +192,7 @@ export default function LeftFloatingPanel({
 										</div>
 									</div>
 									<div className="flex justify-center text-sm">
-										<Button onClick={() => handleNewDocument()} type="submit">Create File</Button>
+										<Button type="submit">Create File</Button>
 									</div>
 								</PopoverContent>
 							</Popover>
