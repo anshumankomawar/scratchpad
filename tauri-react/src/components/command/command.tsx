@@ -48,7 +48,7 @@ export default function CommandPanel({
 
 	return (
 		<CommandDialog open={open} modal={false}>
-			<Command className="dark:bg-stone-900 font-virgil">
+			<Command className="dark:bg-stone-900 ">
 				<CommandInput placeholder="Type a command or search..." />
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>

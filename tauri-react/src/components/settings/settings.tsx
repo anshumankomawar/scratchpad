@@ -18,12 +18,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { Separator } from "@radix-ui/react-separator";
 import { useFontFamily } from "@/context/font_context";
+import { useTheme } from "@/context/theme_context";
 
 const appearanceFormSchema = z.object({
 	theme: z.enum(["light", "dark"], {
 		required_error: "Please select a theme.",
 	}),
-	font: z.enum(["inter", "manrope", "system"], {
+	font: z.enum(["Virgil", "Barlow"], {
 		invalid_type_error: "Select a font",
 		required_error: "Please select a font.",
 	}),
@@ -37,21 +38,17 @@ const defaultValues: Partial<AppearanceFormValues> = {
 };
 
 export default function SettingsPage() {
-	const { fontFamily } = useFontFamily();
+	const { fontFamily, setFontFamily } = useFontFamily();
+	const { setTheme } = useTheme();
 	const form = useForm<AppearanceFormValues>({
 		resolver: zodResolver(appearanceFormSchema),
 		defaultValues,
 	});
 
 	function onSubmit(data: AppearanceFormValues) {
-		toast({
-			title: "You submitted the following values:",
-			description: (
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(data, null, 2)}</code>
-				</pre>
-			),
-		});
+		console.log(data)
+		setFontFamily(data.font)
+		setTheme(data.theme)
 	}
 
 	return (
@@ -71,7 +68,7 @@ export default function SettingsPage() {
 								<FormItem>
 									<FormLabel>Font</FormLabel>
 									<div className="relative w-max">
-										<FormControl>
+										<FormControl defaultValue={fontFamily}>
 											<select
 												className={cn(
 													buttonVariants({ variant: "outline" }),
@@ -79,9 +76,8 @@ export default function SettingsPage() {
 												)}
 												{...field}
 											>
-												<option value="inter">Inter</option>
-												<option value="manrope">Manrope</option>
-												<option value="system">System</option>
+												<option value="Virgil">Virgil</option>
+												<option value="Barlow">Barlow</option>
 											</select>
 										</FormControl>
 										<ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />

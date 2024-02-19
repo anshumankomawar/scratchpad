@@ -7,6 +7,7 @@ import "@/index.css";
 import { routeTree } from "./routeTree.gen";
 import { ThemeProvider } from "@/context/theme_context";
 import { TiptapProvider } from "@/context/tiptap_context";
+import { FontFamilyProvider } from "./context/font_context";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	await getCurrent().show();
@@ -37,13 +38,15 @@ function InnerApp() {
 function App() {
 	return (
 		<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-			<TiptapProvider>
-				<StoreProvider>
-					<QueryClientProvider client={queryClient}>
-						<InnerApp />
-					</QueryClientProvider>
-				</StoreProvider>
-			</TiptapProvider>
+			<FontFamilyProvider>
+				<TiptapProvider>
+					<StoreProvider>
+						<QueryClientProvider client={queryClient}>
+							<InnerApp />
+						</QueryClientProvider>
+					</StoreProvider>
+				</TiptapProvider>
+			</FontFamilyProvider>
 		</ThemeProvider>
 	);
 }

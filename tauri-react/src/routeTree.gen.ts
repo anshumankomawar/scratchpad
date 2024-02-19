@@ -1,6 +1,6 @@
-/* prettier-ignore-start */
-
 /* eslint-disable */
+
+/* prettier-ignore */
 
 // @ts-nocheck
 
@@ -58,5 +58,3 @@ export const routeTree = rootRoute.addChildren([
   DashboardRoute,
   SearchRoute,
 ])
-
-/* prettier-ignore-end */

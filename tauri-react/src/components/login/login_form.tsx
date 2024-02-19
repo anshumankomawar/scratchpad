@@ -8,7 +8,7 @@ export function LoginForm(props: LoginComponentProps) {
 	};
 
 	return (
-		<div className="font-virgil">
+		<div className="">
 			<div className="space-y-4 w-full items-center">
 				<Input
 					id="email"
@@ -28,7 +28,7 @@ export function LoginForm(props: LoginComponentProps) {
 				/>
 				<div className="w-full items-center justify-center flex pt-2">
 					<Button
-						className="font-virgil w-[80px] h-[24px]"
+						className=" w-[80px] h-[24px]"
 						onClick={() => handleSubmit()}
 					>
 						Login

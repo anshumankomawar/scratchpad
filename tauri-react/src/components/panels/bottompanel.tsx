@@ -23,7 +23,7 @@ export default function BottomPanel({
 		<Dialog open={openDialog}>
 			<div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full items-center px-5 py-4 bg-white dark:bg-stone-900">
 				<Popover>
-					<PopoverContent className="p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32 font-virgil text-xs text-start dark:bg-stone-900">
+					<PopoverContent className="p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32  text-xs text-start dark:bg-stone-900">
 						<Button
 							variant="ghost"
 							size="menu"
@@ -81,7 +81,7 @@ export default function BottomPanel({
 				</div>
 			</div>
 			<DialogContent
-				className="bg-white h-5/6 w-5/6 font-virgil p-8"
+				className="bg-white h-5/6 w-5/6  p-8"
 				onPointerDownOutside={() => setOpenDialog(false)}
 			>
 				<SettingsPage />
