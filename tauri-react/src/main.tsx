@@ -3,16 +3,15 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { getCurrent } from "@tauri-apps/api/window";
 import ReactDOM from "react-dom/client";
 import { StoreProvider, useStore } from "./auth";
-import "./index.css";
+import "@/index.css";
 import { routeTree } from "./routeTree.gen";
-import { ThemeProvider } from "./theme_context";
-import { TiptapProvider } from "./tiptap_context";
+import { ThemeProvider } from "@/context/theme_context";
+import { TiptapProvider } from "@/context/tiptap_context";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	await getCurrent().show();
 });
 
-//await getCurrent().listen('webview-loaded', async () => await getCurrent().show());
 const queryClient = new QueryClient();
 const router = createRouter({
 	routeTree,

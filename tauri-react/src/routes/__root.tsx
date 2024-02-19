@@ -4,7 +4,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { type StoreContext } from "../auth";
+import { type StoreContext } from "@/auth";
 import { useState } from "react";
 import LoginComponent from "@/components/login/login";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,7 +16,7 @@ import { SidebarNav } from "@/components/nav/nav";
 import RightPanel from "@/components/panels/rightpanel";
 import Header from "@/components/header/header";
 import TiptapControls from "@/components/tiptap/tiptap_controls";
-import { useTipTapEditor } from "@/tiptap_context";
+import { useTipTapEditor } from "@/context/tiptap_context";
 import LeftPanel from "@/components/panels/leftpanel";
 
 export interface MyRouterContext {
@@ -41,7 +41,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	component: () => {
 		const { token } = Route.useLoaderData<LoaderData>();
 		if (token !== null) return <ProtectedRoute2 />;
-		else return <PublicRoute />;
+		return <PublicRoute />;
 	},
 });
 

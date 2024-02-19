@@ -22,7 +22,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
-import "./tiptap.scss";
+import "@/styles/tiptap.scss";
 
 export interface TiptapContext {
 	editor: Editor | null;
