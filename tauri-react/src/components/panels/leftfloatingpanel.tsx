@@ -30,7 +30,7 @@ import {
 	ContextMenuContent,
 	ContextMenuItem,
 	ContextMenuTrigger,
-  } from "@/components/ui/context-menu"
+} from "@/components/ui/context-menu";
 
 import {
 	AlertDialog,
@@ -42,7 +42,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	AlertDialogTrigger,
-	} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -80,7 +80,7 @@ export default function LeftFloatingPanel({ editor }) {
 		<Sheet open={panel.left}>
 			<SheetContent
 				side="left"
-				className="overflow-y-auto bg-white dark:bg-stone-900 border-none drop-shadow-2xl shadow-2xl lg:w-[300px] min-w-[150px] w-[200px] pt-10"
+				className="bg-white dark:bg-background overflow-y-auto border-none drop-shadow-2xl shadow-2xl lg:w-[300px] min-w-[150px] w-[200px] pt-10"
 				onOpenAutoFocus={cancelAutoFocus}
 				onPointerDownOutside={() => panel.togglePanel(Panel.LEFT)}
 			>
@@ -229,8 +229,9 @@ export default function LeftFloatingPanel({ editor }) {
 														editor.commands.setContent(file.content);
 														// setDocument(file);
 														updateDoc(file);
-												}}>
-												{file.filename}
+													}}
+												>
+													{file.filename}
 												</li>
 											</ContextMenuTrigger>
 											<ContextMenuContent>

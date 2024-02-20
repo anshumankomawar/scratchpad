@@ -38,7 +38,7 @@ export default function CommandPanel({ editor }) {
 			modal={false}
 			onOpenChange={panel.changeCommand}
 		>
-			<Command className="dark:bg-stone-900">
+			<Command>
 				<CommandInput placeholder="Type a command or search..." />
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>

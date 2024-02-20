@@ -40,7 +40,7 @@ export default function RightFloatingPanel({ editor }) {
 		<Sheet open={panel.right} modal={false}>
 			<SheetContent
 				side="right"
-				className="overflow-y-auto mr-4 dark:bg-stone-900 bg-white border-none drop-shadow-2xl shadow-2xl h-1/2 w-min"
+				className="overflow-y-auto mr-4 border-none drop-shadow-2xl shadow-2xl h-1/2 w-min"
 				onOpenAutoFocus={cancelAutoFocus}
 			>
 				<div className="flex flex-col space-y-2">

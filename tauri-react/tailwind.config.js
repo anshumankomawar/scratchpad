@@ -20,8 +20,11 @@ module.exports = {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",
-				background: "hsl(var(--background))",
+				background: "var(--background)",
 				foreground: "hsl(var(--foreground))",
+				dark1: "#363636",
+				dark2: "#262626",
+				dark3: "#1e1e1e",
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
@@ -82,4 +85,3 @@ module.exports = {
 		require("tailwindcss/nesting"),
 	],
 };
-
