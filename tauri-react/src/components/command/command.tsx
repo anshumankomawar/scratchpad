@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/command";
 import { updateDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
+import { useTheme } from "@/context/theme_context";
 
 export default function CommandPanel({ editor }) {
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
 	const panel = usePanelStore((state) => state);
+	const { theme, setTheme } = useTheme();
 
 	async function onCommandSelect() {
 		panel.togglePanel(Panel.COMMAND);
@@ -51,6 +53,11 @@ export default function CommandPanel({ editor }) {
 					</CommandGroup>
 					<CommandSeparator />
 					<CommandGroup heading="Settings">
+						<CommandItem
+							onSelect={() => setTheme(theme === "light" ? "dark" : "light")}
+						>
+							Theme
+						</CommandItem>
 						<CommandItem>Profile</CommandItem>
 						<CommandItem>Billing</CommandItem>
 						<CommandItem>Settings</CommandItem>

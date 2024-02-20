@@ -1,10 +1,10 @@
+use cocoa::delegate;
 use hex_color::HexColor;
-use tauri::WebviewWindow;
-use tauri::{App, Manager, Runtime, Window};
 use objc::msg_send;
 use objc::sel;
 use objc::sel_impl;
-use cocoa::delegate;
+use tauri::WebviewWindow;
+use tauri::{App, Manager, Runtime, Window};
 
 // If anything breaks on macOS, this should be the place which is broken
 // We have to override Tauri (Tao) 's built-in NSWindowDelegate implementation with a
@@ -22,7 +22,7 @@ pub enum ToolbarThickness {
 }
 
 const WINDOW_CONTROL_PAD_X: f64 = 16.0;
-const WINDOW_CONTROL_PAD_Y: f64 = 22.0;
+const WINDOW_CONTROL_PAD_Y: f64 = 18.0;
 
 pub trait WindowExt {
     #[cfg(target_os = "macos")]
@@ -321,26 +321,26 @@ pub fn setup_mac_window(app: &mut App) {
             }
         }
 
-         extern fn on_dealloc(this: &Object, cmd: Sel) {
-           unsafe {
-             let super_del: id = *this.get_ivar("super_delegate");
-             let _: () = msg_send![super_del, dealloc];
-           }
-         }
+        extern "C" fn on_dealloc(this: &Object, cmd: Sel) {
+            unsafe {
+                let super_del: id = *this.get_ivar("super_delegate");
+                let _: () = msg_send![super_del, dealloc];
+            }
+        }
 
-         extern fn on_mark_is_checking_zoomed_in(this: &Object, cmd: Sel) {
-           unsafe {
-             let super_del: id = *this.get_ivar("super_delegate");
-             let _: () = msg_send![super_del, markIsCheckingZoomedIn];
-           }
-         }
+        extern "C" fn on_mark_is_checking_zoomed_in(this: &Object, cmd: Sel) {
+            unsafe {
+                let super_del: id = *this.get_ivar("super_delegate");
+                let _: () = msg_send![super_del, markIsCheckingZoomedIn];
+            }
+        }
 
-         extern fn on_clear_is_checking_zoomed_in(this: &Object, cmd: Sel) {
-           unsafe {
-             let super_del: id = *this.get_ivar("super_delegate");
-             let _: () = msg_send![super_del, clearIsCheckingZoomedIn];
-           }
-         }
+        extern "C" fn on_clear_is_checking_zoomed_in(this: &Object, cmd: Sel) {
+            unsafe {
+                let super_del: id = *this.get_ivar("super_delegate");
+                let _: () = msg_send![super_del, clearIsCheckingZoomedIn];
+            }
+        }
 
         // Are we deallocing this properly ? (I miss safe Rust :(  )
         let app_state = HoppAppState { window };
@@ -383,13 +383,13 @@ pub fn setup_mac_window(app: &mut App) {
     update_window_theme(&window_handle, HexColor::WHITE);
 
     // Control window theme based on app update_window
-    app.get_webview_window("main").unwrap().listen("hopp-bg-changed", move |ev| {
-        let payload = serde_json::from_str::<&str>(ev.payload())
-            .unwrap()
-            .trim();
+    app.get_webview_window("main")
+        .unwrap()
+        .listen("hopp-bg-changed", move |ev| {
+            let payload = serde_json::from_str::<&str>(ev.payload()).unwrap().trim();
 
-        let color = HexColor::parse_rgb(payload).unwrap();
+            let color = HexColor::parse_rgb(payload).unwrap();
 
-        update_window_theme(&window_handle, color);
-    });
+            update_window_theme(&window_handle, color);
+        });
 }

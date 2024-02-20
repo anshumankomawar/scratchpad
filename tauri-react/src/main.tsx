@@ -56,7 +56,7 @@ const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
-		<div className="h-screen w-full overflow-x-hidden">
+		<div className="h-screen w-full overflow-none">
 			<App />
 		</div>,
 	);

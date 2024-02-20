@@ -77,7 +77,7 @@ export default function LeftFloatingPanel({ editor }) {
 	};
 
 	return (
-		<Sheet open={panel.left}>
+		<Sheet>
 			<SheetContent
 				side="left"
 				className="bg-white dark:bg-background overflow-y-auto border-none drop-shadow-2xl shadow-2xl lg:w-[300px] min-w-[150px] w-[200px] pt-10"

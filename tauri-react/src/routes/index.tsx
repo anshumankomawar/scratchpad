@@ -13,7 +13,8 @@ import BottomPanel from "@/components/panels/bottompanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 import CollatePanel from "@/components/collate/collate";
-
+import LeftPanel from "@/components/panels/leftpanel";
+import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
 });
@@ -62,22 +63,29 @@ function HomeComponent() {
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
-				<LeftFloatingPanel editor={tiptap.editor} />
 				<RightFloatingPanel editor={tiptap.editor} />
 				<CommandPanel editor={tiptap.editor} />
-				<EditorContent
-					className="lg:mx-[250px] mx-[100px] overflow-x-hidden pt-4 no-scrollbar"
-					editor={tiptap.editor}
-				/>
-				<BottomPanel
-					theme={theme}
-					setTheme={setTheme}
-					editor={tiptap.editor}
-					handleLogout={handleLogout}
-					filename={doc.filename}
-				/>
+				<div className="absolute bg-background h-full left-0 top-0 w-[200px]">
+					<LeftPanel editor={tiptap.editor} />
+				</div>
+				<div className="flex flex-col">
+					<EditorContent
+						className={cn(
+							"pt-24 absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background h-full overflow-x-hidden no-scrollbar pb-24",
+							panel.left ? "left-[200px]" : "left-0",
+						)}
+						editor={tiptap.editor}
+					/>
+					<BottomPanel
+						theme={theme}
+						setTheme={setTheme}
+						editor={tiptap.editor}
+						handleLogout={handleLogout}
+						filename={doc.filename}
+					/>
+				</div>
 			</div>
-			<DialogContent className="bg-white h-3/4 w-3/4">
+			<DialogContent className="bg-white dark:bg-background h-3/4 w-3/4">
 				<CollatePanel />
 			</DialogContent>
 		</Dialog>

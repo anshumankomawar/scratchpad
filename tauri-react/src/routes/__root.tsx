@@ -1,16 +1,26 @@
+import { type StoreContext } from "@/auth";
+import LoginComponent from "@/components/login/login";
+import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import {
 	Outlet,
 	createRootRouteWithContext,
 	useRouter,
 } from "@tanstack/react-router";
-import { QueryClient, useMutation } from "@tanstack/react-query";
-import { type StoreContext } from "@/auth";
-import { useState } from "react";
-import LoginComponent from "@/components/login/login";
-import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { invoke } from "@tauri-apps/api/core";
+import {
+	ChevronsLeft,
+	Menu,
+	PanelLeft,
+	PanelLeftOpen,
+	PanelRightOpen,
+} from "lucide-react";
+import { useState } from "react";
+import { Panel, usePanelStore } from "@/app_state";
+import { cn } from "@/lib/utils";
 
 export interface MyRouterContext {
 	auth: StoreContext;
@@ -33,7 +43,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	},
 	component: () => {
 		const { token } = Route.useLoaderData<LoaderData>();
-		if (token !== null) return <ProtectedRoute2 />;
+		if (token !== null) return <ProtectedRoute />;
 		return <PublicRoute />;
 	},
 });
@@ -86,14 +96,35 @@ function PublicRoute() {
 	);
 }
 
-function ProtectedRoute2() {
+function ProtectedRoute() {
+	const panel = usePanelStore((state) => state);
+
 	return (
-		<div className="h-full w-full">
-			<div
-				className="fixed w-full z-1000 bg-transparent top-0 h-12"
-				data-tauri-drag-region
-			></div>
-			<div className="pt-6 h-full w-full">
+		<div className="relative z-0 h-full w-full">
+			<div className="z-50 fixed w-full top-0 h-10">
+				<div
+					className={cn(
+						"transition-all h-full flex flex-row items-center",
+						panel.left ? "pl-40" : "pl-20",
+					)}
+					data-tauri-drag-region
+				>
+					<Button
+						variant="ghost"
+						size="menu"
+						className="hover:cursor-pointer"
+						onClick={() => panel.togglePanel(Panel.LEFT)}
+						asChild
+					>
+						{panel.left ? (
+							<ChevronsLeft className="stroke-dull_black dark:stroke-dark2 dark:stroke-dull_white" />
+						) : (
+							<Menu className="stroke-dull_black dark:stroke-dull_white" />
+						)}
+					</Button>
+				</div>
+			</div>
+			<div className="-z-10 top-0 left-0 h-full w-full">
 				<Outlet />
 			</div>
 		</div>

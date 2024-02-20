@@ -33,13 +33,7 @@ const TiptapContext = React.createContext<TiptapContext | null>(null);
 declare module "@tiptap/core" {
 	interface Commands<ReturnType> {
 		fontSize: {
-			/**
-			 * Set the font size
-			 */
 			setFontSize: (size: string) => ReturnType;
-			/**
-			 * Unset the font size
-			 */
 			unsetFontSize: () => ReturnType;
 		};
 	}
@@ -148,7 +142,8 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		content,
 		editorProps: {
 			attributes: {
-				class: "h-full overflow-none outline-none rounded-md mt-24 mb-24 ",
+				class:
+					"h-full overflow-none outline-none rounded-md lg:mx-80 md:mx-48 sm:mx-12 mx-24",
 			},
 		},
 		autofocus: "end",

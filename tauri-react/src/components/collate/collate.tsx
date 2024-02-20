@@ -27,7 +27,7 @@ export default function CollatePanel() {
 	}
 
 	return (
-		<div className=" bg-white w-full h-full overflow-hidden ">
+		<div className="w-full h-full overflow-hidden ">
 			<div className="flex flex-col h-full w-full">
 				<div className="flex w-full items-center pb-4">
 					<Input

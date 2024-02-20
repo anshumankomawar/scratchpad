@@ -22,13 +22,13 @@ export default function BottomPanel({
 
 	return (
 		<Dialog open={openDialog}>
-			<div className="z-100 bottom-0 left-0 fixed h-min flex flex-row w-full justify-between items-center px-5 py-4">
+			<div className="fixed z-50 left-0 bottom-0 h-min w-full justify-between items-center px-5 py-4">
 				<Popover>
-					<PopoverContent className="w-12 p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32  text-xs text-start">
+					<PopoverContent className="w-full p-1 ml-2 mb-2 flex flex-col overflow-y-scroll space-y-1 w-32  text-xs text-start">
 						<Button
 							variant="ghost"
 							size="menu"
-							className="text-xs justify-start p-2"
+							className="w-full text-xs justify-start p-2"
 							onClick={() => panel.togglePanel(Panel.LEFT)}
 						>
 							Files
@@ -36,7 +36,7 @@ export default function BottomPanel({
 						<Button
 							variant="ghost"
 							size="menu"
-							className="text-xs justify-start p-2"
+							className="w-full text-xs justify-start p-2"
 							onClick={() => setOpenDialog(true)}
 						>
 							Settings
@@ -44,7 +44,7 @@ export default function BottomPanel({
 						<Button
 							variant="ghost"
 							size="menu"
-							className="text-xs justify-start p-2"
+							className="w-full text-xs justify-start p-2"
 							onClick={handleLogout}
 						>
 							Logout
@@ -52,7 +52,7 @@ export default function BottomPanel({
 						<Button
 							variant="ghost"
 							size="menu"
-							className="text-xs justify-between p-2"
+							className="w-full text-xs justify-between p-2"
 							onClick={() => {
 								setTheme(theme === "light" ? "dark" : "light");
 							}}
@@ -61,18 +61,17 @@ export default function BottomPanel({
 							{theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
 						</Button>
 					</PopoverContent>
-					<PopoverTrigger className="text-start text-xs hover:cursor-pointer">
+					<PopoverTrigger className="absolute left-4 bottom-4 text-start text-xs hover:cursor-pointer">
 						Settings
 					</PopoverTrigger>
 				</Popover>
-				<div className="text-xs">{filename}</div>
-				<div className="text-end text-xs w-12 text-nowrap">
+				<div className="absolute right-4 bottom-4 text-end text-xs text-nowrap">
 					{editor.storage.characterCount.words()} |{" "}
 					{editor.storage.characterCount.characters()}
 				</div>
 			</div>
 			<DialogContent
-				className="bg-white h-5/6 w-5/6  p-8"
+				className="bg-white dark:bg-background h-5/6 w-5/6  p-8"
 				onPointerDownOutside={() => setOpenDialog(false)}
 			>
 				<SettingsPage />
