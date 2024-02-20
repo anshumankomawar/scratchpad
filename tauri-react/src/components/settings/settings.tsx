@@ -2,6 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -15,7 +22,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { toast } from "@/components/ui/use-toast";
 import { Separator } from "@radix-ui/react-separator";
 import { useFontFamily } from "@/context/font_context";
 import { useTheme } from "@/context/theme_context";
@@ -33,13 +39,16 @@ const appearanceFormSchema = z.object({
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
 // This can come from your database or API.
-const defaultValues: Partial<AppearanceFormValues> = {
-	theme: "light",
-};
 
 export default function SettingsPage() {
 	const { fontFamily, setFontFamily } = useFontFamily();
 	const { setTheme } = useTheme();
+
+	const defaultValues: Partial<AppearanceFormValues> = {
+		theme: "light",
+		font: fontFamily,
+	};
+
 	const form = useForm<AppearanceFormValues>({
 		resolver: zodResolver(appearanceFormSchema),
 		defaultValues,
@@ -69,16 +78,18 @@ export default function SettingsPage() {
 									<FormLabel>Font</FormLabel>
 									<div className="relative w-max">
 										<FormControl defaultValue={fontFamily}>
-											<select
-												className={cn(
-													buttonVariants({ variant: "outline" }),
-													"w-[200px] appearance-none font-normal",
-												)}
-												{...field}
+											<Select
+												defaultValue={fontFamily}
+												onValueChange={field.onChange}
 											>
-												<option value="Virgil">Virgil</option>
-												<option value="Barlow">Barlow</option>
-											</select>
+												<SelectTrigger className="w-[180px]" {...field}>
+													<SelectValue placeholder="Theme" />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="Virgil">Virgil</SelectItem>
+													<SelectItem value="Barlow">Barlow</SelectItem>
+												</SelectContent>
+											</Select>
 										</FormControl>
 										<ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />
 									</div>
@@ -160,7 +171,6 @@ export default function SettingsPage() {
 								</FormItem>
 							)}
 						/>
-
 						<Button type="submit">Update preferences</Button>
 					</form>
 				</Form>
