@@ -49,7 +49,7 @@ export default function Header() {
 			<Button
 				variant="ghost"
 				className={cn(
-					"w-min px-2 py-2 text-dull_black dark:text-dull_white text-sm",
+					"w-min p-2 border-none text-dull_black dark:text-dull_white text-sm",
 					panel.left ? "ml-4" : "",
 				)}
 				size="menu"
@@ -57,6 +57,13 @@ export default function Header() {
 				{doc.doc.filename}
 			</Button>
 			<div className="flex-grow" />
+			<Button
+				variant="ghost"
+				className="w-min p-2 border-none text-dull_black dark:text-dull_white text-sm"
+				size="menu"
+			>
+				Share
+			</Button>
 			<Popover>
 				<PopoverContent className="w-48 p-1 mr-2 flex flex-col overflow-y-scroll space-y-1 w-32 text-xs text-start">
 					<Button
