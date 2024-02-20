@@ -32,18 +32,6 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -56,7 +44,7 @@ import {
 	StickyNote,
 	FilePlus,
 } from "lucide-react";
-import { currDocument, saveDocument, useDocuments } from "@/fetch/documents";
+import { saveDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
 export default function LeftFloatingPanel({ editor }) {

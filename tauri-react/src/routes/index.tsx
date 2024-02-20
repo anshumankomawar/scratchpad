@@ -1,31 +1,25 @@
-import { useTipTapEditor } from "@/context/tiptap_context";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { EditorContent } from "@tiptap/react";
-import { useStore } from "@/auth";
-import LeftFloatingPanel from "@/components/panels/leftfloatingpanel";
-import { useEffect } from "react";
-import CommandPanel from "@/components/command/command";
-import "@/tiptap.scss";
-import "@/index.css";
-import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
-import { useTheme } from "@/context/theme_context";
-import BottomPanel from "@/components/panels/bottompanel";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Panel, useDocStore, usePanelStore } from "@/app_state";
+import { Panel, usePanelStore } from "@/app_state";
 import CollatePanel from "@/components/collate/collate";
+import CommandPanel from "@/components/command/command";
+import BottomPanel from "@/components/panels/bottompanel";
 import LeftPanel from "@/components/panels/leftpanel";
+import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useTipTapEditor } from "@/context/tiptap_context";
+import "@/index.css";
 import { cn } from "@/lib/utils";
+import "@/tiptap.scss";
+import { createFileRoute } from "@tanstack/react-router";
+import { EditorContent } from "@tiptap/react";
+import { useEffect } from "react";
+
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
 });
 
 function HomeComponent() {
 	const tiptap = useTipTapEditor();
-	const store = useStore();
-	const navigate = useNavigate({ from: "/" });
-	const { theme, setTheme } = useTheme();
 	const panel = usePanelStore((state) => state);
-	const doc = useDocStore((state) => state.doc);
 
 	useEffect(() => {
 		function handleKeyUp(event) {
@@ -51,11 +45,6 @@ function HomeComponent() {
 		return () => document.removeEventListener("keyup", handleKeyUp);
 	}, []);
 
-	const handleLogout = async () => {
-		await store.store.delete("token");
-		navigate({ to: "/" });
-	};
-
 	if (!tiptap.editor) {
 		return <div>Loading...</div>;
 	}
@@ -71,22 +60,16 @@ function HomeComponent() {
 				<div className="flex flex-col">
 					<EditorContent
 						className={cn(
-							"pt-24 absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background h-full overflow-x-hidden no-scrollbar pb-24",
+							"pt-40 absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background h-full overflow-x-hidden no-scrollbar pb-24",
 							panel.left ? "left-[200px]" : "left-0",
 						)}
 						editor={tiptap.editor}
 					/>
-					<BottomPanel
-						theme={theme}
-						setTheme={setTheme}
-						editor={tiptap.editor}
-						handleLogout={handleLogout}
-						filename={doc.filename}
-					/>
+					<BottomPanel editor={tiptap.editor} />
 				</div>
 			</div>
 			<DialogContent className="bg-white dark:bg-background h-3/4 w-3/4">
-				<CollatePanel />
+				{panel.centerContent}
 			</DialogContent>
 		</Dialog>
 	);

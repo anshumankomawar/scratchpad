@@ -11,6 +11,8 @@ import {
 import { updateDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 import { useTheme } from "@/context/theme_context";
+import CollatePanel from "../collate/collate";
+import SettingsPage from "../settings/settings";
 
 export default function CommandPanel({ editor }) {
 	const documents = useDocuments();
@@ -18,7 +20,14 @@ export default function CommandPanel({ editor }) {
 	const panel = usePanelStore((state) => state);
 	const { theme, setTheme } = useTheme();
 
-	async function onCommandSelect() {
+	async function onCommandCollate() {
+		panel.setCenterContent(<CollatePanel />);
+		panel.togglePanel(Panel.COMMAND);
+		panel.setPanel(Panel.CENTER, true);
+	}
+
+	async function onCommandSettings() {
+		panel.setCenterContent(<SettingsPage />);
 		panel.togglePanel(Panel.COMMAND);
 		panel.setPanel(Panel.CENTER, true);
 	}
@@ -45,7 +54,7 @@ export default function CommandPanel({ editor }) {
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="Suggestions">
-						<CommandItem onSelect={() => onCommandSelect()}>
+						<CommandItem onSelect={() => onCommandCollate()}>
 							Collate
 						</CommandItem>
 						<CommandItem onSelect={() => onCommandSave()}>Save</CommandItem>
@@ -60,7 +69,9 @@ export default function CommandPanel({ editor }) {
 						</CommandItem>
 						<CommandItem>Profile</CommandItem>
 						<CommandItem>Billing</CommandItem>
-						<CommandItem>Settings</CommandItem>
+						<CommandItem onSelect={() => onCommandSettings()}>
+							Settings
+						</CommandItem>
 					</CommandGroup>
 				</CommandList>
 			</Command>

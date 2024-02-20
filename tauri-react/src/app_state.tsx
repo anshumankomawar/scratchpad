@@ -14,10 +14,12 @@ interface PanelState {
 	command: boolean;
 	right: boolean;
 	center: boolean;
+	centerContent: React.ReactNode;
 	togglePanel: (panel: Panel) => void;
 	setPanel: (panel: Panel, isOpen: boolean) => void;
 	changeCommand: (open: boolean) => void;
 	changeCenter: (open: boolean) => void;
+	setCenterContent: (content: React.ReactNode) => void;
 }
 
 export enum Panel {
@@ -32,6 +34,7 @@ export const usePanelStore = create<PanelState>((set) => ({
 	command: false,
 	right: false,
 	center: false,
+	centerContent: null,
 	togglePanel: (panel: Panel) =>
 		set((state) => {
 			switch (panel) {
@@ -60,4 +63,6 @@ export const usePanelStore = create<PanelState>((set) => ({
 		}),
 	changeCommand: (open: boolean) => set(() => ({ command: open })),
 	changeCenter: (open: boolean) => set(() => ({ center: open })),
+	setCenterContent: (content: React.ReactNode) =>
+		set(() => ({ centerContent: content })),
 }));

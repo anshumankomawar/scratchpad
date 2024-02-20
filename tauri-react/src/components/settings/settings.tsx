@@ -10,7 +10,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
-import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
 	Form,
@@ -76,23 +75,21 @@ export default function SettingsPage() {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Font</FormLabel>
-									<div className="relative w-max">
-										<FormControl defaultValue={fontFamily}>
-											<Select
-												defaultValue={fontFamily}
-												onValueChange={field.onChange}
-											>
-												<SelectTrigger className="w-[180px]" {...field}>
-													<SelectValue placeholder="Theme" />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="Virgil">Virgil</SelectItem>
-													<SelectItem value="Barlow">Barlow</SelectItem>
-												</SelectContent>
-											</Select>
-										</FormControl>
-										<ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />
-									</div>
+									<FormControl defaultValue={fontFamily}>
+										<Select
+											defaultValue={fontFamily}
+											onValueChange={field.onChange}
+										>
+											<SelectTrigger className="w-[180px]" {...field}>
+												<SelectValue placeholder="Theme" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="Virgil">Virgil</SelectItem>
+												<SelectItem value="Barlow">Barlow</SelectItem>
+											</SelectContent>
+										</Select>
+									</FormControl>
+									<ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />
 									<FormDescription>
 										Set the font you want to use in the dashboard.
 									</FormDescription>
