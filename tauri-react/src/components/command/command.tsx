@@ -17,6 +17,7 @@ import SettingsPage from "../settings/settings";
 export default function CommandPanel({ editor }) {
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
+	const updateDoc = useDocStore((state) => state.updateDoc);
 	const panel = usePanelStore((state) => state);
 	const { theme, setTheme } = useTheme();
 
@@ -34,12 +35,13 @@ export default function CommandPanel({ editor }) {
 
 	async function onCommandSave() {
 		panel.togglePanel(Panel.COMMAND);
-		await updateDocument(
+		const doc_id = await updateDocument(
 			doc.filename,
 			doc.foldername,
 			editor.getHTML(),
 			doc.id,
 		);
+		updateDoc({ ...doc, id: doc_id });
 		await documents.refetch();
 	}
 

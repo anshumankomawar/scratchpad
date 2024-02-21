@@ -23,9 +23,8 @@ export const saveDocument = async (filename, foldername) => {
 		content: "",
 		foldername: foldername,
 	})
-		.then(() => {
-			console.log("worked");
-			return true;
+		.then((doc_id) => {
+			return doc_id;
 		})
 		.catch((error) => {
 			console.log(error);
@@ -40,7 +39,7 @@ export const updateDocument = async (filename, foldername, content, id) => {
 		currId: id,
 	})
 		.then((doc_id) => {
-			console.log(doc_id);
+			return doc_id;
 		})
 		.catch((error) => {
 			console.log(error);
@@ -56,4 +55,3 @@ export const currDocument = () =>
 			id: "",
 		},
 	});
-
