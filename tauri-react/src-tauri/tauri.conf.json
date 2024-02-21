@@ -62,6 +62,6 @@
   "plugins": {
     "updater": {}
   },
-  "productName": "tauri",
+  "productName": "scratchpad",
   "version": "0.1.0"
 }
