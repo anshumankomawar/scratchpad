@@ -12,6 +12,7 @@ router = APIRouter(tags=["folders"], dependencies=[Depends(get_db)])
 
 class FolderMetadata(BaseModel):
     name:str
+    icon:str
 
 #adds folder to folders table
 @router.post("/folders")
@@ -20,7 +21,8 @@ def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[Use
         email = current_user["email"]
         folder_to_insert = {
             "name": folder.name,
-            "email":email
+            "email":email, 
+            "icon":folder.icon
         }
         response = db["client"].from_("folders").insert(folder_to_insert).execute()
         new_folder_id = response.data[0]['id']
