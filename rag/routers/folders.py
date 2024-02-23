@@ -1,0 +1,31 @@
+import os
+import json
+from fastapi import APIRouter, Depends
+from typing import Annotated
+import string
+from auth.oauth import get_current_user
+from dependencies import get_db
+from models.user import User
+from pydantic import BaseModel
+
+router = APIRouter(tags=["folders"], dependencies=[Depends(get_db)])
+
+class FolderMetadata(BaseModel):
+    name:str
+
+#adds folder to folders table
+@router.post("/folders")
+def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata):
+    try:
+        email = current_user["email"]
+        folder_to_insert = {
+            "name": folder.name,
+            "email":email
+        }
+        response = db["client"].from_("folders").insert(folder_to_insert).execute()
+        new_folder_id = response.data[0]['id']
+        return {"folder_id": str(new_folder_id)}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "Error adding folder"}
+

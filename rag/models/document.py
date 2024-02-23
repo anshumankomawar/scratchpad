@@ -6,3 +6,4 @@ class Document(BaseModel):
     content:str
     filename:str
     generated:bool
+    folder_id:str
