@@ -16,11 +16,9 @@ class FolderMetadata(BaseModel):
 
 #adds folder to folders table
 @router.post("/folders")
-def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata, location:str):
+def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata, parent_id:str):
     try:
         email = current_user["email"]
-        parent_id = (db["client"].from_("folders").select("id").eq("email", email).eq("name", location).execute()).data[0]['id']
-        print("PARENT ID", parent_id)
         if parent_id:
             existing_folder = db["client"].from_('folders').select("id").eq("email", email).eq("parent_id", parent_id).eq("name", folder.name).execute()
             print("existing FOLDER", existing_folder)
