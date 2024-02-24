@@ -69,4 +69,12 @@ def login(response: Response, userdetails: OAuth2PasswordRequestForm = Depends()
 @app.post("/register")
 async def register(user: User, db: Annotated[dict, Depends(get_db)]):
     db["client"].from_("users").insert([user.dict()]).execute()
+    email = user.dict()['email']
+    folder_to_insert = {
+            "name": "root",
+            "email":email,
+        }
+    response = db["client"].from_("folders").insert(folder_to_insert).execute()
+    new_folder_id = response.data[0]['id']
+    db["client"].from_("folders").update({'parent_id':new_folder_id}).eq("email", email).eq("id", new_folder_id).execute()
     return {"message": "registered"}
