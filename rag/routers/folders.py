@@ -16,17 +16,28 @@ class FolderMetadata(BaseModel):
 
 #adds folder to folders table
 @router.post("/folders")
-def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata):
+def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata, location:str):
     try:
         email = current_user["email"]
-        folder_to_insert = {
-            "name": folder.name,
-            "email":email, 
-            "icon":folder.icon
-        }
-        response = db["client"].from_("folders").insert(folder_to_insert).execute()
-        new_folder_id = response.data[0]['id']
-        return {"folder_id": str(new_folder_id)}
+        parent_id = (db["client"].from_("folders").select("id").eq("email", email).eq("name", location).execute()).data[0]['id']
+        print("PARENT ID", parent_id)
+        if parent_id:
+            existing_folder = db["client"].from_('folders').select("id").eq("email", email).eq("parent_id", parent_id).eq("name", folder.name).execute()
+            print("existing FOLDER", existing_folder)
+            if existing_folder.data!=[]:
+                return {"message": "Folder with same name and location already exists"}
+            else:
+                folder_to_insert = {
+                    "name": folder.name,
+                    "email":email, 
+                    "icon":folder.icon,
+                    "parent_id":parent_id
+                }
+                response = db["client"].from_("folders").insert(folder_to_insert).execute()
+                new_folder_id = response.data[0]['id']
+                return {"folder_id": str(new_folder_id)}
+        else:
+            return {"message": "Folder does not exist"}
     except Exception as e:
         print("Error", e)
         return {"message": "Error adding folder"}
