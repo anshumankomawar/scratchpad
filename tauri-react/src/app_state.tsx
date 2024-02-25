@@ -14,7 +14,7 @@ export const useDocStore = create((set) => ({
 			if (!exists) {
 				return { tabs: [...state.tabs, newTab] };
 			}
-			return { tabs: state.tabs };
+			return { tabs: [...state.tabs] };
 		}),
 	swapTabs: (tab1, tab2) =>
 		set((state) => {
@@ -26,6 +26,10 @@ export const useDocStore = create((set) => ({
 			];
 			return { tabs: [...state.tabs] };
 		}),
+	deleteTab: (toDelete) =>
+		set((state) => ({
+			tabs: state.tabs.filter((tab) => tab.id !== toDelete.id),
+		})),
 }));
 
 export const useDndStore = create((set) => ({

@@ -18,6 +18,7 @@ import {
 	horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableItem from "@/components/dnd/sortableitem";
+import { X } from "lucide-react";
 
 export default function Header() {
 	const panel = usePanelStore((state) => state);
@@ -30,12 +31,19 @@ export default function Header() {
 	const tiptap = useTipTapEditor();
 	const parent = useDndStore((state) => state.parent);
 	const updateParent = useDndStore((state) => state.updateParent);
-
-	const containers = ["A", "B", "C"];
+	const deleteTab = useDocStore((state) => state.deleteTab);
 
 	const handleLogout = async () => {
 		await store.store.delete("token");
 		navigate({ to: "/" });
+	};
+
+	const handleDeleteTab = (tab) => {
+		deleteTab(tab);
+		console.log(doc);
+		updateDoc(useDocStore.getState().tabs[0]);
+		console.log(doc);
+		tiptap.editor.commands.setContent(useDocStore.getState().doc.content);
 	};
 
 	if (!tiptap.editor) {
@@ -65,18 +73,32 @@ export default function Header() {
 			</Button>
 			<div
 				className={cn(
-					"flex-grow flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1 ml-1",
+					"flex-grow flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1.5 ml-1",
 					panel.left ? "ml-4" : "",
 				)}
 			>
 				<SortableContext items={tabs} strategy={horizontalListSortingStrategy}>
 					{tabs.map((tab) => (
-						<SortableItem
-							key={tab.doc_id}
-							id={tab.filename}
-							tab={tab}
-							removable
-						/>
+						<div
+							className={cn(
+								"text-xs py-1 px-1.5 hover:bg-accent hover:text-accent-foreground rounded-md flex items-center",
+								doc.id === tab.id ? "bg-accent" : "",
+							)}
+						>
+							<SortableItem
+								key={tab.id}
+								id={tab.filename}
+								tab={tab}
+								removable
+							/>
+							<X
+								size={10}
+                className="hover:stroke-red-400 "
+								onClick={() => {
+									handleDeleteTab(tab);
+								}}
+							/>
+						</div>
 					))}
 				</SortableContext>
 			</div>

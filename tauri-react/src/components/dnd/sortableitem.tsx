@@ -17,14 +17,7 @@ export default function SortableItem(props) {
 
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-			<div
-				className={cn(
-					"text-xs align-center hover:bg-accent hover:text-accent-foreground rounded-md p-1.5",
-					docStore.doc.filename == props.id ? "bg-accent" : "",
-				)}
-			>
-				{props.id}
-			</div>
+			<span className="inline-block align-top mr-1 h-5">{props.id}</span>
 		</div>
 	);
 }
