@@ -1,5 +1,5 @@
 import { ChevronsLeft, Menu, MoreHorizontal } from "lucide-react";
-import { Panel, useDocStore, usePanelStore } from "@/app_state";
+import { Panel, useDndStore, useDocStore, usePanelStore } from "@/app_state";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +12,39 @@ import { useTheme } from "@/context/theme_context";
 import { useStore } from "@/auth";
 import { useNavigate } from "@tanstack/react-router";
 import SettingsPage from "../settings/settings";
+import { useTipTapEditor } from "@/context/tiptap_context";
+import { Draggable } from "@/components/dnd/draggable";
+import {
+	SortableContext, horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import SortableItem from "@/components/dnd/sortableitem";
 
-export default function Header() {
+export default function Header({ items }) {
 	const panel = usePanelStore((state) => state);
 	const { theme, setTheme } = useTheme();
-	const doc = useDocStore((state) => state);
+	const doc = useDocStore((state) => state.doc);
+	const updateDoc = useDocStore((state) => state.updateDoc);
+	const tabs = useDocStore((state) => state.tabs);
 	const store = useStore();
 	const navigate = useNavigate({ from: "/" });
+	const tiptap = useTipTapEditor();
+	const parent = useDndStore((state) => state.parent);
+	const updateParent = useDndStore((state) => state.updateParent);
+
+	const containers = ['A', 'B', 'C'];
+	const draggableMarkup = (
+		<Draggable id="draggable">Drag me</Draggable>
+	)
+
 
 	const handleLogout = async () => {
 		await store.store.delete("token");
 		navigate({ to: "/" });
 	};
+
+	if (!tiptap.editor) {
+		return <div>Loading...</div>;
+	}
 
 	return (
 		<div
@@ -46,7 +67,28 @@ export default function Header() {
 					<Menu className="stroke-dull_black dark:stroke-dull_white" />
 				)}
 			</Button>
-			<Button
+			{Object.entries(tabs).map(
+				([tab, metadata], index) => (
+					<Button
+						className=""
+						value={tab}
+						key={index}
+						onClick={() => {
+							updateDoc(metadata)
+							tiptap.editor.commands.setContent(metadata.content)
+						}}
+					>
+						{tab}
+					</Button>
+				),
+			)}
+			{/* <SortableContext 
+        items={tabs}
+        strategy={horizontalListSortingStrategy}
+      >
+        {items.map(id => <SortableItem key={id} id={id} />)}
+      </SortableContext> */}
+			{/* <Button
 				variant="ghost"
 				className={cn(
 					"w-min p-2 border-none text-dull_black dark:text-dull_white text-sm",
@@ -54,8 +96,8 @@ export default function Header() {
 				)}
 				size="menu"
 			>
-				{doc.doc.filename}
-			</Button>
+				{doc.filename}
+			</Button> */}
 			<div className="flex-grow" />
 			<Button
 				variant="ghost"

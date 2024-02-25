@@ -7,6 +7,13 @@ export const useDocStore = create((set) => ({
 		id: "",
 	},
 	updateDoc: (newDoc) => set((state) => ({ doc: newDoc })),
+	tabs: {},
+	updateTabs: (newTab) => set((state) => ({ tabs: {...state.tabs, [newTab.filename]: newTab } })),
+}));
+
+export const useDndStore = create((set) => ({
+	parent: "",
+	updateParent:  (newParent) => set((state) => ({ parent: newParent }))
 }));
 
 interface PanelState {

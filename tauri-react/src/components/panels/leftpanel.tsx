@@ -51,6 +51,7 @@ export default function LeftPanel({ editor }) {
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
 	const updateDoc = useDocStore((state) => state.updateDoc);
+	const updateTabs = useDocStore((state) => state.updateTabs);
 	const panel = usePanelStore((state) => state);
 
 	async function cancelAutoFocus(event) {
@@ -133,12 +134,12 @@ export default function LeftPanel({ editor }) {
 										</Label>
 										<Input
 											id="name"
-											onChange={(e) =>
+											onChange={(e) => {
 												updateDoc({
 													...doc,
 													filename: e.target.value,
 												})
-											}
+											}}
 											placeholder="File Name"
 											className="col-span-3"
 										/>
@@ -210,8 +211,8 @@ export default function LeftPanel({ editor }) {
 												key={index2}
 												onClick={() => {
 													editor.commands.setContent(file.content);
-													// setDocument(file);
 													updateDoc(file);
+													updateTabs(file);
 												}}
 											>
 												{file.filename}
