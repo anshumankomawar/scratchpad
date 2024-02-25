@@ -45,13 +45,3 @@ export const updateDocument = async (filename, foldername, content, id) => {
 			console.log(error);
 		});
 };
-
-export const currDocument = () =>
-	useQuery({
-		queryKey: ["doc"],
-		initialData: {
-			filename: "",
-			foldername: "unfiled",
-			id: "",
-		},
-	});

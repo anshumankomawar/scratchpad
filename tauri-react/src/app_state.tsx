@@ -7,13 +7,30 @@ export const useDocStore = create((set) => ({
 		id: "",
 	},
 	updateDoc: (newDoc) => set((state) => ({ doc: newDoc })),
-	tabs: {},
-	updateTabs: (newTab) => set((state) => ({ tabs: {...state.tabs, [newTab.filename]: newTab } })),
+	tabs: [],
+	updateTabs: (newTab) =>
+		set((state) => {
+			const exists = state.tabs.some((tab) => tab.filename === newTab.filename);
+			if (!exists) {
+				return { tabs: [...state.tabs, newTab] };
+			}
+			return { tabs: state.tabs };
+		}),
+	swapTabs: (tab1, tab2) =>
+		set((state) => {
+			const index1 = state.tabs.findIndex((tab) => tab.filename === tab1.id);
+			const index2 = state.tabs.findIndex((tab) => tab.filename === tab2.id);
+			[state.tabs[index1], state.tabs[index2]] = [
+				state.tabs[index2],
+				state.tabs[index1],
+			];
+			return { tabs: [...state.tabs] };
+		}),
 }));
 
 export const useDndStore = create((set) => ({
 	parent: "",
-	updateParent:  (newParent) => set((state) => ({ parent: newParent }))
+	updateParent: (newParent) => set((state) => ({ parent: newParent })),
 }));
 
 interface PanelState {

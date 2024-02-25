@@ -13,13 +13,13 @@ import { useStore } from "@/auth";
 import { useNavigate } from "@tanstack/react-router";
 import SettingsPage from "../settings/settings";
 import { useTipTapEditor } from "@/context/tiptap_context";
-import { Draggable } from "@/components/dnd/draggable";
 import {
-	SortableContext, horizontalListSortingStrategy,
-} from '@dnd-kit/sortable';
+	SortableContext,
+	horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import SortableItem from "@/components/dnd/sortableitem";
 
-export default function Header({ items }) {
+export default function Header() {
 	const panel = usePanelStore((state) => state);
 	const { theme, setTheme } = useTheme();
 	const doc = useDocStore((state) => state.doc);
@@ -31,11 +31,7 @@ export default function Header({ items }) {
 	const parent = useDndStore((state) => state.parent);
 	const updateParent = useDndStore((state) => state.updateParent);
 
-	const containers = ['A', 'B', 'C'];
-	const draggableMarkup = (
-		<Draggable id="draggable">Drag me</Draggable>
-	)
-
+	const containers = ["A", "B", "C"];
 
 	const handleLogout = async () => {
 		await store.store.delete("token");
@@ -43,7 +39,7 @@ export default function Header({ items }) {
 	};
 
 	if (!tiptap.editor) {
-		return <div>Loading...</div>;
+		return <div></div>;
 	}
 
 	return (
@@ -67,37 +63,23 @@ export default function Header({ items }) {
 					<Menu className="stroke-dull_black dark:stroke-dull_white" />
 				)}
 			</Button>
-			{Object.entries(tabs).map(
-				([tab, metadata], index) => (
-					<Button
-						className=""
-						value={tab}
-						key={index}
-						onClick={() => {
-							updateDoc(metadata)
-							tiptap.editor.commands.setContent(metadata.content)
-						}}
-					>
-						{tab}
-					</Button>
-				),
-			)}
-			{/* <SortableContext 
-        items={tabs}
-        strategy={horizontalListSortingStrategy}
-      >
-        {items.map(id => <SortableItem key={id} id={id} />)}
-      </SortableContext> */}
-			{/* <Button
-				variant="ghost"
+			<div
 				className={cn(
-					"w-min p-2 border-none text-dull_black dark:text-dull_white text-sm",
+					"flex-grow flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1 ml-1",
 					panel.left ? "ml-4" : "",
 				)}
-				size="menu"
 			>
-				{doc.filename}
-			</Button> */}
+				<SortableContext items={tabs} strategy={horizontalListSortingStrategy}>
+					{tabs.map((tab) => (
+						<SortableItem
+							key={tab.doc_id}
+							id={tab.filename}
+							tab={tab}
+							removable
+						/>
+					))}
+				</SortableContext>
+			</div>
 			<div className="flex-grow" />
 			<Button
 				variant="ghost"

@@ -1,16 +1,15 @@
-import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 
-export function Droppable(props) {
+export default function TabPanel(props) {
 	const { isOver, setNodeRef } = useDroppable({
-		id: props.id,
+		id: "droppable",
 	});
 	const style = {
 		color: isOver ? "green" : undefined,
 	};
 
 	return (
-		<div ref={setNodeRef} style={style}>
+		<div className="w-full" ref={setNodeRef} style={style}>
 			{props.children}
 		</div>
 	);

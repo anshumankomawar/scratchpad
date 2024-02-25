@@ -60,10 +60,19 @@ export default function LeftPanel({ editor }) {
 
 	const handleNewDocument = async () => {
 		// TODO: Add error handling
-		await saveDocument(doc.filename, doc.foldername);
+		const doc_id = await saveDocument(doc.filename, doc.foldername);
 		await documents.refetch();
 		editor.commands.setContent("");
 		editor.chain().focus().setTextSelection(0).run();
+		const newDoc = {
+			filename: doc.filename,
+			foldername: doc.foldername,
+			id: doc_id,
+			content: "",
+		};
+
+		updateDoc(newDoc);
+		updateTabs(newDoc);
 	};
 
 	return (
@@ -138,7 +147,7 @@ export default function LeftPanel({ editor }) {
 												updateDoc({
 													...doc,
 													filename: e.target.value,
-												})
+												});
 											}}
 											placeholder="File Name"
 											className="col-span-3"
