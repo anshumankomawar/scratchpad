@@ -4,6 +4,7 @@ A typical user of ScratchPad should be able to create notes and save them (symbo
 Our goal is to create both a web-app and an iPad app, similar to existing note taking apps, in order to thoroughly meet our project’s vision. However, given the time constraints of two quarters, we would like to focus on the honing down the core functionalities of the web-app version of ScratchPad first. We anticipate this project being spread out throughout the two quarters, amongst four people.
 
 ## Development
+> Ensure bun installation ```curl -fsSL https://bun.sh/install | bash # for macOS, Linux, and WSL```
 > CD into /rag before following steps
 ```cd /rag```
 > Environment Config: include a .env file with values for OPENAI_API_KEY, SUPABASE_URL, SUPABASE_KEY (.env in rag)
