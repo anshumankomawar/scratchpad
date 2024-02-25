@@ -4,7 +4,9 @@ A typical user of ScratchPad should be able to create notes and save them (symbo
 Our goal is to create both a web-app and an iPad app, similar to existing note taking apps, in order to thoroughly meet our project’s vision. However, given the time constraints of two quarters, we would like to focus on the honing down the core functionalities of the web-app version of ScratchPad first. We anticipate this project being spread out throughout the two quarters, amongst four people.
 
 ## Development
-> Environment Config: include a .env file with values for OPENAI_API_KEY, SUPABASE_URL, SUPABASE_KEY
+> CD into /rag before following steps
+```cd /rag```
+> Environment Config: include a .env file with values for OPENAI_API_KEY, SUPABASE_URL, SUPABASE_KEY (.env in rag)
 ### Python environemnt setup
 1. Create a virtual python environment
 ```python3 -m venv .venv```
@@ -19,6 +21,15 @@ Our goal is to create both a web-app and an iPad app, similar to existing note t
 ```python3 -m pip install -r requirements.txt```
 
 > Note: use `deactivate` to leave virtual environment
+
+### Running Python Server
+```uvicorn main:app --reload``` should start the server, access docs at localhost:8000/docs
+
+### Tauri Setup
+```cd /tauri-react```
+Install tauri cli tool 
+```cargo install tauri-cli@=2.0.0-beta.2```
+**To run the tauri app use** ```cargo tauri dev```
 
 ## Logs 
 Since we would like to work on the web-app version of ScratchPad first, we were able to split up the work based on each of the team member’s passions and interests. The rough layout is outlined below (note: this is subject to change throughout the quarter to give us all a chance to work on different parts of the web-app if we’d like). 
