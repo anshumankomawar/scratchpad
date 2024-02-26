@@ -75,6 +75,12 @@ async def register(user: User, db: Annotated[dict, Depends(get_db)]):
             "email":email,
         }
     response = db["client"].from_("folders").insert(folder_to_insert).execute()
-    new_folder_id = response.data[0]['id']
-    db["client"].from_("folders").update({'parent_id':new_folder_id}).eq("email", email).eq("id", new_folder_id).execute()
+    root_id = response.data[0]['id']
+    db["client"].from_("folders").update({'parent_id':root_id}).eq("email", email).eq("id", root_id).execute()
+    unfiled_folder_to_insert = {
+            "name": "unfiled",
+            "email":email,
+            "parent_id":root_id
+        }
+    response = db["client"].from_("folders").insert(unfiled_folder_to_insert).execute()
     return {"message": "registered"}

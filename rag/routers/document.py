@@ -11,16 +11,17 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
 from fastapi.exceptions import HTTPException
 from typing import List
+from routers.folders import get_folder_id
 
 class DocumentMetadata(BaseModel):
     filename: str
     content: str
-    foldername: str = "unfiled"
+    folder_id: str = ""
 
 class UpdatedDocumentMetadata(BaseModel):
     filename: str
     content: str
-    foldername: str = "unfiled"
+    folder_id: str = ""
     id: str
 
 router = APIRouter(tags=["document"], dependencies=[Depends(get_db)])
@@ -75,12 +76,17 @@ def generate_chunks(content: str) -> List[str]:
 def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadata, generated:bool = False):
     try:
         email = current_user["email"]
+        if doc.folder_id == "":
+            # defaults to unfiled folder if non specified
+            folder_id = get_folder_id(db, current_user, "unfiled")['folder_id']
+        else:
+            folder_id = doc.folder_id
         document_to_insert = {
             "email": email,
-            "content": doc.content,
+            "content": doc.content, 
             "filename": doc.filename,
-            "foldername": doc.foldername,
-            "generated": generated
+            "generated": generated,
+            "folder_id": folder_id,
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]['id']
@@ -127,6 +133,7 @@ def delete_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
         return {"message": "could not delete document"}
 
 #Update foldername
+# To be deleted 
 @router.post("/update_foldername")
 def update_document_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], id:str, foldername:str):
     try:

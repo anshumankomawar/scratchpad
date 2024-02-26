@@ -6,6 +6,7 @@ import string
 from auth.oauth import get_current_user
 from dependencies import get_db
 from models.user import User
+from routers.folders import get_folder_id
 
 router = APIRouter(tags=["documents"], dependencies=[Depends(get_db)])
 
@@ -26,3 +27,40 @@ async def get_user_documents(db: Annotated[dict, Depends(get_db)], current_user:
     except Exception as e:
         print("Error", e)
         return {"documents": []}
+
+
+def build_folder_structure(db, current_user, folder_id):
+    folders = db["client"].from_('folders').select('*').eq('email', current_user["email"]).eq('parent_id', folder_id).execute()
+    #documents in this folder
+    documents = db["client"].from_('documents').select('*').eq('email', current_user["email"]).eq('folder_id', folder_id).execute()
+
+    folder_structure = {}
+    for folder in folders.data:
+        subfolder_id = folder['id']
+        name = folder['name']
+        folder_structure[name] = build_folder_structure(db, current_user, subfolder_id)
+
+    folder_structure["documents"] = documents.data
+
+    return folder_structure
+
+
+@router.get("/documents_folders")
+async def get_user_documents_and_folders(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)]):
+    print(current_user)
+    try:
+        root_id = get_folder_id(db, current_user, "root")['folder_id']
+        folders_under_root = db["client"].from_('folders').select('*').eq('email', current_user["email"]).eq('parent_id', root_id).neq('id', root_id).execute()
+        #group documents by foldername
+        folder_structure = {}
+
+        for folder in folders_under_root.data:
+            folder_id = folder['id']
+            name = folder['name']
+            folder_structure[name] = build_folder_structure(db, current_user, folder_id)
+            folder_structure[name]["id"]= folder_id
+
+        return {"folder_structure": folder_structure}
+    except Exception as e:
+        print("Error", e)
+        return {"folder_structure": {}}

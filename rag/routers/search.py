@@ -14,12 +14,13 @@ from langchain_community.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from .document import add_document
 from pydantic import BaseModel
+from routers.folders import get_or_make_generated_folder
 
 
 class DocumentMetadata(BaseModel):
     filename: str
     content: str
-    foldername: str = "generated"
+    folder_id: str = ""
 
 
 router = APIRouter(tags=["search"], dependencies=[Depends(get_db)])
@@ -130,7 +131,9 @@ def search_document(
             # data = generate_summary_falcon(request, all_chunks, query)
 
             print("***************GENERATED DATA**************\n")
-            insert = DocumentMetadata(filename="generated", content=data)
+            generated_id = get_or_make_generated_folder(db, current_user)['generated_id']
+            print("GENERATED ID", generated_id)
+            insert = DocumentMetadata(filename="generated", content=data, folder_id = generated_id)
             print("***************TRYING TO INSERT DATA**************\n")
             document_created = add_document(db, current_user, insert, True)
             print("***************INSERTED DATA**************\n")
