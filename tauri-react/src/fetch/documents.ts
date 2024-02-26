@@ -8,7 +8,6 @@ export const useDocuments = () => {
 		queryFn: () =>
 			invoke("get_documents")
 				.then((res) => {
-					console.log("updating documents");
 					return res.documents;
 				})
 				.catch((error) => {
