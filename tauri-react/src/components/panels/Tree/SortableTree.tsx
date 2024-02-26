@@ -219,7 +219,7 @@ export function SortableTree({
           />
         ))}
         {createPortal(
-          <DragOverlay
+          <DragOverlay className="bg-red"
             dropAnimation={dropAnimationConfig}
             modifiers={indicator ? [adjustTranslate] : undefined}
           >

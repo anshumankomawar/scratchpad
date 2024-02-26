@@ -35,7 +35,7 @@ export const AllFeatures = () => {
     return <div></div>
   } else {
     return(
-      <Wrapper>
+      <Wrapper className="bg-red">
         <SortableTree defaultItems={folderItems} collapsible indicator removable />
       </Wrapper>
 

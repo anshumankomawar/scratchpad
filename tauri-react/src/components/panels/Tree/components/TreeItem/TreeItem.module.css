@@ -67,14 +67,10 @@
 }
 
 .TreeItem {
-  --vertical-padding: 10px;
-
   position: relative;
   display: flex;
-  align-items: center;
-  padding: var(--vertical-padding) 10px;
-  background-color: #fff;
-  border: 1px solid #dedede;
+  padding: 3% 0;
+  background-color: rgb(255, 255, 255);
   color: #222;
   box-sizing: border-box;
 }
@@ -85,6 +81,12 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+li {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .Count {
@@ -101,7 +103,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   color: #fff;
-}
+} 
 
 .disableInteraction {
   pointer-events: none;
