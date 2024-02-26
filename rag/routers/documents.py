@@ -51,14 +51,18 @@ async def get_user_documents_and_folders(db: Annotated[dict, Depends(get_db)], c
     try:
         root_id = get_folder_id(db, current_user, "root")['folder_id']
         folders_under_root = db["client"].from_('folders').select('*').eq('email', current_user["email"]).eq('parent_id', root_id).neq('id', root_id).execute()
-        #group documents by foldername
-        folder_structure = {}
+
+        subfolder_structure = {}
 
         for folder in folders_under_root.data:
             folder_id = folder['id']
             name = folder['name']
-            folder_structure[name] = build_folder_structure(db, current_user, folder_id)
-            folder_structure[name]["id"]= folder_id
+            subfolder_structure[name] = build_folder_structure(db, current_user, folder_id)
+            subfolder_structure[name]["id"]= folder_id
+        
+        folder_structure = {}
+        folder_structure['root'] = subfolder_structure
+        folder_structure['root']["id"] = root_id
 
         return {"folder_structure": folder_structure}
     except Exception as e:
