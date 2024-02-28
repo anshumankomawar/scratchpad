@@ -113,7 +113,7 @@ function ProtectedRoute() {
 				sensors={sensors}
 				collisionDetection={closestCenter}
 			>
-				<div className="z-50 fixed w-full top-0 h-10">
+				<div className="z-50 fixed w-full top-0 h-10 bg-background">
 					<Header />
 				</div>
 				<div className="-z-10 top-0 left-0 h-full w-full">
