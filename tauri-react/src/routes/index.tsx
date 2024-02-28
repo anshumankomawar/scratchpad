@@ -57,7 +57,7 @@ function HomeComponent() {
 				<CommandPanel editor={tiptap.editor} />
 				<div className="absolute bg-background h-full left-0 top-0 w-[200px]">
 					{/* <LeftPanel editor={tiptap.editor} /> */}
-					<AllFeatures/>
+					<AllFeatures editor={tiptap.editor} />
 				</div>
 				<div className="flex flex-col">
 					<EditorContent

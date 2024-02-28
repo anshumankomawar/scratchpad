@@ -50,7 +50,7 @@ import { Panel, useDocStore, usePanelStore } from "@/app_state";
 export default function LeftPanel({ editor }) {
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
-    const tabs = useDocStore((state) => state.tabs);
+	const tabs = useDocStore((state) => state.tabs);
 	const updateDoc = useDocStore((state) => state.updateDoc);
 	const updateTabs = useDocStore((state) => state.updateTabs);
 	const panel = usePanelStore((state) => state);
@@ -223,7 +223,7 @@ export default function LeftPanel({ editor }) {
 													editor.commands.setContent(file.content);
 													updateDoc(file);
 													updateTabs(file);
-                          console.log("left", useDocStore.getState().tabs);
+													console.log("left", useDocStore.getState().tabs);
 												}}
 											>
 												{file.filename}

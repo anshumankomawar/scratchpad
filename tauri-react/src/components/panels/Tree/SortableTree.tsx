@@ -38,33 +38,8 @@ import type { FlattenedItem, SensorContext, TreeItems } from "./types";
 import { sortableTreeKeyboardCoordinates } from "./keyboardCoordinates";
 import { SortableTreeItem } from "./components";
 import { CSS } from "@dnd-kit/utilities";
-
-const initialItems: TreeItems = [
-	{
-		id: "Home", //folder name
-		children: [],
-	},
-	{
-		id: "Collections",
-		children: [
-			{ id: "Spring", children: [] }, //file name, set to empty list
-			{ id: "Summer", children: [] },
-			{ id: "Fall", children: [] },
-			{ id: "Winter", children: [] },
-		],
-	},
-	{
-		id: "About Us",
-		children: [],
-	},
-	{
-		id: "My Account",
-		children: [
-			{ id: "Addresses", children: [] },
-			{ id: "Order History", children: [] },
-		],
-	},
-];
+import { useDocuments } from "@/fetch/documents";
+import { useTipTapEditor } from "@/context/tiptap_context";
 
 const measuring = {
 	droppable: {
@@ -105,12 +80,14 @@ interface Props {
 
 export function SortableTree({
 	collapsible,
-	defaultItems = initialItems,
 	indicator = false,
 	indentationWidth = 20,
 	removable,
 }: Props) {
-	const [items, setItems] = useState(() => defaultItems);
+	const editor = useTipTapEditor();
+	if (!editor) return null;
+	const { data } = useDocuments();
+	const [items, setItems] = useState(() => []);
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
 	const [offsetLeft, setOffsetLeft] = useState(0);
@@ -119,11 +96,26 @@ export function SortableTree({
 		overId: UniqueIdentifier;
 	} | null>(null);
 
+	useEffect(() => {
+		if (data) {
+			const newItems = Object.entries(data).map(([folderName, files]) => ({
+				id: folderName,
+				children: files.map((file) => ({
+					id: file.filename,
+					children: [],
+					file: file,
+				})),
+				file: null,
+			}));
+			setItems(newItems);
+		}
+	}, [data]);
+
 	const flattenedItems = useMemo(() => {
 		const flattenedTree = flattenTree(items);
 		const collapsedItems = flattenedTree.reduce<string[]>(
-			(acc, { children, collapsed, id }) =>
-				collapsed && children.length ? [...acc, id] : acc,
+			(acc, { children, collapsed, id, file }) =>
+				collapsed && children.length ? [...acc, id, file] : acc,
 			[],
 		);
 
@@ -201,12 +193,12 @@ export function SortableTree({
 			onDragEnd={handleDragEnd}
 			onDragCancel={handleDragCancel}
 		>
-			<div className="pt-4">
+			<div className="pt-4 px-4">
 				<SortableContext
 					items={sortedIds}
 					strategy={verticalListSortingStrategy}
 				>
-					{flattenedItems.map(({ id, children, collapsed, depth }) => (
+					{flattenedItems.map(({ id, children, collapsed, depth, file }) => (
 						<SortableTreeItem
 							key={id}
 							id={id}
@@ -221,6 +213,9 @@ export function SortableTree({
 									: undefined
 							}
 							onRemove={removable ? () => handleRemove(id) : undefined}
+							childCount={children.length}
+							file={file}
+							editor={editor.editor}
 						/>
 					))}
 					{createPortal(

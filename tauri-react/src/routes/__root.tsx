@@ -5,7 +5,6 @@ import LoginComponent from "@/components/login/login";
 import { Toaster } from "@/components/ui/toaster";
 import { useTipTapEditor } from "@/context/tiptap_context";
 import { login } from "@/fetch/auth";
-import { useDocuments } from "@/fetch/documents";
 import {
 	DndContext,
 	KeyboardSensor,
