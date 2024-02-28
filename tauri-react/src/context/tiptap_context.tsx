@@ -136,17 +136,16 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		}),
 	];
 
-	const content = ``;
+	const content = "";
 	const editor = useEditor({
 		extensions,
 		content,
 		editorProps: {
 			attributes: {
 				class:
-					"h-full overflow-none outline-none rounded-md lg:mx-48 md:mx-24 sm:mx-20 mx-20",
+					"top-14 pt-20 h-full overflow-y-scroll outline-none lg:mx-48 md:mx-24 sm:mx-20 mx-20",
 			},
 		},
-		autofocus: "end",
 	});
 
 	return (

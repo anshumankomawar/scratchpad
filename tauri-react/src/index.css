@@ -83,6 +83,10 @@
   display: none;
 }
 
+/* Track */
+::-webkit-scrollbar-track {
+  background: bg-background;
+}
 
 @font-face {
   font-family: "Virgil";

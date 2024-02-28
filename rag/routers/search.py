@@ -26,43 +26,14 @@ router = APIRouter(tags=["search"], dependencies=[Depends(get_db)])
 
 
 def generate_summary_openai(request: Request, all_chunks: str, query: str):
-    # completion_messages = [
-    #     {
-    #         "role": "system",
-    #         "content": """ 
-    #                     As a professional summarizer, create a concise and comprehensive 50 WORD summary of the provided text, be it an article, post, conversation, or passage, while adhering to these guidelines:
-
-                            
-    #                         1. Craft a summary that is detailed, thorough, in-depth, and complex, while maintaining clarity and conciseness.
-
-                                                        
-    #                         2. Incorporate main ideas and essential information, eliminating extraneous language and focusing on critical aspects.
-
-                                                        
-    #                         3. Rely strictly on the provided text, without including external information.
-
-                                                        
-    #                         4. Format the summary in paragraph form for easy understanding.
-
-                        
-    #                     By following this optimized prompt, you will generate an effective summary that encapsulates the essence of the given text in a clear, concise, and reader-friendly manner.
-    #                     """,
-    #     },
-    #     {
-    #         "role": "user",
-    #         "content": query
-    #         + "Don’t give information not mentioned in the CONTEXT INFORMATION.",
-    #     },
-    #     {
-    #         "role": "assistant",
-    #         "content": all_chunks,
-    #     },
-    # ]
     completion_messages = [
-        {"role": "system", "content": "System: Generate a note based solely on the following text. Do not include any explanations."},
+        {
+            "role": "system",
+            "content": "System: Generate a note based solely on the following text. Do not include any explanations.",
+        },
         {"role": "system", "content": "System: Text: " + all_chunks},
         {"role": "user", "content": "User: " + query},
-        {"role": "system", "content": "Note:"}
+        {"role": "system", "content": "Note:"},
     ]
     record_timing(request, "started gpt")
     response = openai.chat.completions.create(
@@ -136,7 +107,7 @@ def search_document(
             # data = generate_summary_falcon(request, all_chunks, query)
 
             print("***************GENERATED DATA**************\n")
-            insert = DocumentMetadata(filename="generated", content=data)
+            insert = DocumentMetadata(filename=query, content=data)
             print("***************TRYING TO INSERT DATA**************\n")
             document_created = add_document(db, current_user, insert, True)
             print("***************INSERTED DATA**************\n")

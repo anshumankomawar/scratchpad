@@ -99,6 +99,7 @@ function ProtectedRoute() {
 		const tab = docStore.tabs.find((tab) => tab.filename === active.id);
 		docStore.updateDoc(tab);
 		tiptap.editor.commands.setContent(tab.content);
+		tiptap.editor.commands.focus("start");
 	}
 
 	if (!tiptap.editor) {
@@ -113,10 +114,10 @@ function ProtectedRoute() {
 				sensors={sensors}
 				collisionDetection={closestCenter}
 			>
-				<div className="z-50 fixed w-full top-0 h-10 bg-background">
+				<div className="z-50 fixed w-full top-0 h-10">
 					<Header />
 				</div>
-				<div className="-z-10 top-0 left-0 h-full w-full">
+				<div className="-z-10 left-0 h-full w-full">
 					<Outlet />
 				</div>
 			</DndContext>

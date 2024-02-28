@@ -57,16 +57,14 @@ function HomeComponent() {
 				<div className="absolute bg-background h-full left-0 top-0 w-[200px]">
 					<LeftPanel editor={tiptap.editor} />
 				</div>
-				<div className="flex flex-col">
-					<EditorContent
-						className={cn(
-							"pt-40 absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background h-full overflow-x-hidden no-scrollbar pb-24",
-							panel.left ? "left-[200px]" : "left-0",
-						)}
-						editor={tiptap.editor}
-					/>
-					<BottomPanel editor={tiptap.editor} />
-				</div>
+				<EditorContent
+					className={cn(
+						"absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24",
+						panel.left ? "left-[200px]" : "left-0",
+					)}
+					editor={tiptap.editor}
+				/>
+				<BottomPanel editor={tiptap.editor} />
 			</div>
 			<DialogContent className="bg-white dark:bg-background h-3/4 w-3/4">
 				{panel.centerContent}
