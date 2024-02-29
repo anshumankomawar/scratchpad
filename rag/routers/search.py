@@ -215,7 +215,7 @@ def search_documentV2(
             print("***************GENERATED DATA**************\n")
             generated_id = get_or_make_generated_folder(db, current_user)['generated_id']
             print("GENERATED ID", generated_id)
-            insert = DocumentMetadataV2(filename="generated", content=data, folder_id = generated_id)
+            insert = DocumentMetadataV2(filename=query, content=data, folder_id = generated_id)
             print("***************TRYING TO INSERT DATA**************\n")
             document_created = add_documentV2(db, current_user, insert, True)
             print("***************INSERTED DATA**************\n")
