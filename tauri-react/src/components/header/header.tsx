@@ -40,10 +40,12 @@ export default function Header() {
 
 	const handleDeleteTab = (tab) => {
 		deleteTab(tab);
-		console.log(doc);
 		updateDoc(useDocStore.getState().tabs[0]);
-		console.log(doc);
-		tiptap.editor.commands.setContent(useDocStore.getState().doc.content);
+		if (useDocStore.getState().tabs.length > 0) {
+			tiptap.editor.commands.setContent(useDocStore.getState().doc.content);
+		} else {
+			tiptap.editor.commands.setContent("");
+		}
 	};
 
 	if (!tiptap.editor) {
@@ -93,7 +95,7 @@ export default function Header() {
 							/>
 							<X
 								size={10}
-                className="hover:stroke-red-400 "
+								className="hover:stroke-red-400 "
 								onClick={() => {
 									handleDeleteTab(tab);
 								}}

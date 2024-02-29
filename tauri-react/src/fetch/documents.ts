@@ -5,10 +5,9 @@ export const useDocuments = () => {
 	return useQuery({
 		queryKey: ["documents"],
 		initialData: [],
-		queryFn: () =>
-			invoke("get_documents")
+		queryFn: async () =>
+			await invoke("get_documents")
 				.then((res) => {
-					console.log("updating documents");
 					return res.documents;
 				})
 				.catch((error) => {

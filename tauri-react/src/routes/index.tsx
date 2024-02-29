@@ -1,9 +1,8 @@
 import { Panel, usePanelStore } from "@/app_state";
-import CollatePanel from "@/components/collate/collate";
 import CommandPanel from "@/components/command/command";
 import BottomPanel from "@/components/panels/bottompanel";
-import LeftPanel from "@/components/panels/leftpanel";
 import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
+import { LeftPanel } from "@/components/panels/leftpanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTipTapEditor } from "@/context/tiptap_context";
 import "@/index.css";
