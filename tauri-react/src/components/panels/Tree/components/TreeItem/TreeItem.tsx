@@ -59,13 +59,14 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 				style={padding}
 				{...props}
 				onClick={() => {
-					console.log("HERE");
+					console.log("clicked");
 					if (props.file !== null) {
+						console.log("file");
 						props.editor.commands.setContent(props.file.content);
 						docStore.updateDoc(props.file);
 						docStore.updateTabs(props.file);
 					} else {
-						console.log("HERE");
+						console.log("folder");
 						onCollapse();
 					}
 				}}

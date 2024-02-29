@@ -53,15 +53,17 @@ export const AllFeatures = ({ editor }) => {
 		updateTabs(newDoc);
 	};
 
+	const iconClassname =
+		"size-6 stroke-dull_black dark:stroke-dull_white hover:bg-accent rounded-md p-1";
+
 	return (
-		<div className="bg-alabaster dark:bg-dark2 h-full pt-10 overflow-scroll">
-			<div className="flex flex-row mb-2 justify-end space-x-2 sticky top-5 bg-alabaster dark:bg-dark2 pb-2 px-5 align-bottom">
+		<div className="bg-alabaster dark:bg-dark2 h-full pt-10 overflow-scroll px-2">
+			<div className="flex flex-row mb-4 justify-end sticky top-5 bg-alabaster dark:bg-dark2 px-2">
+				<div className="text-md">Files</div>
+				<div className="flex-grow" />
 				<Popover>
 					<PopoverTrigger>
-						<FolderPlus
-							size={16}
-							className="stroke-dull_black dark:stroke-dull_white"
-						/>
+						<FolderPlus className={iconClassname} />
 					</PopoverTrigger>
 					<PopoverContent className="">
 						<div className="grid gap-4 py-4">
@@ -110,10 +112,7 @@ export const AllFeatures = ({ editor }) => {
 				</Popover>
 				<Popover>
 					<PopoverTrigger>
-						<FilePlus
-							size={16}
-							className="stroke-dull_black dark:stroke-dull_white"
-						/>
+						<FilePlus className={iconClassname} />
 					</PopoverTrigger>
 					<PopoverContent className="">
 						<div className="grid gap-4 py-4">
