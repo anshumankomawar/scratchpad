@@ -82,7 +82,9 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
 
 			<Button
 				variant="ghost"
-				onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
+				onClick={() =>
+					editor.chain().focus().clearNodes().unsetAllMarks().run()
+				}
 				className={editor.isActive("clearNodes") ? "bg-accent" : ""}
 				size="icon"
 			>
