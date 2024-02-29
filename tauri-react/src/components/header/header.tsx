@@ -75,7 +75,7 @@ export default function Header() {
 			</Button>
 			<div
 				className={cn(
-					"flex-grow flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1.5 ml-1",
+					"overflow-x-scroll overflow-y-none w-3/4 flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1.5 ml-1",
 					panel.left ? "ml-4" : "",
 				)}
 			>

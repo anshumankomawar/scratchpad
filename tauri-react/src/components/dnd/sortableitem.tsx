@@ -17,7 +17,9 @@ export default function SortableItem(props) {
 
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-			<span className="inline-block align-top mr-1 h-5">{props.id}</span>
+			<span className="text-ellipsis text-xs overflow-hidden truncate inline-block align-top mr-1 h-5">
+				{props.id}
+			</span>
 		</div>
 	);
 }
