@@ -11,6 +11,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pydantic import BaseModel
 from fastapi.exceptions import HTTPException
 from typing import List
+from routers.folders import get_folder_id
 
 class DocumentMetadata(BaseModel):
     filename: str
@@ -21,6 +22,17 @@ class UpdatedDocumentMetadata(BaseModel):
     filename: str
     content: str
     foldername: str = "unfiled"
+    id: str
+
+class DocumentMetadataV2(BaseModel):
+    filename: str
+    content: str
+    folder_id: str = ""
+
+class UpdatedDocumentMetadataV2(BaseModel):
+    filename: str
+    content: str
+    folder_id: str = ""
     id: str
 
 router = APIRouter(tags=["document"], dependencies=[Depends(get_db)])
@@ -81,6 +93,50 @@ def add_document(db: Annotated[dict, Depends(get_db)], current_user: Annotated[U
             "filename": doc.filename,
             "foldername": doc.foldername,
             "generated": generated
+        }
+        response = db["client"].from_("documents").insert(document_to_insert).execute()
+        new_document_id = response.data[0]['id']
+        if generated == False:
+            chunks = generate_chunks(doc.content)
+            embeddings = OpenAIEmbeddings()
+            records_to_insert = []
+            current_page = 0
+            for chunk in chunks:
+                embedding = embeddings.embed_query(chunk)
+                record = {
+                    "document_id": new_document_id,
+                    "content": chunk,
+                    "metadata": {
+                        "page": current_page,
+                        "source": doc.filename
+                    }, 
+                    "embedding": embedding
+                }
+                records_to_insert.append(record)
+                current_page+=1
+            db["client"].from_("chunks").insert(records_to_insert).execute()
+        return {"doc_id": str(new_document_id)}
+    except Exception as e:
+        print("Error", e)
+        return {"doc_id": None}
+
+
+# Adds document, adds chunks and embeddings to chunks table
+@router.post("/documentV2")
+def add_documentV2(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], doc: DocumentMetadataV2, generated:bool = False):
+    try:
+        email = current_user["email"]
+        if doc.folder_id == "":
+            # defaults to unfiled folder if non specified
+            folder_id = get_folder_id(db, current_user, "unfiled")['folder_id']
+        else:
+            folder_id = doc.folder_id
+        document_to_insert = {
+            "email": email,
+            "content": doc.content, 
+            "filename": doc.filename,
+            "generated": generated,
+            "folder_id": folder_id,
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]['id']

@@ -1,13 +1,13 @@
+import { ThemeProvider } from "@/context/theme_context";
+import { TiptapProvider } from "@/context/tiptap_context";
+import "@/index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { getCurrent } from "@tauri-apps/api/window";
 import ReactDOM from "react-dom/client";
 import { StoreProvider, useStore } from "./auth";
-import "@/index.css";
-import { routeTree } from "./routeTree.gen";
-import { ThemeProvider } from "@/context/theme_context";
-import { TiptapProvider } from "@/context/tiptap_context";
 import { FontFamilyProvider } from "./context/font_context";
+import { routeTree } from "./routeTree.gen";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	await getCurrent().show();

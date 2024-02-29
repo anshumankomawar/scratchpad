@@ -13,6 +13,7 @@ import {
 	List,
 	ListTodo,
 	Quote,
+	RemoveFormatting,
 	SeparatorHorizontal,
 	Strikethrough,
 	Subscript,
@@ -77,6 +78,15 @@ export default function TiptapControls({ editor }: { editor: Editor | null }) {
 				size="icon"
 			>
 				<Strikethrough className="w-4 h-4" />
+			</Button>
+
+			<Button
+				variant="ghost"
+				onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
+				className={editor.isActive("clearNodes") ? "bg-accent" : ""}
+				size="icon"
+			>
+				<RemoveFormatting className="w-4 h-4" />
 			</Button>
 
 			<Button

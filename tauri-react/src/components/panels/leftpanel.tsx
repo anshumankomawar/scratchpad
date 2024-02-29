@@ -35,6 +35,8 @@ export const LeftPanel = ({ editor }) => {
 	const updateDoc = useDocStore((state) => state.updateDoc);
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
+	const tabs = useDocStore((state) => state.tabs);
+	const updateDoc = useDocStore((state) => state.updateDoc);
 	const updateTabs = useDocStore((state) => state.updateTabs);
 
 	const handleNewDocument = async () => {
