@@ -47,7 +47,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 		},
 		ref,
 	) => {
-		const padding = { paddingLeft: `${depth * indentationWidth}px` };
+		const padding = { marginLeft: `${depth * indentationWidth}px` };
 		const docStore = useDocStore((state) => state);
 		return (
 			<li
@@ -59,13 +59,13 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 				style={padding}
 				{...props}
 				onClick={() => {
+					console.log("HERE");
 					if (props.file !== null) {
-						console.log("props.file", props.file);
-						console.log("props.editor", props.editor);
 						props.editor.commands.setContent(props.file.content);
 						docStore.updateDoc(props.file);
 						docStore.updateTabs(props.file);
 					} else {
+						console.log("HERE");
 						onCollapse();
 					}
 				}}
@@ -73,11 +73,12 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 				<div
 					className={cn(
 						"flex flex-row px-2 py-1 rounded-md justify-center items-center",
-						ghost && "bg-accent bg-accent",
+						ghost && "bg-accent ",
 						clone && "bg-transparent border-none",
 					)}
 					ref={ref}
 					style={style}
+					{...handleProps}
 				>
 					{/*<Handle {...handleProps} />*/}
 					{childCount > 0 && (

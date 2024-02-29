@@ -142,7 +142,12 @@ export function SortableTree({
 		sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth),
 	);
 	const sensors = useSensors(
-		useSensor(PointerSensor),
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				delay: 100,
+				tolerance: 10,
+			},
+		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter,
 		}),
@@ -163,27 +168,8 @@ export function SortableTree({
 		};
 	}, [flattenedItems, offsetLeft]);
 
-	const announcements: Announcements = {
-		onDragStart({ active }) {
-			return `Picked up ${active.id}.`;
-		},
-		onDragMove({ active, over }) {
-			return getMovementAnnouncement("onDragMove", active.id, over?.id);
-		},
-		onDragOver({ active, over }) {
-			return getMovementAnnouncement("onDragOver", active.id, over?.id);
-		},
-		onDragEnd({ active, over }) {
-			return getMovementAnnouncement("onDragEnd", active.id, over?.id);
-		},
-		onDragCancel({ active }) {
-			return `Moving was cancelled. ${active.id} was dropped in its original position.`;
-		},
-	};
-
 	return (
 		<DndContext
-			accessibility={{ announcements }}
 			sensors={sensors}
 			collisionDetection={closestCenter}
 			measuring={measuring}
@@ -218,25 +204,6 @@ export function SortableTree({
 							editor={editor.editor}
 						/>
 					))}
-					{createPortal(
-						<DragOverlay
-							className="bg-red"
-							dropAnimation={dropAnimationConfig}
-							modifiers={indicator ? [adjustTranslate] : undefined}
-						>
-							{activeId && activeItem ? (
-								<SortableTreeItem
-									id={activeId}
-									depth={activeItem.depth}
-									clone
-									childCount={getChildCount(items, activeId) + 1}
-									value={activeId.toString()}
-									indentationWidth={indentationWidth}
-								/>
-							) : null}
-						</DragOverlay>,
-						document.body,
-					)}
 				</SortableContext>
 			</div>
 		</DndContext>
