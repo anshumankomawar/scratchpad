@@ -40,6 +40,7 @@ export const LeftPanel = ({ editor }) => {
 
 	const handleNewDocument = async () => {
 		const doc_id = await saveDocument(doc.filename, doc.foldername);
+		console.log(doc_id);
 		await documents.refetch();
 		editor.commands.setContent("");
 		editor.chain().focus().setTextSelection(0).run();
@@ -51,6 +52,7 @@ export const LeftPanel = ({ editor }) => {
 		};
 
 		updateDoc(newDoc);
+		console.log("After", doc_id);
 		updateTabs(newDoc);
 	};
 

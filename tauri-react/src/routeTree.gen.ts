@@ -1,6 +1,6 @@
-/* prettier-ignore-start */
-
 /* eslint-disable */
+
+/* prettier-ignore */
 
 // @ts-nocheck
 
@@ -34,5 +34,3 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([IndexRoute])
-
-/* prettier-ignore-end */

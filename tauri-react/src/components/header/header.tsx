@@ -80,8 +80,9 @@ export default function Header() {
 				)}
 			>
 				<SortableContext items={tabs} strategy={horizontalListSortingStrategy}>
-					{tabs.map((tab) => (
+					{tabs.map((tab, index) => (
 						<div
+							key={index}
 							className={cn(
 								"text-xs py-1 px-1.5 hover:bg-accent hover:text-accent-foreground rounded-md flex items-center",
 								doc.id === tab.id ? "bg-accent" : "",
