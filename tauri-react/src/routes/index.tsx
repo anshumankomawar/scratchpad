@@ -1,10 +1,8 @@
 import { Panel, usePanelStore } from "@/app_state";
-import CollatePanel from "@/components/collate/collate";
 import CommandPanel from "@/components/command/command";
 import BottomPanel from "@/components/panels/bottompanel";
-import LeftPanel from "@/components/panels/leftpanel";
 import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
-import { AllFeatures } from "@/components/panels/tree/Tree.story";
+import { LeftPanel } from "@/components/panels/leftpanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTipTapEditor } from "@/context/tiptap_context";
 import "@/index.css";
@@ -56,8 +54,7 @@ function HomeComponent() {
 				<RightFloatingPanel editor={tiptap.editor} />
 				<CommandPanel editor={tiptap.editor} />
 				<div className="absolute bg-background h-full left-0 top-0 w-[200px]">
-					{/* <LeftPanel editor={tiptap.editor} /> */}
-					<AllFeatures editor={tiptap.editor} />
+					<LeftPanel editor={tiptap.editor} />
 				</div>
 				<div className="flex flex-col">
 					<EditorContent

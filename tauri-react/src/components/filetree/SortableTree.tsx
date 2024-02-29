@@ -36,7 +36,7 @@ import {
 } from "./utilities";
 import type { FlattenedItem, SensorContext, TreeItems } from "./types";
 import { sortableTreeKeyboardCoordinates } from "./keyboardCoordinates";
-import { SortableTreeItem } from "./components";
+import { SortableTreeItem } from "@/components/filetree/node/SortableTreeItem";
 import { CSS } from "@dnd-kit/utilities";
 import { useDocuments } from "@/fetch/documents";
 import { useTipTapEditor } from "@/context/tiptap_context";

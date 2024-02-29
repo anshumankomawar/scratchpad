@@ -1,12 +1,8 @@
-import classNames from "classnames";
-import React, { forwardRef, HTMLAttributes } from "react";
-
-import { Button } from "@/components/ui/button";
+import { useDocStore } from "@/app_state";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Action, Handle, Remove } from "../../../components";
+import { HTMLAttributes, forwardRef } from "react";
 import styles from "./TreeItem.module.css";
-import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
 export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, "id"> {
 	childCount?: number;
