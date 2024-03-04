@@ -21,10 +21,14 @@ class UpdateFolderMetadata(BaseModel):
 
 #adds folder to folders table
 @router.post("/folders")
-def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata, parent_id:str):
+def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], folder: FolderMetadata, parent_id:str=""):
     try:
         email = current_user["email"]
-        if parent_id:
+        if parent_id=="":
+            ## defaults to root
+            parent_id = get_folder_id(db, current_user, "root")["folder_id"]
+        parent_id_valid = db["client"].from_('folders').select("*").eq("email", email).eq("parent_id", parent_id).execute()
+        if parent_id_valid.data!=[]:
             existing_folder = db["client"].from_('folders').select("id").eq("email", email).eq("parent_id", parent_id).eq("name", folder.name).execute()
             if existing_folder.data!=[]:
                 return {"message": "Folder with same name and location already exists"}
@@ -39,7 +43,7 @@ def add_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[Use
                 new_folder_id = response.data[0]['id']
                 return {"folder_id": str(new_folder_id)}
         else:
-            return {"message": "Folder does not exist"}
+            return{"message": "folder location not valid"}
     except Exception as e:
         print("Error", e)
         return {"message": "Error adding folder"}
