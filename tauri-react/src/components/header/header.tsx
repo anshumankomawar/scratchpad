@@ -19,6 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import SortableItem from "@/components/dnd/sortableitem";
 import { X } from "lucide-react";
+import AccountPage from "../account/account";
 
 export default function Header() {
 	const panel = usePanelStore((state) => state);
@@ -133,6 +134,17 @@ export default function Header() {
 						}}
 					>
 						Settings
+					</Button>
+					<Button
+						variant="ghost"
+						size="menu"
+						className="w-full text-xs justify-start p-2"
+						onClick={() => {
+							panel.setCenterContent(<AccountPage />);
+							panel.setPanel(Panel.CENTER, true);
+						}}
+					>
+						Account
 					</Button>
 					<Button
 						variant="ghost"
