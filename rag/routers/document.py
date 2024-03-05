@@ -183,6 +183,7 @@ def delete_document(db: Annotated[dict, Depends(get_db)], current_user: Annotate
         return {"message": "could not delete document"}
 
 #Update foldername
+# to be deleted, and replaced with update folders in folders.py
 @router.post("/update_foldername")
 def update_document_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], id:str, foldername:str):
     try:
