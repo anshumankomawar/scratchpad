@@ -16,6 +16,7 @@ export function getProjection(
 	dragOffset: number,
 	indentationWidth: number,
 ) {
+	console.log("getting projectiON");
 	const overItemIndex = items.findIndex(({ id }) => id === overId);
 	const activeItemIndex = items.findIndex(({ id }) => id === activeId);
 	const activeItem = items[activeItemIndex];

@@ -49,7 +49,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 			<li
 				className={cn(
 					"list-none hover:bg-accent rounded-md",
-					clone && "pl-5 pt-5 pointer-events-none",
+					clone && "pointer-events-none",
 				)}
 				ref={wrapperRef}
 				style={padding}
@@ -67,8 +67,8 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 				<div
 					className={cn(
 						"flex flex-row px-2 py-1 rounded-md justify-center items-center",
-						ghost && "bg-accent ",
-						clone && "bg-transparent border-none",
+						ghost && "bg-accent",
+						clone && "bg-accent",
 					)}
 					ref={ref}
 					style={style}

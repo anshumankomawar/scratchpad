@@ -66,18 +66,18 @@ const dropAnimationConfig: DropAnimation = {
 };
 
 interface Props {
-  collapsible?: boolean;
-  defaultItems?: TreeItems;
-  indentationWidth?: number;
-  indicator?: boolean;
-  removable?: boolean;
-  children?: React.ReactNode;
-  sortedIds: UniqueIdentifier[];
-  activeId: UniqueIdentifier | null;
-  flattenedItems: FlattenedItem[];
-  handleCollapse: (id: UniqueIdentifier) => void; 
-  handleRemove: (id: UniqueIdentifier) => void; 
-  projected: any;
+	collapsible?: boolean;
+	defaultItems?: TreeItems;
+	indentationWidth?: number;
+	indicator?: boolean;
+	removable?: boolean;
+	children?: React.ReactNode;
+	sortedIds: UniqueIdentifier[];
+	activeId: UniqueIdentifier | null;
+	flattenedItems: FlattenedItem[];
+	handleCollapse: (id: UniqueIdentifier) => void;
+	handleRemove: (id: UniqueIdentifier) => void;
+	projected: any;
 }
 
 export function SortableTree({
@@ -97,35 +97,29 @@ export function SortableTree({
 	if (!editor) return null;
 
 	return (
-		<div className="flex">
-			<div className="pt-4 w-[200px]">
-				<SortableContext
-					items={sortedIds}
-					strategy={verticalListSortingStrategy}
-				>
-					{flattenedItems.map(({ id, children, collapsed, depth, file }) => (
-						<SortableTreeItem
-							key={id}
-							id={id}
-							value={id}
-							depth={id === activeId && projected ? projected.depth : depth}
-							indentationWidth={indentationWidth}
-							indicator={indicator}
-							collapsed={Boolean(collapsed && children.length)}
-							onCollapse={
-								collapsible && children.length
-									? () => handleCollapse(id)
-									: undefined
-							}
-							onRemove={removable ? () => handleRemove(id) : undefined}
-							childCount={children.length}
-							file={file}
-							editor={editor.editor}
-						/>
-					))}
-				</SortableContext>
-			</div>
-			{children}
+		<div className="pt-4 w-full">
+			<SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
+				{flattenedItems.map(({ id, children, collapsed, depth, file }) => (
+					<SortableTreeItem
+						key={id}
+						id={id}
+						value={id}
+						depth={id === activeId && projected ? projected.depth : depth}
+						indentationWidth={indentationWidth}
+						indicator={indicator}
+						collapsed={Boolean(collapsed && children.length)}
+						onCollapse={
+							collapsible && children.length
+								? () => handleCollapse(id)
+								: undefined
+						}
+						onRemove={removable ? () => handleRemove(id) : undefined}
+						childCount={children.length}
+						file={file}
+						editor={editor.editor}
+					/>
+				))}
+			</SortableContext>
 		</div>
 	);
 }

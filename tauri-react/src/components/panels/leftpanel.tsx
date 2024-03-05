@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { saveDocument, useDocuments } from "@/fetch/documents";
 import { Panel, useDocStore, usePanelStore } from "@/app_state";
 
-export const LeftPanel = ({ editor }) => {
+export const LeftPanel = ({ editor, child }) => {
 	const updateDoc = useDocStore((state) => state.updateDoc);
 	const documents = useDocuments();
 	const doc = useDocStore((state) => state.doc);
@@ -173,6 +173,7 @@ export const LeftPanel = ({ editor }) => {
 					</PopoverContent>
 				</Popover>
 			</div>
+			{child}
 		</div>
 	);
 };

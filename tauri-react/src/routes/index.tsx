@@ -18,13 +18,16 @@ import {
 	DragEndEvent,
 	DragMoveEvent,
 	DragOverEvent,
+	DragOverlay,
 	DragStartEvent,
+	DropAnimation,
 	KeyboardSensor,
 	MeasuringStrategy,
 	PointerSensor,
 	SensorContext,
 	UniqueIdentifier,
 	closestCenter,
+	pointerWithin,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
@@ -38,6 +41,9 @@ import {
 } from "@/components/filetree/utilities";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useDocuments } from "@/fetch/documents";
+import { createPortal } from "react-dom";
+import { SortableTreeItem } from "@/components/filetree/node/SortableTreeItem";
+import { CSS } from "@dnd-kit/utilities";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -82,7 +88,7 @@ function HomeComponent() {
 	}
 
 	const { data } = useDocuments();
-  const docStore = useDocStore((state) => state);
+	const docStore = useDocStore((state) => state);
 	const [items, setItems] = useState(() => []);
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
@@ -91,7 +97,7 @@ function HomeComponent() {
 		parentId: UniqueIdentifier | null;
 		overId: UniqueIdentifier;
 	} | null>(null);
-  const indicator = false;
+	const indicator = false;
 	const indentationWidth = 20;
 
 	useEffect(() => {
@@ -122,6 +128,7 @@ function HomeComponent() {
 			activeId ? [activeId, ...collapsedItems] : collapsedItems,
 		);
 	}, [activeId, items]);
+
 	const projected =
 		activeId && overId
 			? getProjection(
@@ -132,6 +139,7 @@ function HomeComponent() {
 					indentationWidth,
 			  )
 			: null;
+
 	const sensorContext: SensorContext = useRef({
 		items: flattenedItems,
 		offset: offsetLeft,
@@ -182,12 +190,18 @@ function HomeComponent() {
 		document.body.style.setProperty("cursor", "grabbing");
 	}
 
-	function handleDragMove({ delta }: DragMoveEvent) {
-		setOffsetLeft(delta.x);
+	function handleDragMove({ delta, over }: DragMoveEvent) {
+		if (over?.id !== "editor") {
+			setOffsetLeft(delta.x);
+		}
 	}
 
-	function handleDragOver({ over }: DragOverEvent) {
-		setOverId(over?.id ?? null);
+	function handleDragOver({ delta, over }: DragOverEvent) {
+		if (over?.id === "editor") {
+			setOverId(activeId);
+		} else {
+			setOverId(over?.id ?? null);
+		}
 	}
 
 	function findParentWithNullFile(tree, id, parent = null) {
@@ -266,6 +280,33 @@ function HomeComponent() {
 		);
 	}
 
+	function tree() {
+		return (
+			<SortableTree
+				collapsible
+				indicator
+				removable
+				sortedIds={sortedIds}
+				handleCollapse={handleCollapse}
+				handleRemove={handleRemove}
+				projected={projected}
+				flattenedItems={flattenedItems}
+				activeId={activeId}
+			/>
+		);
+	}
+
+	const dropAnimationConfig: DropAnimation = {
+		keyframes({ transform }) {
+			return [
+				{ opacity: 1, transform: CSS.Transform.toString(transform.initial) },
+				{ opacity: 0, transform: CSS.Transform.toString(transform.initial) }, // Keep the position same as initial
+			];
+		},
+		easing: "ease-out",
+		// Removed the sideEffects function since you want to eliminate the additional animation
+	};
+
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
@@ -273,37 +314,41 @@ function HomeComponent() {
 				<CommandPanel editor={tiptap.editor} />
 				<DndContext
 					sensors={sensors}
-					collisionDetection={closestCenter}
-					measuring={measuring}
+					collisionDetection={pointerWithin}
 					onDragStart={handleDragStart}
 					onDragMove={handleDragMove}
 					onDragOver={handleDragOver}
 					onDragEnd={handleDragEnd}
 					onDragCancel={handleDragCancel}
-				>	
-					<div className="absolute bg-background left-0 top-0 w-[200px] overflow-y-auto">
-						<LeftPanel editor={tiptap.editor} />
-						<SortableTree
-							collapsible
-							indicator
-							removable
-							sortedIds={sortedIds}
-							handleCollapse={handleCollapse}
-							handleRemove={handleRemove}
-							projected={projected}
-							flattenedItems={flattenedItems}
-							activeId={activeId}
-						/>
+				>
+					<div className="w-full h-full">
+						<div className="absolute left-0 top-0 w-[200px] h-full overflow-y-auto bg-alabaster dark:bg-dark2">
+							<LeftPanel editor={tiptap.editor} child={tree()} />
+						</div>
+						<DropZone id="editor">
+							<EditorContent
+								className={cn(
+									"absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24",
+									panel.left ? "left-[200px]" : "left-0",
+								)}
+								editor={tiptap.editor}
+							/>
+						</DropZone>
+						{createPortal(
+							<DragOverlay zIndex={100000} dropAnimation={dropAnimationConfig}>
+								{activeId && activeItem ? (
+									<SortableTreeItem
+										id={activeId}
+										depth={activeItem.depth}
+										clone
+										value={activeId.toString()}
+										indentationWidth={0}
+									/>
+								) : null}
+							</DragOverlay>,
+							document.body,
+						)}
 					</div>
-					<DropZone id="editor">
-						<EditorContent
-							className={cn(
-								"absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24",
-								panel.left ? "left-[200px]" : "left-0",
-							)}
-							editor={tiptap.editor}
-						/>
-					</DropZone>
 				</DndContext>
 				<BottomPanel editor={tiptap.editor} />
 			</div>

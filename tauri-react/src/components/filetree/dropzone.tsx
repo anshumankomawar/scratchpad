@@ -1,16 +1,17 @@
-import { FC, ReactNode } from 'react';
-import { useDroppable, UniqueIdentifier } from '@dnd-kit/core';
+import { FC, ReactNode } from "react";
+import { useDroppable, UniqueIdentifier } from "@dnd-kit/core";
 
-export const DropZone: FC<{ children: ReactNode, id: UniqueIdentifier }> = ({ children, id }) => {
-  const { setNodeRef } = useDroppable({ id })
+export const DropZone: FC<{ children: ReactNode; id: UniqueIdentifier }> = ({
+	children,
+	id,
+}) => {
+	const { setNodeRef, isOver } = useDroppable({ id });
 
-  const style = {
-    listStyleType: 'none',
-  };
+	console.log(isOver);
+	return (
+		<div ref={setNodeRef} className="h-full w-full">
+			{children}
+		</div>
+	);
+};
 
-  return (
-    <li ref={setNodeRef} style={style}>
-      {children}
-    </li>
-  );
-}
