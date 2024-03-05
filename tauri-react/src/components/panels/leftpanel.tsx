@@ -1,4 +1,4 @@
-import { SortableTree } from "@/components/filetree/SortableTree";
+import { SortableTree } from "../filetree/SortableTree.2";
 
 import {
 	Popover,
@@ -52,7 +52,6 @@ export const LeftPanel = ({ editor }) => {
 		};
 
 		updateDoc(newDoc);
-		console.log("After", doc_id);
 		updateTabs(newDoc);
 	};
 
@@ -60,7 +59,7 @@ export const LeftPanel = ({ editor }) => {
 		"size-6 stroke-dull_black dark:stroke-dull_white hover:bg-accent rounded-md p-1";
 
 	return (
-		<div className="bg-alabaster dark:bg-dark2 h-full pt-10 overflow-scroll px-2">
+		<div className="bg-alabaster dark:bg-dark2 h-full pt-10 overflow-none px-2">
 			<div className="flex flex-row mb-4 justify-end sticky top-5 bg-alabaster dark:bg-dark2 px-2">
 				<div className="text-md">Files</div>
 				<div className="flex-grow" />
@@ -174,7 +173,6 @@ export const LeftPanel = ({ editor }) => {
 					</PopoverContent>
 				</Popover>
 			</div>
-			<SortableTree collapsible indicator removable />
 		</div>
 	);
 };
