@@ -74,7 +74,7 @@ export default function Header() {
 					<Menu className="stroke-dull_black dark:stroke-dull_white" />
 				)}
 			</Button>
-			<div
+			{/*<div
 				className={cn(
 					"overflow-x-scroll overflow-y-none w-3/4 flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1.5 ml-1",
 					panel.left ? "ml-4" : "",
@@ -106,6 +106,7 @@ export default function Header() {
 					))}
 				</SortableContext>
 			</div>
+      */}
 			<div className="flex-grow" />
 			<Button
 				variant="ghost"
