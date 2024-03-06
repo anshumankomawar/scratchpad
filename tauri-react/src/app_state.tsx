@@ -32,6 +32,11 @@ export const useDocStore = create((set) => ({
 		})),
 }));
 
+// export const useEditorStore = create((set) => ({
+//   leftEditor:
+
+// }))
+
 export const useDndStore = create((set) => ({
 	parent: "",
 	updateParent: (newParent) => set((state) => ({ parent: newParent })),

@@ -83,8 +83,8 @@ function HomeComponent() {
 		return () => document.removeEventListener("keyup", handleKeyUp);
 	}, []);
 
-	if (!tiptap.editor) {
-		return <div>Loading...</div>;
+	if (!tiptap.editor || !tiptap.rightEditor) {
+		return <div />;
 	}
 
 	const { data } = useDocuments();
@@ -93,6 +93,7 @@ function HomeComponent() {
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
 	const [offsetLeft, setOffsetLeft] = useState(0);
+	const [isRightEditorOpen, setIsRightEditorOpen] = useState(false);
 	const [currentPosition, setCurrentPosition] = useState<{
 		parentId: UniqueIdentifier | null;
 		overId: UniqueIdentifier;
@@ -232,6 +233,8 @@ function HomeComponent() {
 			docStore.updateTabs(file.file);
 			tiptap.editor?.commands.setContent(file.file.content);
 			tiptap.editor?.commands.focus("start");
+		} else if (projected && over?.id === "second-editor") {
+			setIsRightEditorOpen(true);
 		} else if (projected && over) {
 			const { depth, parentId } = projected;
 			const clonedItems: FlattenedItem[] = JSON.parse(
@@ -328,11 +331,23 @@ function HomeComponent() {
 						<DropZone id="editor" leftPanel={panel.left}>
 							<EditorContent
 								className={cn(
-									"absolute transition-[left] border-l left-1/5 right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24",
+									"absolute transition-[left] border-l left-1/5 right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-48 md:px-24 sm:px-20 px-20",
 									panel.left ? "left-1/5" : "left-0",
+                  isRightEditorOpen && panel.left && "right-2/5",
+                  isRightEditorOpen && !panel.left && "right-1/2",
+                  isRightEditorOpen && "lg:px-24 md:px-12 sm:px-20 px-10",
 								)}
 								editor={tiptap.editor}
 							/>
+							{isRightEditorOpen && (
+								<EditorContent
+									className={cn(
+										"absolute transition-[left] border-l left-1/2 right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",
+                    panel.left && "left-3/5" 
+									)}
+									editor={tiptap.rightEditor}
+								/>
+							)}
 						</DropZone>
 						{createPortal(
 							<DragOverlay zIndex={100000} dropAnimation={null}>

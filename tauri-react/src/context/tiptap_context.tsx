@@ -26,6 +26,7 @@ import "@/tiptap.scss";
 
 export interface TiptapContext {
 	editor: Editor | null;
+  rightEditor: Editor | null;
 }
 
 const TiptapContext = React.createContext<TiptapContext | null>(null);
@@ -143,13 +144,24 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		editorProps: {
 			attributes: {
 				class:
-					"top-14 pt-20 h-full overflow-y-scroll outline-none lg:mx-48 md:mx-24 sm:mx-20 mx-20",
+					"top-14 pt-20 h-full overflow-y-scroll outline-none",
+			},
+		},
+	});
+
+  const rightEditor = useEditor({
+		extensions,
+		content,
+		editorProps: {
+			attributes: {
+				class:
+					"top-14 pt-20 h-full overflow-y-scroll outline-none",
 			},
 		},
 	});
 
 	return (
-		<TiptapContext.Provider value={{ editor }}>
+		<TiptapContext.Provider value={{ editor, rightEditor }}>
 			{children}
 		</TiptapContext.Provider>
 	);
