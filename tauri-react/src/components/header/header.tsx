@@ -57,7 +57,7 @@ export default function Header() {
 		<div
 			className={cn(
 				"transition-all h-full flex flex-row items-center",
-				panel.left ? "pl-40" : "pl-20",
+				panel.left ? "pl-36" : "pl-20",
 			)}
 			data-tauri-drag-region
 		>

@@ -60,7 +60,7 @@ export const LeftPanel = ({ editor, child }) => {
 
 	return (
 		<div className="bg-alabaster dark:bg-dark2 h-full pt-10 overflow-none px-2">
-			<div className="flex flex-row mb-4 justify-end sticky top-5 bg-alabaster dark:bg-dark2 px-2">
+			<div className="flex flex-row pb-4 justify-end sticky top-10 bg-alabaster dark:bg-dark2 px-2 overflow-none">
 				<div className="text-md">Files</div>
 				<div className="flex-grow" />
 				<Popover>
