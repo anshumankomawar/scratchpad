@@ -97,7 +97,7 @@ export function SortableTree({
 	if (!editor) return null;
 
 	return (
-		<div className="pt-4 w-full">
+		<div className="w-full">
 			<SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
 				{flattenedItems.map(({ id, children, collapsed, depth, file }) => (
 					<SortableTreeItem

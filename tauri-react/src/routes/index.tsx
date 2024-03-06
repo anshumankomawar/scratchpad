@@ -110,6 +110,7 @@ function HomeComponent() {
 					file: file,
 				})),
 				file: null,
+				collapsed: true,
 			}));
 			setItems(newItems);
 		}
@@ -191,7 +192,8 @@ function HomeComponent() {
 	}
 
 	function handleDragMove({ delta, over }: DragMoveEvent) {
-		if (over?.id !== "editor") {
+		const item = flattenedItems.find(({ id }) => id === over?.id);
+		if (item?.children.length > 0) {
 			setOffsetLeft(delta.x);
 		}
 	}
@@ -230,10 +232,7 @@ function HomeComponent() {
 			docStore.updateTabs(file.file);
 			tiptap.editor?.commands.setContent(file.file.content);
 			tiptap.editor?.commands.focus("start");
-			return;
-		}
-
-		if (projected && over) {
+		} else if (projected && over) {
 			const { depth, parentId } = projected;
 			const clonedItems: FlattenedItem[] = JSON.parse(
 				JSON.stringify(flattenTree(items)),
@@ -253,6 +252,8 @@ function HomeComponent() {
 
 			setItems(newItems);
 		}
+
+		document.body.style.setProperty("cursor", "auto");
 	}
 
 	function handleDragCancel() {
@@ -304,7 +305,6 @@ function HomeComponent() {
 			];
 		},
 		easing: "ease-out",
-		// Removed the sideEffects function since you want to eliminate the additional animation
 	};
 
 	return (
@@ -335,7 +335,7 @@ function HomeComponent() {
 							/>
 						</DropZone>
 						{createPortal(
-							<DragOverlay zIndex={100000} dropAnimation={dropAnimationConfig}>
+							<DragOverlay zIndex={100000} dropAnimation={null}>
 								{activeId && activeItem ? (
 									<SortableTreeItem
 										id={activeId}

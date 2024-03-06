@@ -67,7 +67,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
 				<div
 					className={cn(
 						"flex flex-row px-2 py-1 rounded-md justify-center items-center",
-						ghost && "bg-accent",
+						ghost && "",
 						clone && "bg-accent",
 					)}
 					ref={ref}

@@ -103,7 +103,7 @@ function ProtectedRoute() {
 	}
 
 	if (!tiptap.editor) {
-		return <div>Loading...</div>;
+		return <div></div>;
 	}
 
 	return (
