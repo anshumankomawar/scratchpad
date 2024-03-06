@@ -151,8 +151,8 @@ function HomeComponent() {
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
 			activationConstraint: {
-				delay: 200,
-				tolerance: 10,
+				delay: 100,
+				tolerance: 15,
 			},
 		}),
 		useSensor(KeyboardSensor, {
@@ -322,14 +322,14 @@ function HomeComponent() {
 					onDragCancel={handleDragCancel}
 				>
 					<div className="w-full h-full">
-						<div className="absolute left-0 top-0 w-[200px] h-full overflow-y-auto bg-alabaster dark:bg-dark2">
+						<div className="absolute left-0 top-0 w-1/5 h-full overflow-y-auto bg-alabaster dark:bg-dark2">
 							<LeftPanel editor={tiptap.editor} child={tree()} />
 						</div>
-						<DropZone id="editor">
+						<DropZone id="editor" leftPanel={panel.left}>
 							<EditorContent
 								className={cn(
-									"absolute transition-[left] border-l left-[200px] right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24",
-									panel.left ? "left-[200px]" : "left-0",
+									"absolute transition-[left] border-l left-1/5 right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24",
+									panel.left ? "left-1/5" : "left-0",
 								)}
 								editor={tiptap.editor}
 							/>

@@ -16,6 +16,13 @@ module.exports = {
 			},
 		},
 		extend: {
+            inset: {
+                '1/5': '20%',
+                '2/5': '40%',
+                '3/5': '60%',
+                '4/5': '80%',
+                '5/5': '100%',
+            },
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
