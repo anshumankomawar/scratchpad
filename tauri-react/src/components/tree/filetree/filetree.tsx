@@ -12,10 +12,8 @@ import type { FlattenedItem, TreeItems } from "./types";
 import { FolderTreeItem } from "@/components/tree/filetree/filetree_item";
 import { CSS } from "@dnd-kit/utilities";
 import { useTipTapEditor } from "@/context/tiptap_context";
-import { useDocStore } from "@/app_state";
-import { Input } from "@/components/ui/input";
+import { useDocStore, useTreeStore } from "@/app_state";
 import { useState } from "react";
-import { removeItem } from "@/components/filetree/utilities";
 import { saveDocument, useDocuments } from "@/fetch/documents";
 
 const dropAnimationConfig: DropAnimation = {
@@ -48,13 +46,9 @@ interface Props {
 	indicator?: boolean;
 	removable?: boolean;
 	children?: React.ReactNode;
-	sortedIds: UniqueIdentifier[];
-	activeId: UniqueIdentifier | null;
-	flattenedItems: FlattenedItem[];
 	handleCollapse: (id: UniqueIdentifier) => void;
 	handleRemove: (id: UniqueIdentifier) => void;
 	projected: any;
-	setItems: any;
 }
 
 export function FileTree({
@@ -62,17 +56,14 @@ export function FileTree({
 	indicator = false,
 	indentationWidth = 20,
 	removable,
-	sortedIds,
-	activeId,
-	flattenedItems,
 	handleCollapse,
 	handleRemove,
 	projected,
-	setItems,
 	children,
 }: Props) {
 	const editor = useTipTapEditor();
 	const docStore = useDocStore((state) => state);
+	const treeStore = useTreeStore((state) => state);
 	if (!editor) return null;
 	const [newFileName, setNewFileName] = useState("");
 	const documents = useDocuments();
@@ -94,24 +85,24 @@ export function FileTree({
 	};
 
 	const updateItemsWithRemoveAndAdd = (folderName, itemIdToRemove, newItem) => {
-		setItems((prevItems) => {
-			return prevItems.map((item) => {
+		treeStore.updateTree(
+			treeStore.flattenedTree.map((item) => {
 				if (item.foldername === folderName) {
 					const updatedChildren = item.children.filter(
 						(child) => child.id !== itemIdToRemove,
 					);
-					if (newItem && newItem.id) {
+					if (newItem?.id) {
 						updatedChildren.push(newItem);
 					}
 					return { ...item, children: updatedChildren };
 				}
 				return item;
-			});
-		});
+			}),
+		);
 	};
 
 	const removeItemFromFolder = (folderName, itemId) => {
-		let updatedItems = flattenedItems.map((item) => {
+		let updatedItems = treeStore.flattenedTree.map((item) => {
 			if (item.foldername === folderName) {
 				const updatedChildren = item.children.filter(
 					(child) => child.id !== itemId,
@@ -121,13 +112,16 @@ export function FileTree({
 			return item;
 		});
 
-		setItems(updatedItems);
+		treeStore.updateTree(updatedItems);
 	};
 
 	return (
 		<div className="w-full">
-			<SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-				{flattenedItems.map(
+			<SortableContext
+				items={treeStore.sortedIds}
+				strategy={verticalListSortingStrategy}
+			>
+				{treeStore.flattenedTree.map(
 					({ id, foldername, children, collapsed, depth, file }) => {
 						if (id !== docStore.doc.folder_id) return;
 						return children.map((child) => {
@@ -183,7 +177,7 @@ export function FileTree({
 									id={child.id}
 									value={child.id}
 									depth={
-										child.id === activeId && projected
+										child.id === treeStore.activeId && projected
 											? projected.depth
 											: child.depth
 									}

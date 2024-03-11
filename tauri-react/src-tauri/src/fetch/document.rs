@@ -40,6 +40,19 @@ pub async fn save_document(filename: &str, content: &str, folderId: &str, state:
 }
 
 #[tauri::command]
+pub async fn delete_document(fileId: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<()> {
+    let token = get_from_store(&state, &app)?;
+
+    let res = state.client.delete("http://localhost:8000/document")
+    .query(&[("id", fileId)])
+    .header(AUTHORIZATION, format!("Bearer {}", token))
+    .send()
+    .await?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn add_folder(foldername: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
     let params = [("foldername", &foldername), ("icon", &"icon")];
     let token = get_from_store(&state, &app)?;

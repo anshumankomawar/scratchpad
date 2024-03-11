@@ -12,7 +12,7 @@ import type { FlattenedItem, TreeItems } from "./types";
 import { FolderTreeItem } from "@/components/tree/foldertree/foldertree_item";
 import { CSS } from "@dnd-kit/utilities";
 import { useTipTapEditor } from "@/context/tiptap_context";
-import { useDocStore } from "@/app_state";
+import { useDocStore, useTreeStore } from "@/app_state";
 import { saveDocument, useDocuments } from "@/fetch/documents";
 import { useState } from "react";
 import { addFolder } from "@/fetch/folder";
@@ -48,12 +48,9 @@ interface Props {
 	removable?: boolean;
 	children?: React.ReactNode;
 	sortedIds: UniqueIdentifier[];
-	activeId: UniqueIdentifier | null;
-	flattenedItems: FlattenedItem[];
 	handleCollapse: (id: UniqueIdentifier) => void;
 	handleRemove: (id: UniqueIdentifier) => void;
 	projected: any;
-	setItems: any;
 }
 
 export function FolderTree({
@@ -62,16 +59,14 @@ export function FolderTree({
 	indentationWidth = 20,
 	removable,
 	sortedIds,
-	activeId,
-	flattenedItems,
 	handleCollapse,
 	handleRemove,
 	projected,
 	children,
-	setItems,
 }: Props) {
 	const editor = useTipTapEditor();
 	const docStore = useDocStore((state) => state);
+	const treeStore = useTreeStore((state) => state);
 	if (!editor) return null;
 	const [newFoldername, setNewFoldername] = useState("");
 	const documents = useDocuments();
@@ -83,12 +78,14 @@ export function FolderTree({
 	};
 
 	const removeFolder = (folderId) => {
-		let updatedItems = flattenedItems.filter((item) => item.id !== folderId);
-		setItems(updatedItems);
+		let updatedItems = treeStore.flattenedTree.filter(
+			(item) => item.id !== folderId,
+		);
+		treeStore.updateTree(updatedItems);
 	};
 
 	const updateFoldersWithRemoveAndAdd = () => {
-		const updatedItems = flattenedItems.filter(
+		const updatedItems = treeStore.flattenedTree.filter(
 			(item) => item.id !== "newfolder",
 		);
 		const newItem = {
@@ -100,14 +97,14 @@ export function FolderTree({
 		};
 
 		updatedItems.push(newItem);
-		setItems(updatedItems);
+		treeStore.updateTree(updatedItems);
 		docStore.updateFolder(newFoldername, newFoldername);
 	};
 
 	return (
 		<div className="w-full">
 			<SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-				{flattenedItems.map(
+				{treeStore.flattenedTree.map(
 					({ id, foldername, children, collapsed, depth, file }) => {
 						if (id === "newfolder")
 							return (
@@ -124,7 +121,7 @@ export function FolderTree({
 										onKeyDown={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
-												updateFoldersWithRemoveAndAdd("temp");
+												updateFoldersWithRemoveAndAdd();
 												if (newFoldername !== "") {
 													handleNewFolder();
 												}
@@ -144,7 +141,11 @@ export function FolderTree({
 								key={id}
 								id={id}
 								value={id}
-								depth={id === activeId && projected ? projected.depth : depth}
+								depth={
+									id === treeStore.activeId && projected
+										? projected.depth
+										: depth
+								}
 								indentationWidth={indentationWidth}
 								indicator={indicator}
 								collapsed={Boolean(collapsed && children.length)}

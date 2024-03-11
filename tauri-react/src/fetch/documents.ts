@@ -39,8 +39,19 @@ export const updateDocument = async (filename, folderId, content, currId) => {
 		currId: currId,
 	})
 		.then((doc_id) => {
+			console.log("update", doc_id);
 			return doc_id;
 		})
+		.catch((error) => {
+			console.log(error);
+		});
+};
+
+export const deleteDocument = async (fileId) => {
+	return await invoke("delete_document", {
+		fileId: fileId,
+	})
+		.then((_) => {})
 		.catch((error) => {
 			console.log(error);
 		});

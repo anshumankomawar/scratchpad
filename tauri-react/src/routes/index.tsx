@@ -1,8 +1,7 @@
-import { Panel, useDocStore, usePanelStore } from "@/app_state";
+import { Panel, useDocStore, usePanelStore, useTreeStore } from "@/app_state";
 import CommandPanel from "@/components/command/command";
 import BottomPanel from "@/components/panels/bottompanel";
 import RightFloatingPanel from "@/components/panels/rightfloatingpanel";
-import { LeftPanel } from "@/components/panels/leftpanel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useTipTapEditor } from "@/context/tiptap_context";
 import "@/index.css";
@@ -11,8 +10,6 @@ import "@/tiptap.scss";
 import { createFileRoute } from "@tanstack/react-router";
 import { EditorContent } from "@tiptap/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DropZone } from "@/components/filetree/dropzone";
-import { SortableTree } from "@/components/filetree/SortableTree";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -39,6 +36,7 @@ import {
 	flattenTree,
 	getProjection,
 	removeChildrenOf,
+	removeItem,
 	setProperty,
 } from "@/components/filetree/utilities";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -62,22 +60,26 @@ function HomeComponent() {
 	const panel = usePanelStore((state) => state);
 	const { data, refetch } = useDocuments();
 	const docStore = useDocStore((state) => state);
-	const [items, setItems] = useState(() => []);
-	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
 	const [offsetLeft, setOffsetLeft] = useState(0);
-	const [isRightEditorOpen, setIsRightEditorOpen] = useState(false);
 	const [currentPosition, setCurrentPosition] = useState<{
 		parentId: UniqueIdentifier | null;
 		overId: UniqueIdentifier;
 	} | null>(null);
 	const indicator = false;
 	const indentationWidth = 20;
+	const treeStore = useTreeStore((state) => state);
 
 	if (!tiptap.editor || !tiptap.rightEditor) {
 		return <div />;
 	}
+
 	const previousDocRef = useRef(docStore.doc);
+	const isUpdatingRef = useRef(false);
+
+	useEffect(() => {
+		previousDocRef.current = docStore.doc;
+	}, [docStore.doc]);
 
 	useEffect(() => {
 		async function handleKeyUpAsync(event) {
@@ -98,6 +100,10 @@ function HomeComponent() {
 				panel.setPanel(Panel.COMMAND, false);
 			} else if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
+				if (isUpdatingRef.current) {
+					return; // Prevent update if already in progress
+				}
+				isUpdatingRef.current = true;
 				try {
 					const doc_id = await updateDocument(
 						docStore.doc.filename,
@@ -106,17 +112,23 @@ function HomeComponent() {
 						docStore.doc.id,
 					);
 					if (docStore.doc.id === previousDocRef.current.id) {
+						treeStore.updateTreeOnDocumentUpdate(
+							previousDocRef.current.foldername,
+							previousDocRef.current.id,
+							doc_id,
+						);
 						docStore.updateDoc({ ...docStore.doc, id: doc_id });
 					}
-					refetch();
+					await refetch();
 				} catch (error) {
 					console.error("Failed to update document", error);
+				} finally {
+					isUpdatingRef.current = false; // Reset flag regardless of success or failure
 				}
 			}
 		}
 
 		function handleKeyUp(event) {
-			// Call the async function within the synchronous event handler
 			handleKeyUpAsync(event).catch(console.error);
 		}
 
@@ -131,42 +143,15 @@ function HomeComponent() {
 					docStore.updateFolder(data["unfiled"].id, docStore.doc.foldername);
 				}
 			}
-			const newItems = Object.entries(data).map(([folderName, files]) => ({
-				id: files.id,
-				foldername: folderName,
-				children: files.documents.map((file) => ({
-					folder_id: files.id,
-					foldername: folderName,
-					id: file.filename,
-					children: [],
-					file: file,
-				})),
-				file: null,
-				collapsed: true,
-			}));
-			setItems(newItems);
+			treeStore.updateData(data);
 		}
 	}, [data]);
 
-	const flattenedItems = useMemo(() => {
-		const flattenedTree = flattenTree(items);
-		const collapsedItems = flattenedTree.reduce<string[]>(
-			(acc, { children, collapsed, id, file }) =>
-				collapsed && children.length ? [...acc, id, file] : acc,
-			[],
-		);
-
-		return removeChildrenOf(
-			flattenedTree,
-			activeId ? [activeId, ...collapsedItems] : collapsedItems,
-		);
-	}, [activeId, items]);
-
 	const projected =
-		activeId && overId
+		treeStore.activeId && overId
 			? getProjection(
-					flattenedItems,
-					activeId,
+					treeStore.flattenedTree,
+					treeStore.activeId,
 					overId,
 					offsetLeft,
 					indentationWidth,
@@ -174,7 +159,7 @@ function HomeComponent() {
 			: null;
 
 	const sensorContext: SensorContext = useRef({
-		items: flattenedItems,
+		items: treeStore.flattenedTree,
 		offset: offsetLeft,
 	});
 	const [coordinateGetter] = useState(() =>
@@ -192,26 +177,20 @@ function HomeComponent() {
 		}),
 	);
 
-	const sortedIds = useMemo(
-		() => flattenedItems.map(({ id }) => id),
-		[flattenedItems],
-	);
-	const activeItem = activeId
-		? flattenedItems.find(({ id }) => id === activeId)
-		: null;
-
 	useEffect(() => {
 		sensorContext.current = {
-			items: flattenedItems,
+			items: treeStore.flattenedTree,
 			offset: offsetLeft,
 		};
-	}, [flattenedItems, offsetLeft]);
+	}, [treeStore.flattenedTree, offsetLeft]);
 
 	function handleDragStart({ active: { id: activeId } }: DragStartEvent) {
-		setActiveId(activeId);
+		treeStore.updateActiveId(activeId);
 		setOverId(activeId);
 
-		const activeItem = flattenedItems.find(({ id }) => id === activeId);
+		const activeItem = treeStore.flattenedTree.find(
+			({ id }) => id === activeId,
+		);
 
 		if (activeItem) {
 			setCurrentPosition({
@@ -224,7 +203,7 @@ function HomeComponent() {
 	}
 
 	function handleDragMove({ delta, over }: DragMoveEvent) {
-		const item = flattenedItems.find(({ id }) => id === over?.id);
+		const item = treeStore.flattenedTree.find(({ id }) => id === over?.id);
 		if (item?.children.length > 0) {
 			setOffsetLeft(delta.x);
 		}
@@ -232,7 +211,7 @@ function HomeComponent() {
 
 	function handleDragOver({ delta, over }: DragOverEvent) {
 		if (over?.id === "editor") {
-			setOverId(activeId);
+			setOverId(treeStore.activeId);
 		} else {
 			setOverId(over?.id ?? null);
 		}
@@ -259,17 +238,15 @@ function HomeComponent() {
 		resetState();
 
 		if (projected && over?.id === "editor") {
-			const file = flattenedItems.find(({ id }) => id === active.id);
+			const file = treeStore.flattenedTree.find(({ id }) => id === active.id);
 			docStore.updateDoc(file.file);
 			docStore.updateTabs(file.file);
 			tiptap.editor?.commands.setContent(file.file.content);
 			tiptap.editor?.commands.focus("start");
-		} else if (projected && over?.id === "second-editor") {
-			setIsRightEditorOpen(true);
 		} else if (projected && over) {
 			const { depth, parentId } = projected;
-			const clonedItems: FlattenedItem[] = JSON.parse(
-				JSON.stringify(flattenTree(items)),
+			const clonedItems: [] = JSON.parse(
+				JSON.stringify(flattenTree(treeStore.flattenedTree)),
 			);
 			const overIndex = clonedItems.findIndex(({ id }) => id === over.id);
 			const activeIndex = clonedItems.findIndex(({ id }) => id === active.id);
@@ -284,7 +261,7 @@ function HomeComponent() {
 			const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
 			const newItems = buildTree(sortedItems);
 
-			setItems(newItems);
+			treeStore.updateTree(newItems);
 		}
 
 		document.body.style.setProperty("cursor", "auto");
@@ -296,7 +273,7 @@ function HomeComponent() {
 
 	function resetState() {
 		setOverId(null);
-		setActiveId(null);
+		treeStore.updateActiveId(null);
 		setOffsetLeft(0);
 		setCurrentPosition(null);
 
@@ -304,52 +281,26 @@ function HomeComponent() {
 	}
 
 	function handleRemove(id: UniqueIdentifier) {
-		setItems((items) => removeItem(items, id));
+		treeStore.updateTree(removeItem(treeStore.tree, id));
 	}
 
 	function handleCollapse(id: UniqueIdentifier) {
-		setItems((items) =>
-			setProperty(items, id, "collapsed", (value) => {
+		treeStore.updateTree(
+			setProperty(treeStore.tree, id, "collapsed", (value) => {
 				return !value;
 			}),
 		);
 	}
 
-	function tree() {
-		return (
-			<SortableTree
-				collapsible
-				indicator
-				removable
-				sortedIds={sortedIds}
-				handleCollapse={handleCollapse}
-				handleRemove={handleRemove}
-				projected={projected}
-				flattenedItems={flattenedItems}
-				activeId={activeId}
-			/>
-		);
-	}
-
-	function style(color) {
-		return {
-			height: "100%",
-			display: "flex",
-			alignItems: "center",
-			justifyContent: "center",
-			backgroundColor: color,
-		};
-	}
-
-	const dropAnimationConfig: DropAnimation = {
-		keyframes({ transform }) {
-			return [
-				{ opacity: 1, transform: CSS.Transform.toString(transform.initial) },
-				{ opacity: 0, transform: CSS.Transform.toString(transform.initial) }, // Keep the position same as initial
-			];
-		},
-		easing: "ease-out",
-	};
+	//const dropAnimationConfig: DropAnimation = {
+	//keyframes({ transform }) {
+	//return [
+	//{ opacity: 1, transform: CSS.Transform.toString(transform.initial) },
+	//{ opacity: 0, transform: CSS.Transform.toString(transform.initial) }, // Keep the position same as initial
+	//];
+	//},
+	//easing: "ease-out",
+	//};
 
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
@@ -375,7 +326,7 @@ function HomeComponent() {
 									variant={"ghost"}
 									size={"toolbar"}
 									onClick={() => {
-										let updatedItems = [...items];
+										let updatedItems = [...treeStore.tree];
 
 										const existingItemIndex = updatedItems.findIndex(
 											(item) => item.id === "newfolder",
@@ -390,7 +341,7 @@ function HomeComponent() {
 											};
 
 											updatedItems.push(newItem);
-											setItems(updatedItems);
+											treeStore.updateTree(updatedItems);
 										} else {
 											console.error("A 'newfolder' item already exists");
 										}
@@ -417,13 +368,10 @@ function HomeComponent() {
 									collapsible
 									indicator
 									removable
-									sortedIds={sortedIds}
+									sortedIds={treeStore.sortedIds}
 									handleCollapse={handleCollapse}
 									handleRemove={handleRemove}
 									projected={projected}
-									flattenedItems={flattenedItems}
-									activeId={activeId}
-									setItems={setItems}
 								/>
 							</DndContext>
 						</div>
@@ -445,7 +393,7 @@ function HomeComponent() {
 									variant={"ghost"}
 									size={"toolbar"}
 									onClick={() => {
-										let updatedItems = [...items];
+										let updatedItems = [...treeStore.tree];
 
 										const folderIndex = updatedItems.findIndex(
 											(item) => item.id === docStore.doc.folder_id,
@@ -473,7 +421,7 @@ function HomeComponent() {
 												];
 
 												updatedItems[folderIndex] = updatedFolder;
-												setItems(updatedItems);
+												treeStore.updateTree(updatedItems);
 											}
 										} else {
 											console.error("Folder not found");
@@ -501,13 +449,10 @@ function HomeComponent() {
 									collapsible
 									indicator
 									removable
-									sortedIds={sortedIds}
+									sortedIds={treeStore.sortedIds}
 									handleCollapse={handleCollapse}
 									handleRemove={handleRemove}
 									projected={projected}
-									flattenedItems={flattenedItems}
-									activeId={activeId}
-									setItems={setItems}
 								/>
 							</DndContext>
 						</div>
