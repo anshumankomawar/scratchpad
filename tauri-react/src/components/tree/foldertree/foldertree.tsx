@@ -100,7 +100,6 @@ export function FolderTree({
 		};
 
 		updatedItems.push(newItem);
-		console.log("updatedItems", updatedItems);
 		setItems(updatedItems);
 		docStore.updateFolder(newFoldername, newFoldername);
 	};
