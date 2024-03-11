@@ -87,6 +87,24 @@ export function FolderTree({
 		setItems(updatedItems);
 	};
 
+	const updateFoldersWithRemoveAndAdd = () => {
+		const updatedItems = flattenedItems.filter(
+			(item) => item.id !== "newfolder",
+		);
+		const newItem = {
+			id: newFoldername,
+			foldername: newFoldername,
+			children: [],
+			file: null,
+			collapsed: true,
+		};
+
+		updatedItems.push(newItem);
+		console.log("updatedItems", updatedItems);
+		setItems(updatedItems);
+		docStore.updateFolder(newFoldername, newFoldername);
+	};
+
 	return (
 		<div className="w-full">
 			<SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
@@ -107,7 +125,7 @@ export function FolderTree({
 										onKeyDown={(e) => {
 											if (e.key === "Enter") {
 												e.preventDefault();
-												removeFolder("newfolder");
+												updateFoldersWithRemoveAndAdd("temp");
 												if (newFoldername !== "") {
 													handleNewFolder();
 												}
