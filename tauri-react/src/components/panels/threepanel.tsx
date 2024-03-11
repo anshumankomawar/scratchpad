@@ -99,7 +99,7 @@ const ThreePanelLayout = ({
 	// Adjusting the layout based on showAllPanels
 	const layoutStyle = panelStore.left
 		? { display: "flex", width: "100%", height: "100%" }
-		: { width: "100%", height: "100%" }; // Full width and height for single panel
+		: { display: "flex", width: "100%", height: "100%" }; // Full width and height for single panel
 
 	return (
 		<div ref={containerRef} style={layoutStyle}>
