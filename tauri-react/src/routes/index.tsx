@@ -13,11 +13,8 @@ import { EditorContent } from "@tiptap/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DropZone } from "@/components/filetree/dropzone";
 import { SortableTree } from "@/components/filetree/SortableTree";
-import SplitPane, { Pane } from "split-pane-react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import throttle from "lodash.throttle";
-import "split-pane-react/esm/themes/default.css";
 import {
 	DndContext,
 	DragEndEvent,
@@ -46,14 +43,9 @@ import {
 } from "@/components/filetree/utilities";
 import { arrayMove } from "@dnd-kit/sortable";
 import { updateDocument, useDocuments } from "@/fetch/documents";
-import { createPortal } from "react-dom";
-import { SortableTreeItem } from "@/components/filetree/node/SortableTreeItem";
-import { CSS } from "@dnd-kit/utilities";
-import { ResizablePanel } from "@/components/panels/resizablepanels";
 import { FolderTree } from "@/components/tree/foldertree/foldertree";
 import ThreePanelLayout from "@/components/panels/threepanel";
 import { FileTree } from "@/components/tree/filetree/filetree";
-//import SplitPane from "react-split-pane";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -368,12 +360,15 @@ function HomeComponent() {
 				<ThreePanelLayout>
 					{/*first panel*/}
 					<div className="flex flex-col w-full">
-						<div
-							className="h-10 border-b items-start justify-center align-middle flex flex-col"
-							data-tauri-drag-region
-						>
-							<div className="flex flex-row w-full justify-between items-end px-1">
-								<div className="ml-20 text-sm text-dull_black dark:text-dull_white font-medium">
+						<div className="h-10 border-b items-start justify-center align-middle flex flex-col">
+							<div
+								className="flex flex-row w-full justify-between items-end px-1"
+								data-tauri-drag-region
+							>
+								<div
+									className="ml-20 text-sm text-dull_black dark:text-dull_white font-medium cursor-default"
+									data-tauri-drag-region
+								>
 									Collate
 								</div>
 								<Button
@@ -435,12 +430,15 @@ function HomeComponent() {
 					</div>
 					{/*second panel*/}
 					<div className="flex flex-col w-full">
-						<div
-							className="h-10 border-b items-start justify-center align-middle flex flex-col"
-							data-tauri-drag-region
-						>
-							<div className="flex flex-row w-full justify-between items-end px-1 pl-4">
-								<div className="text-sm text-dull_black dark:text-dull_white">
+						<div className="h-10 border-b items-start justify-center align-middle flex flex-col">
+							<div
+								className="flex flex-row w-full justify-between items-end px-1 pl-4"
+								data-tauri-drag-region
+							>
+								<div
+									className="text-sm text-dull_black dark:text-dull_white cursor-default"
+									data-tauri-drag-region
+								>
 									{docStore.doc.foldername}
 								</div>
 								<Button

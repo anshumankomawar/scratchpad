@@ -108,19 +108,19 @@ function ProtectedRoute() {
 
 	return (
 		<div className="relative z-0 h-full w-full">
-			<DndContext
-				onDragStart={handleDragStart}
-				onDragEnd={handleDragEnd}
-				sensors={sensors}
-				collisionDetection={closestCenter}
-			>
-				<div className="z-50 fixed w-min top-0 right-0 h-10">
+			<div className="z-50 fixed w-min top-0 right-0 h-10">
+				<DndContext
+					onDragStart={handleDragStart}
+					onDragEnd={handleDragEnd}
+					sensors={sensors}
+					collisionDetection={closestCenter}
+				>
 					<Header />
-				</div>
-				<div className="-z-10 left-0 h-full w-full">
-					<Outlet />
-				</div>
-			</DndContext>
+				</DndContext>
+			</div>
+			<div className="-z-10 left-0 h-full w-full">
+				<Outlet />
+			</div>
 		</div>
 	);
 }

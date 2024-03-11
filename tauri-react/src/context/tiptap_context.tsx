@@ -101,9 +101,6 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 			nested: true,
 		}),
 		Placeholder.configure({
-			// Use a placeholder:
-			//placeholder: "Write something …",
-			// Use different placeholders depending on the node type:
 			placeholder: ({ node }) => {
 				if (node.type.name === "heading") {
 					return "Untitled";

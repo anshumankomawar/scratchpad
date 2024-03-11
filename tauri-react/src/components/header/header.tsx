@@ -59,6 +59,7 @@ export default function Header() {
 				"transition-all h-full flex flex-row items-center",
 				panel.left ? "pl-36" : "pl-20",
 			)}
+			data-tauri-drag-region
 		>
 			{/*<Button
 				variant="ghost"
