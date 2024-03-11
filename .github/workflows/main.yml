@@ -8,6 +8,9 @@ on:
 
 jobs:
   publish-tauri:
+    defaults:
+      run:
+        working-directory: ./tauri-react
     permissions:
       contents: write
     strategy:
@@ -41,7 +44,7 @@ jobs:
           tauriScript: 'bun tauri'
           projectPath: ./tauri-react
           tagName: scratchpad-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: 'App v__VERSION__'
+          releaseName: 'Scratchpad v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
