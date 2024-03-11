@@ -59,9 +59,6 @@
     }
   },
   "identifier": "com.scratchpad.dev",
-  "plugins": {
-    "updater": {}
-  },
   "productName": "scratchpad",
   "version": "0.1.0"
 }
