@@ -17,16 +17,16 @@ mod fetch;
 mod state;
 mod util;
 
-use error::Result; 
-use fetch::{auth::login, user::get_user};
+use error::Result;
+use fetch::document::{add_folder, get_documents, save_document, update_document};
 use fetch::search::search_user_documents;
-use fetch::document::{save_document, get_documents, update_document};
+use fetch::{auth::login, user::get_user};
 use state::TauriState;
 use util::check;
 
 use std::path::PathBuf;
+use tauri::{App, Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
-use tauri::{Manager, Wry, App};
 
 fn load_store(app: &mut App, path: &PathBuf) -> Result<()> {
     let stores = app.state::<StoreCollection<Wry>>();
@@ -53,8 +53,16 @@ fn main() {
             app.manage(TauriState::new(path));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![login, check, get_user, search_user_documents, save_document, get_documents, update_document])
+        .invoke_handler(tauri::generate_handler![
+            login,
+            check,
+            get_user,
+            search_user_documents,
+            save_document,
+            get_documents,
+            update_document,
+            add_folder
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-

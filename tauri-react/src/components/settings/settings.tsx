@@ -29,7 +29,7 @@ const appearanceFormSchema = z.object({
 	theme: z.enum(["light", "dark"], {
 		required_error: "Please select a theme.",
 	}),
-	font: z.enum(["Virgil", "Barlow"], {
+	font: z.enum(["Virgil", "Barlow", "System", "Lato", "CrimsonPro"], {
 		invalid_type_error: "Select a font",
 		required_error: "Please select a font.",
 	}),
@@ -54,7 +54,6 @@ export default function SettingsPage() {
 	});
 
 	function onSubmit(data: AppearanceFormValues) {
-		console.log(data);
 		setFontFamily(data.font);
 		setTheme(data.theme);
 	}
@@ -86,6 +85,9 @@ export default function SettingsPage() {
 											<SelectContent>
 												<SelectItem value="Virgil">Virgil</SelectItem>
 												<SelectItem value="Barlow">Barlow</SelectItem>
+												<SelectItem value="System">System</SelectItem>
+												<SelectItem value="Lato">Lato</SelectItem>
+												<SelectItem value="CrimsonPro">Crimson Pro</SelectItem>
 											</SelectContent>
 										</Select>
 									</FormControl>

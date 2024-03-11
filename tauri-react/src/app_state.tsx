@@ -5,7 +5,20 @@ export const useDocStore = create((set) => ({
 		filename: "",
 		foldername: "unfiled",
 		id: "",
+		folder_id: "",
 	},
+	updateFolder: (folderId, foldername) =>
+		set((state) => ({
+			doc: { ...state.doc, folder_id: folderId, foldername: foldername },
+		})),
+	updateFile: (folderId, foldername) =>
+		set((state) => ({
+			doc: {
+				...state.doc,
+				folder_id: state.doc.folderId,
+				foldername: state.doc.foldername,
+			},
+		})),
 	updateDoc: (newDoc) => set((state) => ({ doc: newDoc })),
 	tabs: [],
 	updateTabs: (newTab) =>
@@ -31,11 +44,6 @@ export const useDocStore = create((set) => ({
 			tabs: state.tabs.filter((tab) => tab.id !== toDelete.id),
 		})),
 }));
-
-// export const useEditorStore = create((set) => ({
-//   leftEditor:
-
-// }))
 
 export const useDndStore = create((set) => ({
 	parent: "",
@@ -63,7 +71,7 @@ export enum Panel {
 }
 
 export const usePanelStore = create<PanelState>((set) => ({
-	left: false,
+	left: true,
 	command: false,
 	right: false,
 	center: false,

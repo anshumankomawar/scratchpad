@@ -28,6 +28,7 @@ const buttonVariants = cva(
 				font: "h-8 pl-2 pr-1 py-2",
 				custom: "h-7 w-7",
 				menu: "h-7 w-7 p-1",
+				toolbar: "h-6 w-6 p-1",
 			},
 		},
 		defaultVariants: {

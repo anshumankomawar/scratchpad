@@ -13,6 +13,11 @@ import { EditorContent } from "@tiptap/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DropZone } from "@/components/filetree/dropzone";
 import { SortableTree } from "@/components/filetree/SortableTree";
+import SplitPane, { Pane } from "split-pane-react";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import throttle from "lodash.throttle";
+import "split-pane-react/esm/themes/default.css";
 import {
 	DndContext,
 	DragEndEvent,
@@ -40,10 +45,15 @@ import {
 	setProperty,
 } from "@/components/filetree/utilities";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useDocuments } from "@/fetch/documents";
+import { updateDocument, useDocuments } from "@/fetch/documents";
 import { createPortal } from "react-dom";
 import { SortableTreeItem } from "@/components/filetree/node/SortableTreeItem";
 import { CSS } from "@dnd-kit/utilities";
+import { ResizablePanel } from "@/components/panels/resizablepanels";
+import { FolderTree } from "@/components/tree/foldertree/foldertree";
+import ThreePanelLayout from "@/components/panels/threepanel";
+import { FileTree } from "@/components/tree/filetree/filetree";
+//import SplitPane from "react-split-pane";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -58,36 +68,7 @@ const measuring = {
 function HomeComponent() {
 	const tiptap = useTipTapEditor();
 	const panel = usePanelStore((state) => state);
-
-	useEffect(() => {
-		function handleKeyUp(event) {
-			if (event.key === "ArrowLeft" && (event.metaKey || event.ctrlKey)) {
-				event.preventDefault();
-				panel.togglePanel(Panel.LEFT);
-			} else if (
-				event.key === "ArrowRight" &&
-				(event.metaKey || event.ctrlKey)
-			) {
-				event.preventDefault();
-				panel.togglePanel(Panel.RIGHT);
-			} else if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
-				event.preventDefault();
-				panel.togglePanel(Panel.COMMAND);
-			} else if (event.key === "Escape") {
-				event.preventDefault();
-				panel.setPanel(Panel.COMMAND, false);
-			}
-		}
-
-		document.addEventListener("keyup", handleKeyUp);
-		return () => document.removeEventListener("keyup", handleKeyUp);
-	}, []);
-
-	if (!tiptap.editor || !tiptap.rightEditor) {
-		return <div />;
-	}
-
-	const { data } = useDocuments();
+	const { data, refetch } = useDocuments();
 	const docStore = useDocStore((state) => state);
 	const [items, setItems] = useState(() => []);
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
@@ -101,11 +82,69 @@ function HomeComponent() {
 	const indicator = false;
 	const indentationWidth = 20;
 
+	if (!tiptap.editor || !tiptap.rightEditor) {
+		return <div />;
+	}
+	const previousDocRef = useRef(docStore.doc);
+
+	useEffect(() => {
+		async function handleKeyUpAsync(event) {
+			if (event.key === "ArrowLeft" && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
+				panel.togglePanel(Panel.LEFT);
+			} else if (
+				event.key === "ArrowRight" &&
+				(event.metaKey || event.ctrlKey)
+			) {
+				event.preventDefault();
+				panel.togglePanel(Panel.RIGHT);
+			} else if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
+				panel.setPanel(Panel.COMMAND, true);
+			} else if (event.key === "Escape") {
+				event.preventDefault();
+				panel.setPanel(Panel.COMMAND, false);
+			} else if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
+				try {
+					const doc_id = await updateDocument(
+						docStore.doc.filename,
+						docStore.doc.folder_id,
+						tiptap.editor.getHTML(),
+						docStore.doc.id,
+					);
+					if (docStore.doc.id === previousDocRef.current.id) {
+						docStore.updateDoc({ ...docStore.doc, id: doc_id });
+					}
+					refetch();
+				} catch (error) {
+					console.error("Failed to update document", error);
+				}
+			}
+		}
+
+		function handleKeyUp(event) {
+			// Call the async function within the synchronous event handler
+			handleKeyUpAsync(event).catch(console.error);
+		}
+
+		document.addEventListener("keyup", handleKeyUp);
+		return () => document.removeEventListener("keyup", handleKeyUp);
+	}, [docStore.updateDoc, docStore.doc, tiptap.editor, refetch, panel]);
+
 	useEffect(() => {
 		if (data) {
+			if (docStore.doc.folder_id === "") {
+				if (Object.keys(data).length > 0) {
+					docStore.updateFolder(data["unfiled"].id, docStore.doc.foldername);
+				}
+			}
 			const newItems = Object.entries(data).map(([folderName, files]) => ({
-				id: folderName,
-				children: files.map((file) => ({
+				id: files.id,
+				foldername: folderName,
+				children: files.documents.map((file) => ({
+					folder_id: files.id,
+					foldername: folderName,
 					id: file.filename,
 					children: [],
 					file: file,
@@ -152,8 +191,8 @@ function HomeComponent() {
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
 			activationConstraint: {
-				delay: 100,
-				tolerance: 15,
+				delay: 400,
+				tolerance: 10,
 			},
 		}),
 		useSensor(KeyboardSensor, {
@@ -300,6 +339,16 @@ function HomeComponent() {
 		);
 	}
 
+	function style(color) {
+		return {
+			height: "100%",
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "center",
+			backgroundColor: color,
+		};
+	}
+
 	const dropAnimationConfig: DropAnimation = {
 		keyframes({ transform }) {
 			return [
@@ -312,60 +361,167 @@ function HomeComponent() {
 
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
-			<div className="relative w-full h-full px-4 pb-4 items-center justify-center">
-				<RightFloatingPanel editor={tiptap.editor} />
+			<div className="relative w-full h-full items-center justify-center">
 				<CommandPanel editor={tiptap.editor} />
-				<DndContext
-					sensors={sensors}
-					collisionDetection={pointerWithin}
-					onDragStart={handleDragStart}
-					onDragMove={handleDragMove}
-					onDragOver={handleDragOver}
-					onDragEnd={handleDragEnd}
-					onDragCancel={handleDragCancel}
-				>
-					<div className="w-full h-full">
-						<div className="absolute left-0 top-0 w-1/5 h-full overflow-y-auto bg-alabaster dark:bg-dark2">
-							<LeftPanel editor={tiptap.editor} child={tree()} />
-						</div>
-						<DropZone id="editor" leftPanel={panel.left}>
-							<EditorContent
-								className={cn(
-									"absolute transition-[left] border-l left-1/5 right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-48 md:px-24 sm:px-20 px-20",
-									panel.left ? "left-1/5" : "left-0",
-                  isRightEditorOpen && panel.left && "right-2/5",
-                  isRightEditorOpen && !panel.left && "right-1/2",
-                  isRightEditorOpen && "lg:px-24 md:px-12 sm:px-20 px-10",
-								)}
-								editor={tiptap.editor}
-							/>
-							{isRightEditorOpen && (
-								<EditorContent
-									className={cn(
-										"absolute transition-[left] border-l left-1/2 right-0 z-10 bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",
-                    panel.left && "left-3/5" 
-									)}
-									editor={tiptap.rightEditor}
-								/>
-							)}
-						</DropZone>
-						{createPortal(
-							<DragOverlay zIndex={100000} dropAnimation={null}>
-								{activeId && activeItem ? (
-									<SortableTreeItem
-										id={activeId}
-										depth={activeItem.depth}
-										clone
-										value={activeId.toString()}
-										indentationWidth={0}
-									/>
-								) : null}
-							</DragOverlay>,
-							document.body,
-						)}
-					</div>
-				</DndContext>
+				<RightFloatingPanel editor={tiptap.editor} />
 				<BottomPanel editor={tiptap.editor} />
+				<ThreePanelLayout>
+					{/*first panel*/}
+					<div className="flex flex-col w-full">
+						<div
+							className="h-10 border-b items-start justify-center align-middle flex flex-col"
+							data-tauri-drag-region
+						>
+							<div className="flex flex-row w-full justify-between items-end px-1">
+								<div className="ml-20 text-sm text-dull_black dark:text-dull_white font-medium">
+									Collate
+								</div>
+								<Button
+									variant={"ghost"}
+									size={"toolbar"}
+									onClick={() => {
+										let updatedItems = [...items];
+
+										const existingItemIndex = updatedItems.findIndex(
+											(item) => item.id === "newfolder",
+										);
+
+										if (existingItemIndex === -1) {
+											const newItem = {
+												id: "newfolder",
+												children: [],
+												file: null,
+												collapsed: true,
+											};
+
+											updatedItems.push(newItem);
+											setItems(updatedItems);
+										} else {
+											console.error("A 'newfolder' item already exists");
+										}
+									}}
+								>
+									<Plus
+										size={14}
+										className="stroke-dull_black dark:stroke-dull_white"
+									/>
+								</Button>
+							</div>
+						</div>
+						<div className="px-2 pt-2">
+							<DndContext
+								sensors={sensors}
+								collisionDetection={pointerWithin}
+								onDragStart={handleDragStart}
+								onDragMove={handleDragMove}
+								onDragOver={handleDragOver}
+								onDragEnd={handleDragEnd}
+								onDragCancel={handleDragCancel}
+							>
+								<FolderTree
+									collapsible
+									indicator
+									removable
+									sortedIds={sortedIds}
+									handleCollapse={handleCollapse}
+									handleRemove={handleRemove}
+									projected={projected}
+									flattenedItems={flattenedItems}
+									activeId={activeId}
+									setItems={setItems}
+								/>
+							</DndContext>
+						</div>
+					</div>
+					{/*second panel*/}
+					<div className="flex flex-col w-full">
+						<div
+							className="h-10 border-b items-start justify-center align-middle flex flex-col"
+							data-tauri-drag-region
+						>
+							<div className="flex flex-row w-full justify-between items-end px-1 pl-4">
+								<div className="text-sm text-dull_black dark:text-dull_white">
+									{docStore.doc.foldername}
+								</div>
+								<Button
+									variant={"ghost"}
+									size={"toolbar"}
+									onClick={() => {
+										let updatedItems = [...items];
+
+										const folderIndex = updatedItems.findIndex(
+											(item) => item.id === docStore.doc.folder_id,
+										);
+
+										if (folderIndex !== -1) {
+											let updatedFolder = { ...updatedItems[folderIndex] };
+											const fileIndex = updatedFolder.children.findIndex(
+												(item) => item.id === "new",
+											);
+
+											if (fileIndex === -1) {
+												const newItem = {
+													id: "new",
+													folder_id: docStore.doc.folder_id,
+													folder_name: updatedFolder.foldername,
+													children: [],
+													file: {},
+													collapsed: true,
+												};
+
+												updatedFolder.children = [
+													...updatedFolder.children,
+													newItem,
+												];
+
+												updatedItems[folderIndex] = updatedFolder;
+												setItems(updatedItems);
+											}
+										} else {
+											console.error("Folder not found");
+										}
+									}}
+								>
+									<Plus
+										size={14}
+										className="stroke-dull_black dark:stroke-dull_white"
+									/>
+								</Button>
+							</div>
+						</div>
+						<div className="px-2 pt-2">
+							<DndContext
+								sensors={sensors}
+								collisionDetection={pointerWithin}
+								onDragStart={handleDragStart}
+								onDragMove={handleDragMove}
+								onDragOver={handleDragOver}
+								onDragEnd={handleDragEnd}
+								onDragCancel={handleDragCancel}
+							>
+								<FileTree
+									collapsible
+									indicator
+									removable
+									sortedIds={sortedIds}
+									handleCollapse={handleCollapse}
+									handleRemove={handleRemove}
+									projected={projected}
+									flattenedItems={flattenedItems}
+									activeId={activeId}
+									setItems={setItems}
+								/>
+							</DndContext>
+						</div>
+					</div>
+					{/*third panel*/}
+					<EditorContent
+						className={cn(
+							"w-full bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",
+						)}
+						editor={tiptap.editor}
+					/>
+				</ThreePanelLayout>
 			</div>
 			<DialogContent className="bg-white dark:bg-background h-3/4 w-3/4">
 				{panel.centerContent}

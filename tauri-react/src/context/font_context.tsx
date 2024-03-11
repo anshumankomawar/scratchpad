@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-type FontFamily = "Virgil" | "Barlow"; // Updated to include 'Barlow'
+type FontFamily = "Virgil" | "Barlow" | "System" | "Lato" | "CrimsonPro"; // Updated to include 'Barlow'
 
 type FontFamilyProviderProps = {
 	children: React.ReactNode;

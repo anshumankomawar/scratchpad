@@ -22,11 +22,12 @@ import TextStyle from "@tiptap/extension-text-style";
 import Placeholder from "@tiptap/extension-placeholder";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import Document from "@tiptap/extension-document";
 import "@/tiptap.scss";
 
 export interface TiptapContext {
 	editor: Editor | null;
-  rightEditor: Editor | null;
+	rightEditor: Editor | null;
 }
 
 const TiptapContext = React.createContext<TiptapContext | null>(null);
@@ -82,6 +83,10 @@ export const TextStyleExtended = TextStyle.extend({
 export function TiptapProvider({ children }: { children: React.ReactNode }) {
 	const lowlight = createLowlight();
 	lowlight.register("js", javascript);
+	const CustomDocument = Document.extend({
+		// https://tiptap.dev/api/schema#content
+		content: "heading block*",
+	});
 
 	// define your extension array
 	const extensions = [
@@ -91,11 +96,21 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		TaskList,
 		Subscript,
 		Superscript,
+		CustomDocument,
 		TaskItem.configure({
 			nested: true,
 		}),
 		Placeholder.configure({
-			placeholder: "Write something …",
+			// Use a placeholder:
+			//placeholder: "Write something …",
+			// Use different placeholders depending on the node type:
+			placeholder: ({ node }) => {
+				if (node.type.name === "heading") {
+					return "Untitled";
+				}
+
+				return "Can you add some further context?";
+			},
 		}),
 		Table,
 		TableRow,
@@ -143,19 +158,17 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		content,
 		editorProps: {
 			attributes: {
-				class:
-					"top-14 pt-20 h-full overflow-y-scroll outline-none",
+				class: "top-14 pt-20 h-full overflow-y-scroll outline-none",
 			},
 		},
 	});
 
-  const rightEditor = useEditor({
+	const rightEditor = useEditor({
 		extensions,
 		content,
 		editorProps: {
 			attributes: {
-				class:
-					"top-14 pt-20 h-full overflow-y-scroll outline-none",
+				class: "top-14 pt-20 h-full overflow-y-scroll outline-none",
 			},
 		},
 	});

@@ -59,9 +59,8 @@ export default function Header() {
 				"transition-all h-full flex flex-row items-center",
 				panel.left ? "pl-36" : "pl-20",
 			)}
-			data-tauri-drag-region
 		>
-			<Button
+			{/*<Button
 				variant="ghost"
 				size="menu"
 				className="hover:cursor-pointer"
@@ -73,7 +72,7 @@ export default function Header() {
 				) : (
 					<Menu className="stroke-dull_black dark:stroke-dull_white" />
 				)}
-			</Button>
+			</Button>/*}
 			{/*<div
 				className={cn(
 					"overflow-x-scroll overflow-y-none w-3/4 flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1.5 ml-1",
@@ -108,13 +107,13 @@ export default function Header() {
 			</div>
       */}
 			<div className="flex-grow" />
-			<Button
+			{/*<Button
 				variant="ghost"
 				className="w-min p-2 border-none text-dull_black dark:text-dull_white text-sm"
 				size="menu"
 			>
 				Share
-			</Button>
+			</Button>*/}
 			<Popover>
 				<PopoverContent className="w-48 p-1 mr-2 flex flex-col overflow-y-scroll space-y-1 w-32 text-xs text-start">
 					<Button
@@ -150,14 +149,6 @@ export default function Header() {
 					<Button
 						variant="ghost"
 						size="menu"
-						className="w-full text-xs justify-start p-2"
-						onClick={() => handleLogout()}
-					>
-						Logout
-					</Button>
-					<Button
-						variant="ghost"
-						size="menu"
 						className="w-full text-xs justify-between p-2"
 						onClick={() => {
 							setTheme(theme === "light" ? "dark" : "light");
@@ -165,6 +156,14 @@ export default function Header() {
 					>
 						{theme === "light" ? "Dark Mode" : "Light Mode"}
 						{theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+					</Button>
+					<Button
+						variant="ghost"
+						size="menu"
+						className="w-full text-xs justify-start p-2"
+						onClick={() => handleLogout()}
+					>
+						Logout
 					</Button>
 				</PopoverContent>
 				<PopoverTrigger asChild>

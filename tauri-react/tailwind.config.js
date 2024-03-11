@@ -7,6 +7,19 @@ module.exports = {
 		fontFamily: {
 			virgil: ["Virgil", "sans-serif"],
 			barlow: ["Barlow", "sans-serif"],
+			lato: ["Lato", "sans-serif"],
+			crimson_pro: ["CrimsonPro", "sans-serif"],
+			system: [
+				"-apple-system",
+				"BlinkMacSystemFont",
+				'"Segoe UI"',
+				"Roboto",
+				"Oxygen-Sans",
+				"Ubuntu",
+				"Cantarell",
+				'"Helvetica Neue"',
+				"sans-serif",
+			],
 		},
 		container: {
 			center: true,
@@ -16,13 +29,13 @@ module.exports = {
 			},
 		},
 		extend: {
-            inset: {
-                '1/5': '20%',
-                '2/5': '40%',
-                '3/5': '60%',
-                '4/5': '80%',
-                '5/5': '100%',
-            },
+			inset: {
+				"1/5": "20%",
+				"2/5": "40%",
+				"3/5": "60%",
+				"4/5": "80%",
+				"5/5": "100%",
+			},
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
@@ -88,9 +101,9 @@ module.exports = {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 			},
-            screens: {
-                lg: '1500px'
-            },
+			screens: {
+				lg: "1500px",
+			},
 		},
 	},
 	plugins: [

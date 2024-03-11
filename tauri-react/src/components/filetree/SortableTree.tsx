@@ -1,46 +1,17 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import {
-	Announcements,
-	DndContext,
-	closestCenter,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	DragStartEvent,
-	DragOverlay,
-	DragMoveEvent,
-	DragEndEvent,
-	DragOverEvent,
-	MeasuringStrategy,
-	DropAnimation,
-	Modifier,
 	defaultDropAnimation,
+	DropAnimation,
 	UniqueIdentifier,
 } from "@dnd-kit/core";
 import {
 	SortableContext,
-	arrayMove,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-import {
-	buildTree,
-	flattenTree,
-	getProjection,
-	getChildCount,
-	removeItem,
-	removeChildrenOf,
-	setProperty,
-} from "./utilities";
-import type { FlattenedItem, SensorContext, TreeItems } from "./types";
-import { sortableTreeKeyboardCoordinates } from "./keyboardCoordinates";
+import type { FlattenedItem, TreeItems } from "./types";
 import { SortableTreeItem } from "@/components/filetree/node/SortableTreeItem";
 import { CSS } from "@dnd-kit/utilities";
-import { useDocuments } from "@/fetch/documents";
 import { useTipTapEditor } from "@/context/tiptap_context";
-import { useDocStore } from "@/app_state";
 
 const dropAnimationConfig: DropAnimation = {
 	keyframes({ transform }) {

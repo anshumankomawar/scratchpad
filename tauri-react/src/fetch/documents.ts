@@ -4,11 +4,11 @@ import { invoke } from "@tauri-apps/api/core";
 export const useDocuments = () => {
 	return useQuery({
 		queryKey: ["documents"],
-		initialData: [],
+		initialData: {},
 		queryFn: async () =>
 			await invoke("get_documents")
 				.then((res) => {
-					return res.documents;
+					return res.folders;
 				})
 				.catch((error) => {
 					console.log(error);
@@ -16,11 +16,11 @@ export const useDocuments = () => {
 	});
 };
 
-export const saveDocument = async (filename, foldername) => (
-	await invoke("save_document", {
+export const saveDocument = async (filename, folder_id) => {
+	return await invoke("save_document", {
 		filename: filename,
 		content: "",
-		foldername: foldername,
+		folderId: folder_id,
 	})
 		.then((doc_id) => {
 			console.log("save", doc_id);
@@ -28,20 +28,20 @@ export const saveDocument = async (filename, foldername) => (
 		})
 		.catch((error) => {
 			console.log(error);
-		})
-);
+		});
+};
 
-export const updateDocument = async (filename, foldername, content, id) => (
-	await invoke("update_document", {
+export const updateDocument = async (filename, folderId, content, currId) => {
+	return await invoke("update_document", {
 		filename: filename,
 		content: content,
-		foldername: foldername,
-		currId: id,
+		folderId: folderId,
+		currId: currId,
 	})
 		.then((doc_id) => {
 			return doc_id;
 		})
 		.catch((error) => {
 			console.log(error);
-		})
-);
+		});
+};

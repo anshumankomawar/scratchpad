@@ -37,7 +37,7 @@ export default function CommandPanel({ editor }) {
 		panel.togglePanel(Panel.COMMAND);
 		const doc_id = await updateDocument(
 			doc.filename,
-			doc.foldername,
+			doc.folder_id,
 			editor.getHTML(),
 			doc.id,
 		);
