@@ -31,6 +31,7 @@ class DocumentMetadataV2(BaseModel):
     filename: str
     content: str
     folder_id: str = ""
+    filetype: str
 
 
 class UpdatedDocumentMetadataV2(BaseModel):
@@ -89,7 +90,7 @@ def update_document(
         if document:
             delete_document(db, current_user, doc.id)
             metadata = DocumentMetadataV2(
-                filename=doc.filename, content=doc.content, folder_id=doc.folder_id
+                filename=doc.filename, content=doc.content, folder_id=doc.folder_id, filetype=document.data[0]["filetype"]
             )
             new_document_id = add_documentV2(db, current_user, metadata)["doc_id"]
             return {
@@ -179,6 +180,7 @@ def add_documentV2(
             "filename": doc.filename,
             "generated": generated,
             "folder_id": folder_id,
+            "filetype": doc.filetype,
         }
         response = db["client"].from_("documents").insert(document_to_insert).execute()
         new_document_id = response.data[0]["id"]
