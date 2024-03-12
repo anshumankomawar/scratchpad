@@ -26,7 +26,7 @@ struct Response {
 pub async fn search_user_documents(query: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<Value> {
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.post("http://localhost:8000/search")
+    let res = state.client.post("https://scratchpad-production.up.railway.app/search")
     .query(&[("query", query)])
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
