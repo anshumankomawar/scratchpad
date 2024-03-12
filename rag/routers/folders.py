@@ -40,10 +40,12 @@ def add_folder(
             .from_("folders")
             .select("*")
             .eq("email", email)
-            .eq("parent_id", parent_id)
+            .eq("id", parent_id)
             .execute()
         )
+        print("parent id data", parent_id_valid)
         if parent_id_valid.data != []:
+            print("in here")
             existing_folder = (
                 db["client"]
                 .from_("folders")

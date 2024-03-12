@@ -66,6 +66,7 @@ def build_folder_structure(db, current_user, folder_id):
         subfolder_id = folder["id"]
         name = folder["name"]
         folder_structure[name] = build_folder_structure(db, current_user, subfolder_id)
+        folder_structure[name]["id"] = subfolder_id
 
     folder_structure["documents"] = documents.data
 
@@ -95,6 +96,7 @@ async def get_user_documentsV2(
         subfolder_structure = {}
 
         for folder in folders_under_root.data:
+            print("in here pls")
             folder_id = folder["id"]
             name = folder["name"]
             subfolder_structure[name] = build_folder_structure(
