@@ -224,10 +224,8 @@ def delete_document(
         )
         if document:
             # Delete document
-            # supabase set to cascading delete on foreign key so chunks and query data will get removed automatically
-            db["client"].from_("documents").delete().eq("email", email).eq(
-                "id", id
-            ).execute()
+            # setting the isActive to FALSE
+            db["client"].from_("documents").update({'isActive':False}).eq("email", email).eq("id", id).execute()
         else:
             raise HTTPException(404, detail="Document not found")
         return {"message": "Document deleted successfully"}
