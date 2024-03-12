@@ -78,7 +78,6 @@ async def get_user_documentsV2(
     db: Annotated[dict, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    print(current_user)
     try:
         root_id = get_folder_id(db, current_user, "root")["folder_id"]
         folders_under_root = (
@@ -91,12 +90,10 @@ async def get_user_documentsV2(
             .neq("id", root_id)
             .execute()
         )
-        print(folders_under_root)
 
         subfolder_structure = {}
 
         for folder in folders_under_root.data:
-            print("in here pls")
             folder_id = folder["id"]
             name = folder["name"]
             subfolder_structure[name] = build_folder_structure(

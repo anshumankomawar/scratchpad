@@ -35,6 +35,7 @@ def add_folder(
         if parent_id == "":
             ## defaults to root
             parent_id = get_folder_id(db, current_user, "root")["folder_id"]
+        #checks if the parent folder id is an actual folder
         parent_id_valid = (
             db["client"]
             .from_("folders")
@@ -43,7 +44,6 @@ def add_folder(
             .eq("id", parent_id)
             .execute()
         )
-        print("parent id data", parent_id_valid)
         if parent_id_valid.data != []:
             print("in here")
             existing_folder = (
