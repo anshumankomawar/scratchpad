@@ -35,15 +35,17 @@ def add_folder(
         if parent_id == "":
             ## defaults to root
             parent_id = get_folder_id(db, current_user, "root")["folder_id"]
+        #checks if the parent folder id is an actual folder
         parent_id_valid = (
             db["client"]
             .from_("folders")
             .select("*")
             .eq("email", email)
-            .eq("parent_id", parent_id)
+            .eq("id", parent_id)
             .execute()
         )
         if parent_id_valid.data != []:
+            print("in here")
             existing_folder = (
                 db["client"]
                 .from_("folders")
@@ -150,3 +152,22 @@ def get_or_make_generated_folder(
         print("Error", e)
         return {"message": "Could not find generated directory"}
 
+# Delete folder
+@router.delete("/folders")
+def delete_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], id:str):
+    try:
+        email = current_user["email"]
+        # Check if the folder exists and belongs to the current user
+        folder = db["client"].from_("folders").select("*").eq("email",email).eq("id", id).execute()
+        if folder:
+            # Delete folder
+            # isActive to false
+            db["client"].from_("folders").update({'isActive':False}).eq("email", email).eq("id", id).execute()
+            # setting each document inside this folder to not active
+            db["client"].from_("documents").update({'isActive': False}).eq("email", email).eq("folder_id", id).execute()
+        else:
+            raise HTTPException(404, detail="Folder not found")
+        return {"message": "Folder deleted successfully"}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "could not delete folder"}
