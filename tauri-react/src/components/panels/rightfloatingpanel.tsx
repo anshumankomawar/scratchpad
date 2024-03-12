@@ -28,10 +28,11 @@ import {
 	Underline,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import { usePanelStore } from "@/app_state";
+import { useDocStore, usePanelStore } from "@/app_state";
 
-export default function RightFloatingPanel({ editor }) {
+export default function RightFloatingPanel() {
 	const panel = usePanelStore((state) => state);
+  const editor = useDocStore((state) => state.getEditor());
 
 	async function cancelAutoFocus(event) {
 		event.preventDefault();
@@ -47,8 +48,8 @@ export default function RightFloatingPanel({ editor }) {
 				<div className="flex flex-col space-y-2">
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleBold().run()}
-						className={editor.isActive("bold") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleBold().run()}
+						className={editor?.isActive("bold") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Bold className="w-4 h-4" />
@@ -56,8 +57,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleItalic().run()}
-						className={editor.isActive("italic") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleItalic().run()}
+						className={editor?.isActive("italic") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Italic className="w-4 h-4" />
@@ -65,8 +66,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleUnderline().run()}
-						className={editor.isActive("underline") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleUnderline().run()}
+						className={editor?.isActive("underline") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Underline className="w-4 h-4" />
@@ -74,8 +75,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleStrike().run()}
-						className={editor.isActive("strike") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleStrike().run()}
+						className={editor?.isActive("strike") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Strikethrough className="w-4 h-4" />
@@ -84,9 +85,9 @@ export default function RightFloatingPanel({ editor }) {
 					<Button
 						variant="ghost"
 						onClick={() =>
-							editor.chain().focus().clearNodes().unsetAllMarks().run()
+							editor?.chain().focus().clearNodes().unsetAllMarks().run()
 						}
-						className={editor.isActive("clearNodes") ? "bg-accent" : ""}
+						className={editor?.isActive("clearNodes") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<RemoveFormatting className="w-4 h-4" />
@@ -94,8 +95,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-						className={editor.isActive("codeBlock") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+						className={editor?.isActive("codeBlock") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Code className="w-4 h-4" />
@@ -103,8 +104,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleBlockquote().run()}
-						className={editor.isActive("blockquote") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+						className={editor?.isActive("blockquote") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Quote className="w-4 h-4" />
@@ -112,8 +113,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleBulletList().run()}
-						className={editor.isActive("bulletList") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleBulletList().run()}
+						className={editor?.isActive("bulletList") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<List className="w-4 h-4" />
@@ -121,8 +122,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleTaskList().run()}
-						className={editor.isActive("taskList") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleTaskList().run()}
+						className={editor?.isActive("taskList") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<ListTodo className="w-4 h-4" />
@@ -130,8 +131,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleSubscript().run()}
-						className={editor.isActive("subscript") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleSubscript().run()}
+						className={editor?.isActive("subscript") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Subscript className="w-4 h-4" />
@@ -139,8 +140,8 @@ export default function RightFloatingPanel({ editor }) {
 
 					<Button
 						variant="ghost"
-						onClick={() => editor.chain().focus().toggleSuperscript().run()}
-						className={editor.isActive("superscript") ? "bg-accent" : ""}
+						onClick={() => editor?.chain().focus().toggleSuperscript().run()}
+						className={editor?.isActive("superscript") ? "bg-accent" : ""}
 						size="icon"
 					>
 						<Superscript className="w-4 h-4" />

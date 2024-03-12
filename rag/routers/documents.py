@@ -45,6 +45,7 @@ def build_folder_structure(db, current_user, folder_id):
         .from_("folders")
         .select("*")
         .eq("email", current_user["email"])
+        .eq("isActive", True)
         .eq("parent_id", folder_id)
         .execute()
     )
@@ -55,6 +56,7 @@ def build_folder_structure(db, current_user, folder_id):
         .select("*")
         .eq("email", current_user["email"])
         .eq("folder_id", folder_id)
+        .eq("isActive", True)
         .order("created_at")
         .execute()
     )
@@ -64,6 +66,7 @@ def build_folder_structure(db, current_user, folder_id):
         subfolder_id = folder["id"]
         name = folder["name"]
         folder_structure[name] = build_folder_structure(db, current_user, subfolder_id)
+        folder_structure[name]["id"] = subfolder_id
 
     folder_structure["documents"] = documents.data
 
@@ -75,7 +78,6 @@ async def get_user_documentsV2(
     db: Annotated[dict, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    print(current_user)
     try:
         root_id = get_folder_id(db, current_user, "root")["folder_id"]
         folders_under_root = (
@@ -84,10 +86,10 @@ async def get_user_documentsV2(
             .select("*")
             .eq("email", current_user["email"])
             .eq("parent_id", root_id)
+            .eq("isActive", True)
             .neq("id", root_id)
             .execute()
         )
-        print(folders_under_root)
 
         subfolder_structure = {}
 

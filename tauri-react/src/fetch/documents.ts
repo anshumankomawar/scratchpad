@@ -16,11 +16,12 @@ export const useDocuments = () => {
 	});
 };
 
-export const saveDocument = async (filename, folder_id) => {
+export const saveDocument = async (filename, folder_id, filetype) => {
 	return await invoke("save_document", {
 		filename: filename,
 		content: "",
 		folderId: folder_id,
+        filetype: filetype,
 	})
 		.then((doc_id) => {
 			console.log("save", doc_id);
@@ -31,12 +32,13 @@ export const saveDocument = async (filename, folder_id) => {
 		});
 };
 
-export const updateDocument = async (filename, folderId, content, currId) => {
+export const updateDocument = async (filename, folderId, content, currId, filetype) => {
 	return await invoke("update_document", {
 		filename: filename,
 		content: content,
 		folderId: folderId,
 		currId: currId,
+        filetype: filetype,
 	})
 		.then((doc_id) => {
 			console.log("update", doc_id);

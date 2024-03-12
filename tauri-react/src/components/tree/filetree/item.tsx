@@ -67,9 +67,10 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 						ref={wrapperRef}
 						style={padding}
 						{...props}
+						// docStore.editor.commands.setContent(props.file.content);
 						onClick={() => {
-							props.editor.commands.setContent(props.file.content);
 							docStore.updateDoc({ ...props.file, foldername: foldername });
+							docStore.setEditorContent(props.file.content);
 							//docStore.updateTabs(props.file);
 						}}
 					>
@@ -90,8 +91,8 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 								</div>
 							</div>
 							<div className="flex-grow"></div>
-							<div className="flex-none text-xs w-4 text-end text-gray-300 dark:text-gray-500">
-								.txt
+							<div className="flex-none text-xs text-gray-300 dark:text-gray-500">
+								{props.file.filetype}
 							</div>
 						</div>
 					</div>

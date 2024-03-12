@@ -20,7 +20,7 @@ import {
 	createRootRouteWithContext,
 	useRouter,
 } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface MyRouterContext {
 	auth: StoreContext;
@@ -86,6 +86,13 @@ function ProtectedRoute() {
 		}),
 	);
 
+	useEffect(() => {
+		if (tiptap.editor && tiptap.sheetEditor) {
+			docStore.textEditor = tiptap.editor;
+      docStore.sheetEditor = tiptap.sheetEditor;
+		}
+	}, [tiptap.editor, tiptap.sheetEditor]);
+
 	function handleDragEnd(event) {
 		const { active, over } = event;
 
@@ -102,7 +109,8 @@ function ProtectedRoute() {
 		tiptap.editor.commands.focus("start");
 	}
 
-	if (!tiptap.editor) {
+	if (!docStore.textEditor && !docStore.sheetEditor) {
+    console.error("No editor instances found")
 		return <div></div>;
 	}
 

@@ -27,7 +27,7 @@ import "@/tiptap.scss";
 
 export interface TiptapContext {
 	editor: Editor | null;
-	rightEditor: Editor | null;
+	sheetEditor: Editor | null;
 }
 
 const TiptapContext = React.createContext<TiptapContext | null>(null);
@@ -109,10 +109,6 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 				return "Can you add some further context?";
 			},
 		}),
-		Table,
-		TableRow,
-		TableHeader,
-		TableCell,
 		FontFamily,
 		TextStyleExtended,
 		Heading.extend({
@@ -160,9 +156,26 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		},
 	});
 
-	const rightEditor = useEditor({
-		extensions,
-		content,
+	const tableExtensions = [StarterKit, Table, TableRow, TableHeader, TableCell, FontFamily];
+
+	const sheetEditor = useEditor({
+		extensions: tableExtensions,
+		content: `
+        <table>
+          <tbody>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      `,
 		editorProps: {
 			attributes: {
 				class: "top-14 pt-20 h-full overflow-y-scroll outline-none",
@@ -171,7 +184,7 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 	});
 
 	return (
-		<TiptapContext.Provider value={{ editor, rightEditor }}>
+		<TiptapContext.Provider value={{ editor, sheetEditor }}>
 			{children}
 		</TiptapContext.Provider>
 	);
