@@ -14,3 +14,12 @@ export function useDebounce(value, delay) {
 
 	return debouncedValue;
 }
+
+// const debouncedEditorState = useDebounce(content, 500);
+// useEffect(() => {
+//   console.log("debounce")
+//   if (debouncedEditorState === "") return;
+//   setIsSaving(true)
+//   saveMutation.mutate()
+//   setIsSaving(false)
+// }, [debouncedEditorState]);

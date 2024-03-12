@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { flattenTree, removeChildrenOf } from "./components/filetree/utilities";
+import { flattenTree, removeChildrenOf } from "@/components/tree/utilities";
 import { UniqueIdentifier } from "@dnd-kit/core";
+import { Editor } from "@tiptap/react";
 
 interface TreeStore {
 	data: any;
@@ -99,6 +100,7 @@ export const useTreeStore = create<TreeStore>((set) => ({
 					id: file.filename,
 					children: [],
 					file: file,
+					filetype: file.filetype,
 				})),
 				file: null,
 				collapsed: true,
@@ -144,24 +146,96 @@ export const useTreeStore = create<TreeStore>((set) => ({
 		}),
 }));
 
-export const useDocStore = create((set) => ({
+interface DocMetadata {
+	filename: string;
+	foldername: string;
+	id: string;
+	folder_id: string;
+	filetype: string;
+	content: string;
+}
+
+interface DocStore {
+	doc: DocMetadata;
+	textEditor: Editor | null;
+	sheetEditor: Editor | null;
+	getEditor: () => Editor | null;
+  getEmptyContent: (filetype: string) => string;
+	setEditorContent: (content: string) => void;
+	updateFolder: (folderId: string, foldername: string) => void;
+	updateDoc: (newDoc: DocMetadata) => void;
+	updateTabs: (newTab: DocMetadata) => void;
+	swapTabs: (tab1: DocMetadata, tab2: DocMetadata) => void;
+	deleteTab: (toDelete: DocMetadata) => void;
+}
+
+export const useDocStore = create<DocStore>((set, get) => ({
 	doc: {
 		filename: "",
 		foldername: "unfiled",
 		id: "",
 		folder_id: "",
+		filetype: "txt",
+		content: "",
+	},
+	textEditor: null,
+	sheetEditor: null,
+	getEmptyContent: (filetype) => {
+		switch (filetype) {
+			case "txt": {
+				return "";
+			}
+			case "sheet": {
+				return `
+          <table>
+            <tbody>
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+			}
+      default: return ""
+		}
+	},
+	getEditor: () => {
+		if (get().doc.filetype === "txt") {
+			return get().textEditor;
+		}
+		return get().sheetEditor;
+	},
+	setEditorContent: (content) => {
+		switch (get().doc.filetype) {
+			case "txt": {
+				get().textEditor?.commands.setContent(content);
+				break;
+			}
+			case "sheet": {
+				if (content === "") {
+					get().sheetEditor?.commands.setContent(get().getEmptyContent("sheet"));
+				} else {
+					get().sheetEditor?.commands.setContent(content);
+				}
+
+				break;
+			}
+			default: {
+				console.error("No matching filetype found");
+				break;
+			}
+		}
 	},
 	updateFolder: (folderId, foldername) =>
 		set((state) => ({
 			doc: { ...state.doc, folder_id: folderId, foldername: foldername },
-		})),
-	updateFile: (folderId, foldername) =>
-		set((state) => ({
-			doc: {
-				...state.doc,
-				folder_id: state.doc.folderId,
-				foldername: state.doc.foldername,
-			},
 		})),
 	updateDoc: (newDoc) => set((state) => ({ doc: newDoc })),
 	tabs: [],

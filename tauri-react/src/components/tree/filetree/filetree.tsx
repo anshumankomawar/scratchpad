@@ -15,6 +15,8 @@ import { useTipTapEditor } from "@/context/tiptap_context";
 import { useDocStore, useTreeStore } from "@/app_state";
 import { useState } from "react";
 import { saveDocument, useDocuments } from "@/fetch/documents";
+import { toast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const dropAnimationConfig: DropAnimation = {
 	keyframes({ transform }) {
@@ -61,27 +63,51 @@ export function FileTree({
 	projected,
 	children,
 }: Props) {
-	const editor = useTipTapEditor();
 	const docStore = useDocStore((state) => state);
 	const treeStore = useTreeStore((state) => state);
-	if (!editor) return null;
 	const [newFileName, setNewFileName] = useState("");
 	const documents = useDocuments();
 
-	const handleNewDocument = async () => {
-		const doc_id = await saveDocument(newFileName, docStore.doc.folder_id);
+	function separateFilenameAndExtension(filename: string): {
+		name: string;
+		extension: string;
+	} {
+		const lastDotIndex = filename.lastIndexOf(".");
+		let name: string;
+		let extension: string;
+
+		if (lastDotIndex !== -1) {
+			name = filename.substring(0, lastDotIndex);
+			extension = filename.substring(lastDotIndex + 1);
+		} else {
+			name = filename;
+			extension = "txt"; // Set extension to txt if there is no period
+		}
+
+		// Check if the extension is not one of "txt", "sheet"
+		if (extension !== "txt" && extension !== "sheet") {
+			console.error('Extension must be "txt" or "sheet"');
+			return { name: "", extension: "" }; // Return empty values
+		}
+
+		return { name, extension };
+	}
+
+	const handleNewDocument = async (name, extension) => {
+		const doc_id = await saveDocument(name, docStore.doc.folder_id, extension);
 		const newDoc = {
-			filename: newFileName,
+			filename: name,
 			foldername: docStore.doc.foldername,
 			folder_id: docStore.doc.folder_id,
 			id: doc_id,
 			content: "",
+			filetype: extension,
 		};
 
-		await documents.refetch();
 		docStore.updateDoc(newDoc);
-		editor.editor.commands.setContent("");
-		editor.editor.chain().focus().setTextSelection(0).run();
+		docStore.setEditorContent("");
+		docStore.getEditor()?.chain().focus().setTextSelection(0).run();
+		await documents.refetch();
 	};
 
 	const updateItemsWithRemoveAndAdd = (folderName, itemIdToRemove, newItem) => {
@@ -102,7 +128,7 @@ export function FileTree({
 	};
 
 	const removeItemFromFolder = (folderName, itemId) => {
-		let updatedItems = treeStore.flattenedTree.map((item) => {
+		const updatedItems = treeStore.flattenedTree.map((item) => {
 			if (item.foldername === folderName) {
 				const updatedChildren = item.children.filter(
 					(child) => child.id !== itemId,
@@ -140,13 +166,25 @@ export function FileTree({
 											onKeyDown={(e) => {
 												if (e.key === "Enter") {
 													e.preventDefault();
+													const { name, extension } =
+														separateFilenameAndExtension(newFileName);
+													if (name === "" || extension === "") {
+														toast({
+															variant: "destructive",
+															title: "Uh oh! Something went wrong.",
+															description: "Please enter a valid filetype",
+														});
+														return;
+													}
 													const tempItem = {
 														folder_id: docStore.doc.folder_id,
 														foldername: docStore.doc.foldername,
-														id: newFileName,
+														id: name,
 														children: [],
 														file: {},
 														collapsed: true,
+														filetype: extension,
+														content: docStore.getEmptyContent(extension),
 													};
 													updateItemsWithRemoveAndAdd(
 														docStore.doc.foldername,
@@ -158,9 +196,7 @@ export function FileTree({
 														filename: tempItem.id,
 														foldername: foldername,
 													});
-													if (newFileName !== "") {
-														handleNewDocument();
-													}
+													handleNewDocument(name, extension);
 													setNewFileName("");
 												} else if (e.key === "Escape") {
 													e.preventDefault();
@@ -195,7 +231,6 @@ export function FileTree({
 									childCount={child.children.length}
 									foldername={child.foldername}
 									file={child.file}
-									editor={editor.editor}
 								/>
 							);
 						});

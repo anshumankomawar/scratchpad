@@ -30,7 +30,7 @@ import {
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
-import { sortableTreeKeyboardCoordinates } from "@/components/filetree/keyboardCoordinates";
+import { sortableTreeKeyboardCoordinates } from "@/components/tree/keyboardCoordinates";
 import {
 	buildTree,
 	flattenTree,
@@ -38,12 +38,13 @@ import {
 	removeChildrenOf,
 	removeItem,
 	setProperty,
-} from "@/components/filetree/utilities";
+} from "@/components/tree/utilities";
 import { arrayMove } from "@dnd-kit/sortable";
 import { updateDocument, useDocuments } from "@/fetch/documents";
 import { FolderTree } from "@/components/tree/foldertree/foldertree";
 import ThreePanelLayout from "@/components/panels/threepanel";
 import { FileTree } from "@/components/tree/filetree/filetree";
+import { DataTableDemo } from "@/components/table/datatable";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -56,7 +57,6 @@ const measuring = {
 };
 
 function HomeComponent() {
-	const tiptap = useTipTapEditor();
 	const panel = usePanelStore((state) => state);
 	const { data, refetch } = useDocuments();
 	const docStore = useDocStore((state) => state);
@@ -69,10 +69,6 @@ function HomeComponent() {
 	const indicator = false;
 	const indentationWidth = 20;
 	const treeStore = useTreeStore((state) => state);
-
-	if (!tiptap.editor || !tiptap.rightEditor) {
-		return <div />;
-	}
 
 	const previousDocRef = useRef(docStore.doc);
 	const isUpdatingRef = useRef(false);
@@ -108,8 +104,9 @@ function HomeComponent() {
 					const doc_id = await updateDocument(
 						docStore.doc.filename,
 						docStore.doc.folder_id,
-						tiptap.editor.getHTML(),
+						docStore.getEditor()?.getHTML(),
 						docStore.doc.id,
+            docStore.doc.filetype
 					);
 					if (docStore.doc.id === previousDocRef.current.id) {
 						treeStore.updateTreeOnDocumentUpdate(
@@ -134,7 +131,7 @@ function HomeComponent() {
 
 		document.addEventListener("keyup", handleKeyUp);
 		return () => document.removeEventListener("keyup", handleKeyUp);
-	}, [docStore.updateDoc, docStore.doc, tiptap.editor, refetch, panel]);
+	}, [docStore.updateDoc, docStore.doc, docStore.getEditor(), refetch, panel]);
 
 	useEffect(() => {
 		if (data) {
@@ -241,8 +238,8 @@ function HomeComponent() {
 			const file = treeStore.flattenedTree.find(({ id }) => id === active.id);
 			docStore.updateDoc(file.file);
 			docStore.updateTabs(file.file);
-			tiptap.editor?.commands.setContent(file.file.content);
-			tiptap.editor?.commands.focus("start");
+			docStore.getEditor()?.commands.setContent(file.file.content);
+			docStore.getEditor()?.commands.focus("start");
 		} else if (projected && over) {
 			const { depth, parentId } = projected;
 			const clonedItems: [] = JSON.parse(
@@ -305,9 +302,9 @@ function HomeComponent() {
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full items-center justify-center">
-				<CommandPanel editor={tiptap.editor} />
-				<RightFloatingPanel editor={tiptap.editor} />
-				<BottomPanel editor={tiptap.editor} />
+				<CommandPanel editor={docStore.getEditor()} />
+				<RightFloatingPanel editor={docStore.getEditor()} />
+				{/* <BottomPanel editor={docStore.getEditor()} /> */}
 				<ThreePanelLayout>
 					{/*first panel*/}
 					<div className="flex flex-col w-full">
@@ -326,7 +323,7 @@ function HomeComponent() {
 									variant={"ghost"}
 									size={"toolbar"}
 									onClick={() => {
-										let updatedItems = [...treeStore.tree];
+										const updatedItems = [...treeStore.tree];
 
 										const existingItemIndex = updatedItems.findIndex(
 											(item) => item.id === "newfolder",
@@ -393,14 +390,14 @@ function HomeComponent() {
 									variant={"ghost"}
 									size={"toolbar"}
 									onClick={() => {
-										let updatedItems = [...treeStore.tree];
+										const updatedItems = [...treeStore.tree];
 
 										const folderIndex = updatedItems.findIndex(
 											(item) => item.id === docStore.doc.folder_id,
 										);
 
 										if (folderIndex !== -1) {
-											let updatedFolder = { ...updatedItems[folderIndex] };
+											const updatedFolder = { ...updatedItems[folderIndex] };
 											const fileIndex = updatedFolder.children.findIndex(
 												(item) => item.id === "new",
 											);
@@ -462,7 +459,7 @@ function HomeComponent() {
 						className={cn(
 							"w-full bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",
 						)}
-						editor={tiptap.editor}
+            editor={docStore.getEditor()}
 					/>
 				</ThreePanelLayout>
 			</div>

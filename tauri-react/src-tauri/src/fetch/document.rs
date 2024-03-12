@@ -21,8 +21,8 @@ struct ResponseAddFolder {
 }
 
 #[tauri::command]
-pub async fn save_document(filename: &str, content: &str, folderId: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
-    let params = [("filename", &filename), ("content", &content), ("folder_id", &folderId)];
+pub async fn save_document(filename: &str, content: &str, folderId: &str, filetype: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<String> {
+    let params = [("filename", &filename), ("content", &content), ("folder_id", &folderId), ("filetype", &filetype)];
     let token = get_from_store(&state, &app)?;
 
     let res = state.client.post("http://localhost:8000/documentV2")
@@ -101,6 +101,7 @@ struct Document {
     folder_id: String,
     created_at: Option<String>, // Assuming this can be null in JSON, use Option<>
     isActive: bool,
+    filetype: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
