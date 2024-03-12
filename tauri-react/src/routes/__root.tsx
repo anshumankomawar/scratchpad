@@ -87,7 +87,9 @@ function ProtectedRoute() {
 	);
 
 	useEffect(() => {
+		console.error("detected change");
 		if (tiptap.editor && tiptap.sheetEditor) {
+			console.error("found instances of both");
 			docStore.textEditor = tiptap.editor;
 			docStore.sheetEditor = tiptap.sheetEditor;
 		}
@@ -109,7 +111,7 @@ function ProtectedRoute() {
 		tiptap.editor.commands.focus("start");
 	}
 
-	if (!docStore.textEditor && !docStore.sheetEditor) {
+	if (!tiptap.editor && !tiptap.sheetEditor) {
 		console.error("No editor instances found");
 		return <div>could not get editor instance</div>;
 	}
