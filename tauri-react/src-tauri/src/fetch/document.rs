@@ -25,7 +25,7 @@ pub async fn save_document(filename: &str, content: &str, folderId: &str, filety
     let params = [("filename", &filename), ("content", &content), ("folder_id", &folderId), ("filetype", &filetype)];
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.post("http://localhost:8000/documentV2")
+    let res = state.client.post("https://scratchpad-production.up.railway.app/documentV2")
     .json(&params)
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
@@ -43,7 +43,7 @@ pub async fn save_document(filename: &str, content: &str, folderId: &str, filety
 pub async fn delete_document(fileId: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<()> {
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.delete("http://localhost:8000/document")
+    let res = state.client.delete("https://scratchpad-production.up.railway.app/document")
     .query(&[("id", fileId)])
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
@@ -57,7 +57,7 @@ pub async fn add_folder(foldername: &str, state: State<'_, TauriState>, app: tau
     let params = [("foldername", &foldername), ("icon", &"icon")];
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.post("http://localhost:8000/folders")
+    let res = state.client.post("https://scratchpad-production.up.railway.app/folders")
     .json(&params)
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
@@ -76,7 +76,7 @@ pub async fn update_document(filename: &str, content: &str, folderId: &str, curr
     let params = [("filename", &filename), ("content", &content), ("folder_id", &folderId), ("id", &currId)];
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.patch("http://localhost:8000/document")
+    let res = state.client.patch("https://scratchpad-production.up.railway.app/document")
     .json(&params)
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
@@ -119,7 +119,7 @@ pub struct ResponseGetDocuments {
 pub async fn get_documents(state: tauri::State<'_, TauriState>, app: tauri::AppHandle) -> Result<ResponseGetDocuments> {
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.get("http://localhost:8000/documentsV2")
+    let res = state.client.get("https://scratchpad-production.up.railway.app/documentsV2")
         .header("Authorization", format!("Bearer {}", token))
         .send()
         .await?

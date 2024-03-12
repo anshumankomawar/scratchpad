@@ -11,7 +11,7 @@ use crate::{error::{Result, Error}, util::get_from_store};
 pub async fn get_user(state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<Value> {
     let token = get_from_store(&state, &app)?;
 
-    let res = state.client.get("http://localhost:8000/user")
+    let res = state.client.get("https://scratchpad-production.up.railway.app/user")
     .header(AUTHORIZATION, format!("Bearer {}", token))
     .send()
     .await?

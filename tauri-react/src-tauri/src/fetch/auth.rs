@@ -10,7 +10,7 @@ use crate::error::{Result, Error};
 #[tauri::command]
 pub async fn login(username: &str, password: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<()> {
     let params = [("username", &username), ("password", &password)];
-    let res = state.client.post("http://localhost:8000/login")
+    let res = state.client.post("https://scratchpad-production.up.railway.app/login")
     .form(&params)
     .send()
     .await?

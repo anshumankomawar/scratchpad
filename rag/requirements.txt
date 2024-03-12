@@ -1,13 +1,11 @@
+fastapi
+fastapi-utils
+uvicorn[standard]
 python-dotenv
 openai
-langchain
+langchain==0.1.11
 supabase
 tiktoken
 pypdf
-fastapi[all]
-uvicorn[standard]
 python-multipart
 python-jose[cryptography]
-huggingface_hub
-fastapi-utils
-transformers[torch]
