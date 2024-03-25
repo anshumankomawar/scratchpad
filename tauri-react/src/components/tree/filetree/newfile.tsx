@@ -37,6 +37,8 @@ export default function NewFileMenu({ path = null }) {
 						if (e.key === "Enter") {
 							createLocalDocument(docStore, fileManager, e.target.value, path);
 							setIsOpened(false);
+						} else if (e.key === "Escape") {
+							setIsOpened(false);
 						}
 					}}
 				/>

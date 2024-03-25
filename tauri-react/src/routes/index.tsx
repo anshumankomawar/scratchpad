@@ -15,6 +15,7 @@ import NewFileMenu from "@/components/tree/filetree/newfile";
 import NewFolderMenu from "@/components/tree/foldertree/newfolder";
 import { updateFileContent } from "@/utilities/fileutils";
 import WelcomeScreen from "@/welcome";
+import CollatePanel from "@/components/collate/collate";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -44,6 +45,11 @@ function HomeComponent() {
 			} else if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
 				panel.setPanel(Panel.COMMAND, true);
+			} else if (event.key === "\\" && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
+				panel.setCenterContent(<CollatePanel />);
+				panel.setPanel(Panel.CENTER, true);
+				panel.setPanel(Panel.COMMAND, false);
 			} else if (event.key === "Escape") {
 				event.preventDefault();
 				panel.setPanel(Panel.COMMAND, false);
