@@ -9,7 +9,7 @@ use crate::{error::Result, util::get_from_store};
 #[derive(Serialize, Deserialize, Debug)]
 struct Reference {
     chunk_id: String,
-    document_id: String,
+    document_path: String,
     filename: String,
     foldername: String,
     content: String,

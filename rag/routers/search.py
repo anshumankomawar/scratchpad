@@ -22,6 +22,7 @@ class DocumentMetadata(BaseModel):
     content: str
     foldername: str = "generated"
 
+
 class DocumentMetadataV2(BaseModel):
     filename: str
     content: str
@@ -94,7 +95,7 @@ def search_document(
             similar_chunks = (
                 db["client"]
                 .rpc(
-                    "match_documents",
+                    "match_documentsv2",
                     {
                         "email": email,
                         "query_embedding": embedded_query,
@@ -113,32 +114,32 @@ def search_document(
             # data = generate_summary_falcon(request, all_chunks, query)
 
             print("***************GENERATED DATA**************\n")
-            insert = DocumentMetadata(filename=query, content=data)
-            print("***************TRYING TO INSERT DATA**************\n")
-            document_created = add_document(db, current_user, insert, True)
-            print("***************INSERTED DATA**************\n")
+            # insert = DocumentMetadata(filename=query, content=data)
+            # print("***************TRYING TO INSERT DATA**************\n")
+            # document_created = add_document(db, current_user, insert, True)
+            # print("***************INSERTED DATA**************\n")
 
-            document = (
-                db["client"]
-                .from_("documents")
-                .select("*")
-                .eq("email", email)
-                .eq("id", document_created["doc_id"])
-                .execute()
-            )
-            print("***************RETRIEVED DOCUMENT**************\n")
+            # document = (
+            # db["client"]
+            # .from_("documents")
+            # .select("*")
+            # .eq("email", email)
+            # .eq("id", document_created["doc_id"])
+            # .execute()
+            # )
+            # print("***************RETRIEVED DOCUMENT**************\n")
 
-            db["client"].from_("queries").insert(
-                [
-                    {
-                        "email": email,
-                        "query_content": query,
-                        "embedding": embedded_query,
-                        "metadata": {},
-                        "doc": document_created["doc_id"],
-                    }
-                ]
-            ).execute()
+            # db["client"].from_("queries").insert(
+            # [
+            # {
+            # "email": email,
+            # "query_content": query,
+            # "embedding": embedded_query,
+            # "metadata": {},
+            # "doc": document_created["doc_id"],
+            # }
+            # ]
+            # ).execute()
 
             return {"data": data, "references": similar_chunks_data}
         else:
@@ -146,18 +147,17 @@ def search_document(
                 "***************FOUND SIMILAR QUERY, NO GENERATION REQUIRED**************\n"
             )
             similar_query = similar_queries.data[0]
-            document = (
-                db["client"]
-                .from_("documents")
-                .select("*")
-                .eq("id", similar_query["doc"])
-                .execute()
-            )
-            return {"data": document.data[0]["content"], "references": []}
+            # document = (
+            # db["client"]
+            # .from_("documentsV2")
+            # .select("*")
+            # .eq("id", similar_query["doc"])
+            # .execute()
+            # )
+            return {"data": "", "references": []}
     except Exception as e:
         print("Error", e)
         return {"error": "couldnt get results from search query"}
-
 
 
 # Search document/chunk database, calls open ai api and returns a response based on provided user query
@@ -213,9 +213,13 @@ def search_documentV2(
             # data = generate_summary_falcon(request, all_chunks, query)
 
             print("***************GENERATED DATA**************\n")
-            generated_id = get_or_make_generated_folder(db, current_user)['generated_id']
+            generated_id = get_or_make_generated_folder(db, current_user)[
+                "generated_id"
+            ]
             print("GENERATED ID", generated_id)
-            insert = DocumentMetadataV2(filename=query, content=data, folder_id = generated_id)
+            insert = DocumentMetadataV2(
+                filename=query, content=data, folder_id=generated_id
+            )
             print("***************TRYING TO INSERT DATA**************\n")
             document_created = add_documentV2(db, current_user, insert, True)
             print("***************INSERTED DATA**************\n")

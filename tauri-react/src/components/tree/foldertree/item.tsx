@@ -3,6 +3,16 @@ import { cn } from "@/lib/utils";
 import { Inbox } from "lucide-react";
 import { HTMLAttributes, forwardRef, useState } from "react";
 import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
 	ContextMenu,
 	ContextMenuTrigger,
 	ContextMenuContent,
@@ -55,6 +65,7 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 		},
 		ref,
 	) => {
+		const [open, setOpen] = useState(false);
 		const padding = { marginLeft: `${depth * indentationWidth}px` };
 		const docStore = useDocStore((state) => state);
 		const [isRenaming, setIsRenaming] = useState(false);
@@ -63,6 +74,33 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 
 		return (
 			<Dialog open={isRenaming} modal={false}>
+				<AlertDialog open={open} onOpenChange={setOpen}>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+							<AlertDialogDescription>
+								This action cannot be undone. This will permanently delete "
+								{foldername}" and remove your data from our servers.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction
+								className="bg-red-400 hover:bg-red-500"
+								onClick={async () => {
+									await deleteFolder(
+										fileManager,
+										`${fileManager.dataPath}/${foldername}`,
+										foldername,
+										docStore.getEditor(),
+									);
+								}}
+							>
+								Continue
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 				<ContextMenu>
 					<ContextMenuTrigger asChild>
 						<div
@@ -111,14 +149,7 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 						</ContextMenuItem>
 						<ContextMenuItem
 							className="cursor-pointer"
-							onSelect={async () =>
-								await deleteFolder(
-									fileManager,
-									`${fileManager.dataPath}/${foldername}`,
-									foldername,
-									docStore.getEditor(),
-								)
-							}
+							onSelect={async () => setOpen(true)}
 						>
 							Delete Folder
 						</ContextMenuItem>

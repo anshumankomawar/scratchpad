@@ -1,15 +1,24 @@
 import { useDocStore, useFileManager } from "@/app_state";
 import { cn } from "@/lib/utils";
-import { Inbox } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { HTMLAttributes, forwardRef, useEffect, useRef, useState } from "react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
 	ContextMenu,
 	ContextMenuTrigger,
 	ContextMenuContent,
 	ContextMenuItem,
 } from "@/components/ui/context-menu";
-import { BaseDirectory, remove, rename } from "@tauri-apps/plugin-fs";
+import { BaseDirectory, rename } from "@tauri-apps/plugin-fs";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { deleteDocument, renameFile } from "@/utilities/fileutils";
@@ -55,6 +64,7 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 		},
 		ref,
 	) => {
+		const [open, setOpen] = useState(false);
 		const padding = { marginLeft: `${depth * indentationWidth}px` };
 		const docStore = useDocStore((state) => state);
 		const fileManager = useFileManager((state) => state);
@@ -114,6 +124,34 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 
 		return (
 			<Dialog open={isRenaming} modal={false}>
+				<AlertDialog open={open} onOpenChange={setOpen}>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+							<AlertDialogDescription>
+								This action cannot be undone. This will permanently delete "
+								{props.file.filename}" and remove your data from our servers.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction
+								className="bg-red-400 hover:bg-red-500"
+								onClick={async () => {
+									await deleteDocument(
+										fileManager,
+										props.id,
+										props.file.id,
+										foldername,
+										docStore.getEditor(),
+									);
+								}}
+							>
+								Continue
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 				<ContextMenu>
 					<ContextMenuTrigger asChild>
 						<div
@@ -163,13 +201,14 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 						<ContextMenuItem
 							className="cursor-pointer"
 							onSelect={async () => {
-								await deleteDocument(
-									fileManager,
-									props.id,
-									props.file.id,
-									foldername,
-									docStore.getEditor(),
-								);
+								setOpen(true);
+								//await deleteDocument(
+								//fileManager,
+								//props.id,
+								//props.file.id,
+								//foldername,
+								//docStore.getEditor(),
+								//);
 							}}
 						>
 							Delete File

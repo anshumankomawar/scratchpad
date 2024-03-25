@@ -165,7 +165,6 @@ async def sync(
     db: Annotated[dict, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
     trans_db: Connection = Depends(create_supabase_transaction),
-    neon: Connection = Depends(create_neon_client),
 ):
     cur = trans_db.cursor()
     try:

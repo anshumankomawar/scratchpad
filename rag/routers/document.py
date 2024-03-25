@@ -90,7 +90,10 @@ def update_document(
         if document:
             delete_document(db, current_user, doc.id)
             metadata = DocumentMetadataV2(
-                filename=doc.filename, content=doc.content, folder_id=doc.folder_id, filetype=document.data[0]["filetype"]
+                filename=doc.filename,
+                content=doc.content,
+                folder_id=doc.folder_id,
+                filetype=document.data[0]["filetype"],
             )
             new_document_id = add_documentV2(db, current_user, metadata)["doc_id"]
             return {
@@ -227,7 +230,9 @@ def delete_document(
         if document:
             # Delete document
             # setting the isActive to FALSE
-            db["client"].from_("documents").update({'isActive':False}).eq("email", email).eq("id", id).execute()
+            db["client"].from_("documents").update({"isActive": False}).eq(
+                "email", email
+            ).eq("id", id).execute()
         else:
             raise HTTPException(404, detail="Document not found")
         return {"message": "Document deleted successfully"}
