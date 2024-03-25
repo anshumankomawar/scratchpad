@@ -15,6 +15,7 @@ import NewFileMenu from "@/components/tree/filetree/newfile";
 import NewFolderMenu from "@/components/tree/foldertree/newfolder";
 import { updateFileContent } from "@/utilities/fileutils";
 import { performSync } from "@/fetch/documents";
+import WelcomeScreen from "@/welcome";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -22,7 +23,6 @@ export const Route = createFileRoute("/")({
 
 function HomeComponent() {
 	const panel = usePanelStore((state) => state);
-	const data = useFileManager((state) => state.files);
 	const fileManager = useFileManager((state) => state);
 	const docStore = useDocStore((state) => state);
 	const previousDocRef = useRef(docStore.doc);
@@ -61,18 +61,17 @@ function HomeComponent() {
 		document.addEventListener("keyup", handleKeyUp);
 		return () => document.removeEventListener("keyup", handleKeyUp);
 	}, [
-		docStore.updateDoc,
-		docStore.doc,
-		docStore.getEditor(),
 		panel,
 		fileManager.selectedFile,
 		fileManager.files,
+		fileManager,
+		docStore.getEditor,
 	]);
 
 	return (
 		<Dialog open={panel.center} onOpenChange={panel.changeCenter}>
 			<div className="relative w-full h-full items-center justify-center">
-				<CommandPanel editor={docStore.getEditor()} />
+				<CommandPanel />
 				{/* <BottomPanel editor={docStore.getEditor()} /> */}
 				<ThreePanelLayout>
 					{/*first panel*/}
@@ -116,15 +115,21 @@ function HomeComponent() {
 						</div>
 					</div>
 					{/*third panel*/}
-					<EditorContent
-						className={cn(
-							"w-full bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",
-						)}
-						editor={docStore.getEditor()}
-					/>
+					{fileManager.selectedFile ? (
+						<EditorContent
+							className={cn(
+								"w-full bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",
+							)}
+							editor={docStore.getEditor()}
+						/>
+					) : (
+						<WelcomeScreen />
+					)}
 					{/*<Excalidraw theme={theme === "dark" ? "dark" : "white"} />*/}
 				</ThreePanelLayout>
-				<RightFloatingPanel editor={docStore.getEditor()} />
+				<RightFloatingPanel
+				//editor={docStore.getEditor(fileManager.selectedFile.filetype)}
+				/>
 			</div>
 			<DialogContent className="bg-white dark:bg-background h-3/4 w-3/4">
 				{panel.centerContent}

@@ -1,3 +1,4 @@
+import { DocStore, FileManagerState } from "@/app_state";
 import { toast } from "@/components/ui/use-toast";
 import SyncManager from "@/utilities/sync";
 import {
@@ -7,13 +8,14 @@ import {
 	rename,
 	writeFile,
 } from "@tauri-apps/plugin-fs";
+import { Editor } from "@tiptap/react";
 
 export async function renameFile(
-	fileManager,
-	id,
-	newFilename,
-	filetype,
-	foldername,
+	fileManager: FileManagerState,
+	id: string,
+	newFilename: string,
+	filetype: string,
+	foldername: string,
 ) {
 	const oldPathParts = id.split("/");
 	oldPathParts[oldPathParts.length - 1] = newFilename; // Replace the last part with newFilename
@@ -48,10 +50,10 @@ export async function renameFile(
 }
 
 export async function renameFolder(
-	fileManager,
-	oldPath,
-	newPath,
-	newFoldername,
+	fileManager: FileManagerState,
+	oldPath: string,
+	newPath: string,
+	newFoldername: string,
 ) {
 	await rename(oldPath, newPath, {
 		oldPathBaseDir: BaseDirectory.AppData,
@@ -80,7 +82,12 @@ export async function renameFolder(
 	});
 }
 
-export async function deleteFolder(fileManager, path, foldername, editor) {
+export async function deleteFolder(
+	fileManager: FileManagerState,
+	path: string,
+	foldername: string,
+	editor: Editor,
+) {
 	await remove(path, {
 		recursive: true,
 		baseDir: BaseDirectory.AppData,
@@ -116,11 +123,11 @@ export async function deleteFolder(fileManager, path, foldername, editor) {
 }
 
 export async function deleteDocument(
-	fileManager,
-	id,
-	file_id,
-	foldername,
-	editor,
+	fileManager: FileManagerState,
+	id: string,
+	file_id: string,
+	foldername: string,
+	editor: Editor,
 ) {
 	await remove(file_id, {
 		baseDir: BaseDirectory.AppData,
@@ -150,7 +157,10 @@ export async function deleteDocument(
 	});
 }
 
-export async function updateFileContent(editor, fileManager) {
+export async function updateFileContent(
+	editor: Editor,
+	fileManager: FileManagerState,
+) {
 	const encoder = new TextEncoder();
 	const data = encoder.encode(editor?.getHTML());
 	await writeFile(fileManager.selectedFile.id, data, {
@@ -201,8 +211,8 @@ export function separateFilenameAndExtension(filename: string): {
 }
 
 export async function createLocalDocument(
-	docStore,
-	fileManager,
+	docStore: DocStore,
+	fileManager: FileManagerState,
 	input: string,
 	path?: string | null,
 ) {
@@ -271,7 +281,10 @@ export async function createLocalDocument(
 		});
 }
 
-export async function handleNewFolder(fileManager, path: string) {
+export async function handleNewFolder(
+	fileManager: FileManagerState,
+	path: string,
+) {
 	await mkdir(path, {
 		baseDir: BaseDirectory.AppData,
 	});

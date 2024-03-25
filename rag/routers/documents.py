@@ -1,14 +1,23 @@
 import os
 import json
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 import string
 from auth.oauth import get_current_user
 from dependencies import get_db
 from models.user import User
 from routers.folders import get_folder_id
+from pydantic import BaseModel
+from db.supabase import create_neon_client, create_supabase_transaction
+from psycopg2.extensions import connection as Connection
 
-router = APIRouter(tags=["documents"], dependencies=[Depends(get_db)])
+router = APIRouter(
+    tags=["documents"],
+    dependencies=[
+        Depends(get_db),
+        Depends(get_current_user),
+    ],
+)
 
 
 # gets list of documents for specific user
@@ -108,3 +117,122 @@ async def get_user_documentsV2(
     except Exception as e:
         print("Error", e)
         return {"folder_structure": {}}
+
+
+class SyncData(BaseModel):
+    add: list
+    delete: list
+    update: list
+    rename: list
+
+
+@router.put("/v1/sync")
+async def sync(
+    sync_data: SyncData,
+    db: Annotated[dict, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    trans_db: Connection = Depends(create_supabase_transaction),
+    neon: Connection = Depends(create_neon_client),
+):
+    # try:
+    # cur = trans_db.cursor()
+    # print(current_user["email"])
+    # cur.execute(
+    # 'SELECT * FROM "foldersV2" WHERE email = %s', (current_user["email"],)
+    # )
+    # result = cur.fetchall()
+    # trans_db.commit()
+    # cur.close()
+    # print(result)
+    # except Exception as e:
+    # print("Error", e)
+    # cur = neon.cursor()
+    # cur.execute("SELECT NOW();")
+    # time = cur.fetchone()[0]
+    # cur.execute("SELECT version();")
+    # version = cur.fetchone()[0]
+    # print(f"Current time: {time}")
+    # print(f"PostgreSQL version: {version}")
+    # cur.close()
+    cur = trans_db.cursor()
+    try:
+        email = current_user["email"]
+
+        # Handle 'add' operations
+        for document in sync_data.add:
+            if document["type"] == "folder":
+                cur.execute(
+                    'INSERT INTO "foldersV2" (foldername, email, icon, path, parent_path) VALUES (%s, %s, %s, %s, %s)',
+                    (document["filename"], email, None, document["path"], email),
+                )
+            elif document["type"] == "file":
+                cur.execute(
+                    'INSERT INTO "documentsV2" (filename, email, path, folder_path, content, filetype) VALUES (%s, %s, %s, %s, %s, %s)',
+                    (
+                        document["filename"],
+                        email,
+                        document["path"],
+                        document["folderpath"],
+                        document["content"],
+                        document["extension"],
+                    ),
+                )
+
+        # Handle 'update' operations
+        for document in sync_data.update:
+            if document["type"] == "file":
+                cur.execute(
+                    'UPDATE "documentsV2" SET content = %s WHERE path = %s AND email = %s',
+                    (document["content"], document["path"], email),
+                )
+
+        # Handle 'rename' operations
+        for document in sync_data.rename:
+            if document["type"] == "folder":
+                cur.execute(
+                    'UPDATE "foldersV2" SET foldername = %s, path = %s WHERE path = %s AND email = %s',
+                    (
+                        document["newFilename"],
+                        document["newPath"],
+                        document["oldPath"],
+                        email,
+                    ),
+                )
+            elif document["type"] == "file":
+                cur.execute(
+                    'UPDATE "documentsV2" SET filename = %s, path = %s WHERE path = %s AND email = %s',
+                    (
+                        document["newFilename"],
+                        document["newPath"],
+                        document["oldPath"],
+                        email,
+                    ),
+                )
+
+        # Handle 'delete' operations
+        for document in sync_data.delete:
+            if document["type"] == "folder":
+                cur.execute(
+                    'DELETE FROM "foldersV2" WHERE path = %s AND email = %s',
+                    (document["path"], email),
+                )
+            elif document["type"] == "file":
+                cur.execute(
+                    'DELETE FROM "documentsV2" WHERE path = %s AND email = %s',
+                    (document["path"], email),
+                )
+
+        # Commit the transaction
+        trans_db.commit()
+
+    except Exception as e:
+        # Rollback the transaction in case of any error
+        trans_db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error during sync operation: {e}")
+
+    finally:
+        # Always close the cursor
+        if cur is not None:
+            cur.close()
+
+    return {"message": "Sync successful"}

@@ -27,7 +27,7 @@ interface FolderContents {
 	[key: string]: DirectoryContent[];
 }
 
-interface FileManagerState {
+export interface FileManagerState {
 	baseDir: BaseDirectory;
 	files: FolderContents;
 	folders: { [folderName: string]: { depth: number; id: string } };
@@ -205,11 +205,11 @@ interface DocMetadata {
 	content: string;
 }
 
-interface DocStore {
+export interface DocStore {
 	doc: DocMetadata;
 	textEditor: Editor | null;
 	sheetEditor: Editor | null;
-	getEditor: () => Editor | null;
+	getEditor: () => Editor;
 	getEmptyContent: (filetype: string) => string;
 	setEditorContent: (content: string) => void;
 	updateFolder: (folderId: string, foldername: string) => void;
@@ -225,7 +225,7 @@ export const useDocStore = create<DocStore>((set, get) => ({
 		foldername: "unfiled",
 		id: "",
 		folder_id: "",
-		filetype: "txt",
+		filetype: "",
 		content: "",
 	},
 	textEditor: null,
@@ -254,17 +254,38 @@ export const useDocStore = create<DocStore>((set, get) => ({
         `;
 			}
 			default:
-				return "";
+				return `
+<h1>Welcome to Collate</h1>
+    <hr>
+    <p><b>Get started with Collate</b> – your personal space for notes, ideas, and tasks.</p>
+    <p>Here are a few things you can do:</p>
+    <h2>Create a New Note</h2>
+    <p>Simply click on <i>New Note</i> to begin jotting down your thoughts.</p>
+    <h2>Organize Your Thoughts</h2>
+    <p>Use <u>folders</u> to categorize your notes and keep your workspace tidy.</p>
+    <h2>Explore</h2>
+    <p>Dive into Collate and discover all the tools designed to enhance your productivity.</p>`;
 		}
 	},
 	getEditor: () => {
-		if (get().doc.filetype === "txt") {
-			return get().textEditor;
+		const filetype = useFileManager.getState().selectedFile?.filetype;
+		console.log(filetype);
+
+		switch (filetype) {
+			case "txt":
+				return get().textEditor;
+			case "sheet":
+				return get().sheetEditor;
+			default:
+				console.log("default");
+				get().textEditor?.commands.setContent(get().getEmptyContent("intro"));
+				return get().textEditor;
 		}
-		return get().sheetEditor;
 	},
 	setEditorContent: (content) => {
-		switch (get().doc.filetype) {
+		const filetype = useFileManager.getState().selectedFile?.filetype;
+
+		switch (filetype) {
 			case "txt": {
 				get().textEditor?.commands.setContent(content);
 				break;
@@ -281,7 +302,7 @@ export const useDocStore = create<DocStore>((set, get) => ({
 				break;
 			}
 			default: {
-				console.error("No matching filetype found");
+				get().textEditor?.commands.setContent(get().getEmptyContent("intro"));
 				break;
 			}
 		}
@@ -342,7 +363,7 @@ export enum Panel {
 }
 
 export const usePanelStore = create<PanelState>((set) => ({
-	left: true,
+	left: false,
 	command: false,
 	right: false,
 	center: false,

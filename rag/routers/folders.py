@@ -16,6 +16,12 @@ class FolderMetadata(BaseModel):
     icon: str = None
 
 
+class FolderMetadataV2(BaseModel):
+    foldername: str
+    icon: str = None
+    path: str = None
+
+
 class UpdateFolderMetadata(BaseModel):
     foldername: str
     icon: str = None
@@ -35,7 +41,7 @@ def add_folder(
         if parent_id == "":
             ## defaults to root
             parent_id = get_folder_id(db, current_user, "root")["folder_id"]
-        #checks if the parent folder id is an actual folder
+        # checks if the parent folder id is an actual folder
         parent_id_valid = (
             db["client"]
             .from_("folders")
@@ -71,6 +77,31 @@ def add_folder(
                 return {"folder_id": str(new_folder_id)}
         else:
             return {"message": "folder location not valid"}
+    except Exception as e:
+        print("Error", e)
+        return {"message": "Error adding folder"}
+
+
+# adds folder to folders table
+@router.post("/foldersV2")
+def add_folder_sync(
+    db: Annotated[dict, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    folder: FolderMetadataV2,
+    parent_id: str = "",
+):
+    try:
+        email = current_user["email"]
+        folder_to_insert = {
+            "name": folder.foldername,
+            "email": email,
+            "icon": folder.icon,
+            "path": folder.path,
+            "parent_id": parent_id,
+        }
+        response = db["client"].from_("folders").insert(folder_to_insert).execute()
+        new_folder_id = response.data[0]["id"]
+        return {"folder_id": str(new_folder_id)}
     except Exception as e:
         print("Error", e)
         return {"message": "Error adding folder"}
@@ -152,22 +183,39 @@ def get_or_make_generated_folder(
         print("Error", e)
         return {"message": "Could not find generated directory"}
 
+
 # Delete folder
 @router.delete("/folders")
-def delete_folder(db: Annotated[dict, Depends(get_db)], current_user: Annotated[User, Depends(get_current_user)], id:str):
+def delete_folder(
+    db: Annotated[dict, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+    id: str,
+):
     try:
         email = current_user["email"]
         # Check if the folder exists and belongs to the current user
-        folder = db["client"].from_("folders").select("*").eq("email",email).eq("id", id).execute()
+        folder = (
+            db["client"]
+            .from_("folders")
+            .select("*")
+            .eq("email", email)
+            .eq("id", id)
+            .execute()
+        )
         if folder:
             # Delete folder
             # isActive to false
-            db["client"].from_("folders").update({'isActive':False}).eq("email", email).eq("id", id).execute()
+            db["client"].from_("folders").update({"isActive": False}).eq(
+                "email", email
+            ).eq("id", id).execute()
             # setting each document inside this folder to not active
-            db["client"].from_("documents").update({'isActive': False}).eq("email", email).eq("folder_id", id).execute()
+            db["client"].from_("documents").update({"isActive": False}).eq(
+                "email", email
+            ).eq("folder_id", id).execute()
         else:
             raise HTTPException(404, detail="Folder not found")
         return {"message": "Folder deleted successfully"}
     except Exception as e:
         print("Error", e)
         return {"message": "could not delete folder"}
+
