@@ -209,7 +209,7 @@ export interface DocStore {
 	doc: DocMetadata;
 	textEditor: Editor | null;
 	sheetEditor: Editor | null;
-	getEditor: () => Editor;
+	getEditor: () => Editor | null;
 	getEmptyContent: (filetype: string) => string;
 	setEditorContent: (content: string) => void;
 	updateFolder: (folderId: string, foldername: string) => void;
@@ -269,7 +269,6 @@ export const useDocStore = create<DocStore>((set, get) => ({
 	},
 	getEditor: () => {
 		const filetype = useFileManager.getState().selectedFile?.filetype;
-		console.log(filetype);
 
 		switch (filetype) {
 			case "txt":
@@ -277,9 +276,7 @@ export const useDocStore = create<DocStore>((set, get) => ({
 			case "sheet":
 				return get().sheetEditor;
 			default:
-				console.log("default");
-				get().textEditor?.commands.setContent(get().getEmptyContent("intro"));
-				return get().textEditor;
+				return null;
 		}
 	},
 	setEditorContent: (content) => {

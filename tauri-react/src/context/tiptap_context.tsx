@@ -160,9 +160,22 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 	const tableExtensions = [
 		StarterKit,
 		Table,
-		TableRow,
-		TableHeader,
-		TableCell,
+		TableRow.configure({
+			HTMLAttributes: {
+				class: "border border-accent text-dull_black dark:text-dull_white",
+			},
+		}),
+		TableHeader.configure({
+			HTMLAttributes: {
+				class:
+					"bg-alabaster dark:bg-dark2 border border-accent text-dull_black dark:text-dull_white",
+			},
+		}),
+		TableCell.configure({
+			HTMLAttributes: {
+				class: "border border-accent text-dull_black dark:text-dull_white",
+			},
+		}),
 		FontFamily,
 	];
 

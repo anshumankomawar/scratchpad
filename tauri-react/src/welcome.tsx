@@ -8,7 +8,7 @@ const ActionItem = ({ icon: Icon, action, shortcut, description }) => (
 				<p className="text-xs">{action}</p>
 				<p className="w-full text-xs mt-1">{description}</p>
 			</div>
-			<kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+			<kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-accent px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
 				<span className="text-xs">⌘</span>
 				{shortcut}
 			</kbd>
@@ -21,10 +21,10 @@ const WelcomeScreen = () => {
 		<div className="flex flex-col items-center justify-center h-screen text-center px-6 py-4 space-y-6 text-dull_black dark:text-dull_white">
 			{/* Centered content */}
 			<div>
-				<h1 className="text-xl font-semibold mb-2">📓 Welcome to Collate</h1>
+				<h1 className="text-xl font-semibold mb-2">Welcome to Collate</h1>
 				<p className="text-sm mb-4">
 					<strong>Get started with Collate</strong> – your personal space for
-					notes, ideas, and tasks. 🌱
+					notes, ideas, and tasks.
 				</p>
 				<p className="text-xs mb-2">Here are a few things you can do:</p>
 			</div>

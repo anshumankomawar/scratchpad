@@ -7,14 +7,13 @@ import { cn } from "@/lib/utils";
 import "@/tiptap.scss";
 import { createFileRoute } from "@tanstack/react-router";
 import { EditorContent } from "@tiptap/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { FolderTree } from "@/components/tree/foldertree/foldertree";
 import ThreePanelLayout from "@/components/panels/threepanel";
 import { FileTree } from "@/components/tree/filetree/filetree";
 import NewFileMenu from "@/components/tree/filetree/newfile";
 import NewFolderMenu from "@/components/tree/foldertree/newfolder";
 import { updateFileContent } from "@/utilities/fileutils";
-import { performSync } from "@/fetch/documents";
 import WelcomeScreen from "@/welcome";
 
 export const Route = createFileRoute("/")({
@@ -50,7 +49,9 @@ function HomeComponent() {
 				panel.setPanel(Panel.COMMAND, false);
 			} else if (event.key === "s" && (event.metaKey || event.ctrlKey)) {
 				event.preventDefault();
-				updateFileContent(docStore.getEditor(), fileManager);
+				if (fileManager.selectedFile) {
+					updateFileContent(docStore.getEditor(), fileManager);
+				}
 			}
 		}
 
@@ -115,7 +116,7 @@ function HomeComponent() {
 						</div>
 					</div>
 					{/*third panel*/}
-					{fileManager.selectedFile ? (
+					{fileManager.selectedFile?.filetype ? (
 						<EditorContent
 							className={cn(
 								"w-full bg-white dark:bg-background overflow-x-hidden no-scrollbar h-full pb-24 lg:px-24 md:px-12 sm:px-20 px-10",

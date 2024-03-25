@@ -27,23 +27,23 @@ ul[data-type="taskList"] {
   li {
     display: flex;
 
-    > label {
+    >label {
       flex: 0 0 auto;
       margin-right: 0.5rem;
       user-select: none;
     }
 
-    > div {
+    >div {
       flex: 1 1 auto;
     }
 
     ul li,
     ol li {
-    	display: list-item;
+      display: list-item;
     }
-    
-    ul[data-type="taskList"] > li {
-    	display: flex;
+
+    ul[data-type="taskList"]>li {
+      display: flex;
     }
   }
 }
@@ -61,25 +61,25 @@ ul[data-type="taskList"] {
     table-layout: fixed;
     width: 100%;
 
-    td,
-    th {
-      border: 2px solid #ced4da;
-      box-sizing: border-box;
-      min-width: 1em;
-      padding: 3px 5px;
-      position: relative;
-      vertical-align: top;
+    //td,
+    //th {
+    //border: 2px solid #ced4da;
+    //box-sizing: border-box;
+    //min-width: 1em;
+    //padding: 3px 5px;
+    //position: relative;
+    //vertical-align: top;
 
-      > * {
-        margin-bottom: 0;
-      }
-    }
+    //>* {
+    //margin-bottom: 0;
+    //}
+    //}
 
-    th {
-      background-color: #f1f3f5;
-      font-weight: bold;
-      text-align: left;
-    }
+    //th {
+    //background-color: #f1f3f5;
+    //font-weight: bold;
+    //text-align: left;
+    //}
 
     .selectedCell:after {
       background: rgba(200, 200, 255, 0.4);
