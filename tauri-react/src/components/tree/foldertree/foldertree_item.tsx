@@ -1,10 +1,9 @@
-import React, { CSSProperties } from "react";
+import { CSSProperties } from "react";
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { AnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { Item, Props as TreeItemProps } from "./item";
-import { iOS } from "@/components/tree/utilities";
 
 interface Props extends TreeItemProps {
 	id: UniqueIdentifier;
@@ -44,7 +43,6 @@ export function FolderTreeItem({ id, foldername, depth, ...props }: Props) {
 			style={style}
 			depth={depth}
 			ghost={isDragging}
-			disableSelection={iOS}
 			disableInteraction={isSorting}
 			id={id}
 			foldername={foldername}

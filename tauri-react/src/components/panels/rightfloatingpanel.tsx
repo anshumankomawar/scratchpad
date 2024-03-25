@@ -32,7 +32,7 @@ import { useDocStore, usePanelStore } from "@/app_state";
 
 export default function RightFloatingPanel() {
 	const panel = usePanelStore((state) => state);
-  const editor = useDocStore((state) => state.getEditor());
+	const editor = useDocStore((state) => state.getEditor());
 
 	async function cancelAutoFocus(event) {
 		event.preventDefault();

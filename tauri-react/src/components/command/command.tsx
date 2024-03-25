@@ -9,16 +9,16 @@ import {
 	CommandSeparator,
 } from "@/components/ui/command";
 import { updateDocument, useDocuments } from "@/fetch/documents";
-import { Panel, useDocStore, usePanelStore } from "@/app_state";
+import { Panel, useDocStore, useFileManager, usePanelStore } from "@/app_state";
 import { useTheme } from "@/context/theme_context";
 import CollatePanel from "../collate/collate";
 import SettingsPage from "../settings/settings";
+import { updateFileContent } from "@/utilities/fileutils";
 
-export default function CommandPanel({ editor }) {
-	const documents = useDocuments();
-	const doc = useDocStore((state) => state.doc);
-	const updateDoc = useDocStore((state) => state.updateDoc);
+export default function CommandPanel() {
 	const panel = usePanelStore((state) => state);
+	const docStore = useDocStore((state) => state);
+	const fileManager = useFileManager((state) => state);
 	const { theme, setTheme } = useTheme();
 
 	async function onCommandCollate() {
@@ -35,14 +35,7 @@ export default function CommandPanel({ editor }) {
 
 	async function onCommandSave() {
 		panel.togglePanel(Panel.COMMAND);
-		const doc_id = await updateDocument(
-			doc.filename,
-			doc.folder_id,
-			editor.getHTML(),
-			doc.id,
-		);
-		updateDoc({ ...doc, id: doc_id });
-		await documents.refetch();
+		updateFileContent(docStore.getEditor(), fileManager);
 	}
 
 	return (
@@ -59,7 +52,7 @@ export default function CommandPanel({ editor }) {
 						<CommandItem onSelect={() => onCommandCollate()}>
 							Collate
 						</CommandItem>
-						<CommandItem onSelect={() => onCommandSave()}>Save</CommandItem>
+						<CommandItem onSelect={() => onCommandSave()}>Sync</CommandItem>
 						<CommandItem>Search</CommandItem>
 					</CommandGroup>
 					<CommandSeparator />

@@ -14,7 +14,7 @@ pub enum Error {
     ReqwestError(reqwest::Error),
     StoreError(tauri_plugin_store::Error),
     AuthError(String),
-    SaveError(String)
+    SaveError(String),
 }
 
 impl Display for Error {
@@ -23,7 +23,7 @@ impl Display for Error {
             Error::ReqwestError(e) => write!(f, "ReqwestError: {}", e),
             Error::StoreError(e) => write!(f, "StoreError: {}", e),
             Error::AuthError(e) => write!(f, "AuthError: {}", e),
-            Error::SaveError(e) => write!(f, "SaveError: {}", e)
+            Error::SaveError(e) => write!(f, "SaveError: {}", e),
         }
     }
 }
@@ -35,7 +35,7 @@ impl Error {
             Error::ReqwestError(_) => "ReqwestError",
             Error::StoreError(_) => "StoreError",
             Error::AuthError(_) => "AuthError",
-            Error::SaveError(_) => "SaveError"
+            Error::SaveError(_) => "SaveError",
         }
     }
 }

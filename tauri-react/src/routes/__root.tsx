@@ -1,4 +1,4 @@
-import { useDndStore, useDocStore } from "@/app_state";
+import { useDndStore, useDocStore, useFileManager } from "@/app_state";
 import { type StoreContext } from "@/auth";
 import Header from "@/components/header/header";
 import LoginComponent from "@/components/login/login";
@@ -21,9 +21,13 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { exists, BaseDirectory, mkdir, writeFile } from "@tauri-apps/plugin-fs";
+import { syncData } from "@/fetch/documents";
+import { getCurrent } from "@tauri-apps/api/window";
 
 export interface MyRouterContext {
 	auth: StoreContext;
+	files: any;
 	queryClient: QueryClient;
 }
 
@@ -39,6 +43,37 @@ interface LoaderData {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	loader: async ({ context }) => {
 		const token = await context.auth.store.get("token");
+		const files = useFileManager.getState();
+		files.setDataPath("anshu@gmail.com");
+
+		const filesExists = await exists(useFileManager.getState().dataPath, {
+			baseDir: BaseDirectory.AppData,
+		});
+
+		const syncExists = await exists("sync.json", {
+			baseDir: BaseDirectory.AppData,
+		});
+
+		if (!filesExists) {
+			await mkdir(useFileManager.getState().dataPath, {
+				baseDir: BaseDirectory.AppData,
+			});
+		}
+
+		if (!syncExists) {
+			const encoder = new TextEncoder();
+			const data = encoder.encode(
+				'{"add": [], "delete": [], "update": [], "rename": []}',
+			);
+			await writeFile("sync.json", data, { baseDir: BaseDirectory.AppData });
+			await writeFile("sync_swap.json", data, {
+				baseDir: BaseDirectory.AppData,
+			});
+		}
+
+		syncData();
+		await useFileManager.getState().readDir();
+		await getCurrent().show();
 		return { token };
 	},
 	component: () => {
@@ -87,9 +122,7 @@ function ProtectedRoute() {
 	);
 
 	useEffect(() => {
-		console.error("detected change");
 		if (tiptap.editor && tiptap.sheetEditor) {
-			console.error("found instances of both");
 			docStore.textEditor = tiptap.editor;
 			docStore.sheetEditor = tiptap.sheetEditor;
 		}
@@ -112,21 +145,13 @@ function ProtectedRoute() {
 	}
 
 	if (!tiptap.editor && !tiptap.sheetEditor) {
-		console.error("No editor instances found");
 		return <div>could not get editor instance</div>;
 	}
 
 	return (
 		<div className="relative z-0 h-full w-full">
-			<div className="z-50 fixed w-min top-0 right-0 h-10">
-				<DndContext
-					onDragStart={handleDragStart}
-					onDragEnd={handleDragEnd}
-					sensors={sensors}
-					collisionDetection={closestCenter}
-				>
-					<Header />
-				</DndContext>
+			<div className="z-50 fixed top-0 right-0 h-10">
+				<Header />
 			</div>
 			<div className="-z-10 left-0 h-full w-full">
 				<Outlet />

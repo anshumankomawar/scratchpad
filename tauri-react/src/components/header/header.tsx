@@ -1,5 +1,11 @@
-import { ChevronsLeft, Menu, MoreHorizontal } from "lucide-react";
-import { Panel, useDndStore, useDocStore, usePanelStore } from "@/app_state";
+import { MoreHorizontal } from "lucide-react";
+import {
+	Panel,
+	useDndStore,
+	useDocStore,
+	useFileManager,
+	usePanelStore,
+} from "@/app_state";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,46 +18,19 @@ import { useTheme } from "@/context/theme_context";
 import { useStore } from "@/auth";
 import { useNavigate } from "@tanstack/react-router";
 import SettingsPage from "../settings/settings";
-import { useTipTapEditor } from "@/context/tiptap_context";
-import {
-	SortableContext,
-	horizontalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import SortableItem from "@/components/dnd/sortableitem";
-import { X } from "lucide-react";
 import AccountPage from "../account/account";
 
 export default function Header() {
 	const panel = usePanelStore((state) => state);
 	const { theme, setTheme } = useTheme();
-	const doc = useDocStore((state) => state.doc);
-	const updateDoc = useDocStore((state) => state.updateDoc);
-	const tabs = useDocStore((state) => state.tabs);
 	const store = useStore();
 	const navigate = useNavigate({ from: "/" });
-	const tiptap = useTipTapEditor();
-	const parent = useDndStore((state) => state.parent);
-	const updateParent = useDndStore((state) => state.updateParent);
-	const deleteTab = useDocStore((state) => state.deleteTab);
+	const fileManager = useFileManager((state) => state);
 
 	const handleLogout = async () => {
 		await store.store.delete("token");
 		navigate({ to: "/" });
 	};
-
-	const handleDeleteTab = (tab) => {
-		deleteTab(tab);
-		updateDoc(useDocStore.getState().tabs[0]);
-		if (useDocStore.getState().tabs.length > 0) {
-			tiptap.editor.commands.setContent(useDocStore.getState().doc.content);
-		} else {
-			tiptap.editor.commands.setContent("");
-		}
-	};
-
-	if (!tiptap.editor) {
-		return <div></div>;
-	}
 
 	return (
 		<div
@@ -61,60 +40,21 @@ export default function Header() {
 			)}
 			data-tauri-drag-region
 		>
-			{/*<Button
-				variant="ghost"
-				size="menu"
-				className="hover:cursor-pointer"
-				onClick={() => panel.togglePanel(Panel.LEFT)}
-				asChild
-			>
-				{panel.left ? (
-					<ChevronsLeft className="stroke-dull_black dark:stroke-dark2 dark:stroke-dull_white" />
-				) : (
-					<Menu className="stroke-dull_black dark:stroke-dull_white" />
-				)}
-			</Button>/*}
-			{/*<div
-				className={cn(
-					"overflow-x-scroll overflow-y-none w-3/4 flex-row flex border-none text-dull_black dark:text-dull_white text-sm items-center justify-start h-full space-x-1.5 ml-1",
-					panel.left ? "ml-4" : "",
-				)}
-			>
-				<SortableContext items={tabs} strategy={horizontalListSortingStrategy}>
-					{tabs.map((tab, index) => (
-						<div
-							key={index}
-							className={cn(
-								"text-xs py-1 px-1.5 hover:bg-accent hover:text-accent-foreground rounded-md flex items-center",
-								doc.id === tab.id ? "bg-accent" : "",
-							)}
-						>
-							<SortableItem
-								key={tab.id}
-								id={tab.filename}
-								tab={tab}
-								removable
-							/>
-							<X
-								size={10}
-								className="hover:stroke-red-400 "
-								onClick={() => {
-									handleDeleteTab(tab);
-								}}
-							/>
-						</div>
-					))}
-				</SortableContext>
-			</div>
-      */}
 			<div className="flex-grow" />
-			{/*<Button
-				variant="ghost"
-				className="w-min p-2 border-none text-dull_black dark:text-dull_white text-sm"
-				size="menu"
-			>
-				Share
-			</Button>*/}
+			{fileManager.isSyncing && (
+				<div className="text-xs text-dull_black dark:text-dull_white">
+					Syncing <div></div>
+				</div>
+			)}
+			{/*{fileManager.isSyncing ? (
+				<div className="text-xs text-dull_black dark:text-dull_white">
+					Syncing...
+				</div>
+			) : (
+				<div className="text-xs text-dull_black dark:text-dull_white">
+					Last sync... {fileManager.lastSync}
+				</div>
+			)}*/}
 			<Popover>
 				<PopoverContent className="w-48 p-1 mr-2 flex flex-col overflow-y-scroll space-y-1 w-32 text-xs text-start">
 					<Button

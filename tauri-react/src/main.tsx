@@ -3,15 +3,12 @@ import { TiptapProvider } from "@/context/tiptap_context";
 import "@/index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { getCurrent } from "@tauri-apps/api/window";
 import ReactDOM from "react-dom/client";
 import { StoreProvider, useStore } from "./auth";
 import { FontFamilyProvider } from "./context/font_context";
 import { routeTree } from "./routeTree.gen";
-
-document.addEventListener("DOMContentLoaded", async () => {
-	await getCurrent().show();
-});
+import { useFileManager } from "./app_state";
+import { Toaster } from "./components/ui/toaster";
 
 const queryClient = new QueryClient();
 const router = createRouter({
@@ -20,6 +17,7 @@ const router = createRouter({
 	defaultPreloadStaleTime: 0,
 	context: {
 		auth: undefined!,
+		files: undefined!,
 		queryClient: queryClient,
 	},
 });
@@ -32,7 +30,8 @@ declare module "@tanstack/react-router" {
 
 function InnerApp() {
 	const auth = useStore();
-	return <RouterProvider router={router} context={{ auth }} />;
+	const files = useFileManager((state) => state);
+	return <RouterProvider router={router} context={{ auth, files }} />;
 }
 
 function App() {
@@ -58,6 +57,7 @@ if (!rootElement.innerHTML) {
 	root.render(
 		<div className="h-screen w-full overflow-none">
 			<App />
+			<Toaster />
 		</div>,
 	);
 }

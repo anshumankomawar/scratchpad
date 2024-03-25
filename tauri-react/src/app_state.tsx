@@ -1,147 +1,197 @@
 import { create } from "zustand";
-import { flattenTree, removeChildrenOf } from "@/components/tree/utilities";
-import { UniqueIdentifier } from "@dnd-kit/core";
 import { Editor } from "@tiptap/react";
+import { BaseDirectory, lstat, readDir, readFile } from "@tauri-apps/plugin-fs";
 
-interface TreeStore {
-	data: any;
-	tree: any[];
-	sortedIds: UniqueIdentifier[];
-	flattenedTree: any[];
-	activeId: UniqueIdentifier | null;
-	_flattenTree: (data: any, activeIdOverride: UniqueIdentifier | null) => any;
-	updateData: (data: any) => void;
-	updateTree: (data: any[]) => void;
-	updateActiveId: (activeId: UniqueIdentifier | null) => void;
-	deleteFile: (fileId: string) => void;
-	updateTreeOnDocumentUpdate: (
-		foldername: string,
-		oldDocId: string,
-		newDocId: string,
-	) => void;
+interface FileItem {
+	id: string;
+	content: string;
+	filename: string;
+	foldername: string;
+	folder_id: string;
+	created_at: string;
+	isActive: true;
+	filetype: string;
+	type: "file";
 }
 
-export const useTreeStore = create<TreeStore>((set) => ({
-	data: {},
-	tree: [],
-	sortedIds: [],
-	flattenedTree: [],
-	activeId: null,
-	_flattenTree: (data, activeIdOverride) => {
-		const flattenedTree = flattenTree(data);
-		const collapsedItems = flattenedTree.reduce<string[]>(
-			(acc, { children, collapsed, id, file }) =>
-				collapsed && children.length ? [...acc, id, file] : acc,
-			[],
-		);
-		const activeId =
-			activeIdOverride !== undefined ? activeIdOverride : this.activeId;
-		const newItems = removeChildrenOf(
-			flattenedTree,
-			activeId ? [activeId, ...collapsedItems] : collapsedItems,
-		);
-		return {
-			flattenedTree: newItems,
-			sortedIds: flattenedTree.map((item) => item.id),
-		};
-	},
-	deleteFile: (fileId) =>
-		set((state) => {
-			const updatedTree = state.tree.map((item) => {
-				const updatedChildren = item.children.filter(
-					(child) => child.file.id !== fileId,
-				);
-				return { ...item, children: updatedChildren };
-			});
-			const { flattenedTree, sortedIds } = state._flattenTree(
-				updatedTree,
-				state.activeId,
-			);
-			return {
-				...state,
-				tree: updatedTree,
-				flattenedTree,
-				sortedIds,
-			};
-		}),
-	updateTreeOnDocumentUpdate: (foldername, oldDocId, newDocId) =>
-		set((state) => {
-			const updatedTree = state.flattenedTree.map((item) => {
-				if (item.foldername === foldername) {
-					const updatedChildren = item.children.map((child) => {
-						if (child.id === oldDocId) {
-							return { ...child, id: newDocId };
-						}
-						return child;
-					});
-					return { ...item, children: updatedChildren };
-				}
-				return item;
-			});
-			const { flattenedTree, sortedIds } = state._flattenTree(
-				updatedTree,
-				state.activeId,
-			);
-			return {
-				...state,
-				tree: updatedTree,
-				flattenedTree,
-				sortedIds,
-			};
-		}),
-	updateData: (data) =>
-		set((state) => {
-			const newData = Object.entries(data).map(([folderName, files]) => ({
-				id: files.id,
-				foldername: folderName,
-				children: files.documents.map((file) => ({
-					folder_id: files.id,
-					foldername: folderName,
-					id: file.filename,
-					children: [],
-					file: file,
-					filetype: file.filetype,
-				})),
-				file: null,
-				collapsed: true,
-			}));
+interface FolderItem {
+	id: string;
+	foldername: string;
+	folder_id: string;
+	type: "folder";
+}
 
-			const { flattenedTree, sortedIds } = state._flattenTree(
-				newData,
-				state.activeId,
-			);
-			return {
-				...state,
-				data: data,
-				tree: newData,
-				flattenedTree,
-				sortedIds,
+type DirectoryContent = FileItem | FolderItem;
+
+interface FolderContents {
+	[key: string]: DirectoryContent[];
+}
+
+interface FileManagerState {
+	baseDir: BaseDirectory;
+	files: FolderContents;
+	folders: { [folderName: string]: { depth: number; id: string } };
+	selectedFile: FileItem | null;
+	selectedFolder: string | null;
+	syncPath: string;
+	dataPath: string;
+	isSyncing: boolean;
+	lastSync: string | null;
+	toggleIsSyncing: () => void;
+	setDataPath: (path: string) => void;
+	updateFiles: (files: FolderContents) => void;
+	readDir: () => Promise<void>;
+	selectFolder: (id: string) => void;
+	selectFile: (id: string) => void;
+}
+
+async function flattenDirectoryContents(
+	dirPath: string,
+	baseDir: BaseDirectory,
+): Promise<DirectoryContent[]> {
+	const parentFiles: DirectoryContent[] = [];
+	const folderItemsWithContents: DirectoryContent[] = [];
+	const entries = await readDir(dirPath, { baseDir });
+
+	for (const entry of entries) {
+		const relativeFilePath = `${dirPath}/${entry.name}`;
+
+		if (entry.isFile && entry.name !== ".DS_Store") {
+			const content = await readFile(relativeFilePath, { baseDir });
+			const decoder = new TextDecoder("utf-8");
+			const text = decoder.decode(content);
+			const fileStat = await lstat(relativeFilePath, { baseDir });
+
+			parentFiles.push({
+				id: relativeFilePath,
+				content: text,
+				filename: entry.name.split(".")[0],
+				foldername: dirPath,
+				folder_id: dirPath,
+				created_at:
+					fileStat.birthtime?.toISOString() ?? new Date().toISOString(),
+				isActive: true,
+				filetype: entry.name.split(".").pop() ?? "txt",
+				type: "file",
+			});
+		} else if (entry.isDirectory) {
+			const folderItem: DirectoryContent = {
+				id: relativeFilePath,
+				foldername: entry.name,
+				folder_id: dirPath,
+				type: "folder",
 			};
-		}),
-	updateTree: (data) =>
-		set((state) => {
-			const { flattenedTree, sortedIds } = state._flattenTree(
-				data,
-				state.activeId,
+
+			const nestedItems = await flattenDirectoryContents(
+				relativeFilePath,
+				baseDir,
 			);
+
+			folderItemsWithContents.push(folderItem, ...nestedItems);
+		}
+	}
+
+	return [...parentFiles, ...folderItemsWithContents];
+}
+
+async function mapDirectoryToJson(
+	dirPath: string,
+	baseDir: BaseDirectory,
+): Promise<FolderContents> {
+	const result: FolderContents = {};
+	const entries = await readDir(dirPath, { baseDir });
+
+	for (const entry of entries.filter((entry) => entry.isDirectory)) {
+		const subDirPath = `${dirPath}/${entry.name}`;
+		const flattenedContents = await flattenDirectoryContents(
+			subDirPath,
+			baseDir,
+		);
+		result[entry.name] = flattenedContents;
+	}
+
+	return result;
+}
+
+function findDocumentById(
+	folders: FolderContents,
+	documentId: string,
+): DirectoryContent | null {
+	for (const folderName in folders) {
+		const contents = folders[folderName];
+		const document = contents.find((doc) => doc.id === documentId);
+		if (document) {
+			return document;
+		}
+	}
+	return null;
+}
+
+export const useFileManager = create<FileManagerState>((set, get) => ({
+	baseDir: BaseDirectory.AppData,
+	files: {},
+	folders: {},
+	selectedFile: null,
+	selectedFolder: null,
+	syncPath: "sync.json",
+	dataPath: "",
+	isSyncing: false,
+	lastSync: null,
+	updateFiles: (files) => set({ files }),
+	toggleIsSyncing: () => set((state) => ({ isSyncing: !state.isSyncing })),
+	setDataPath: (path) => set((state) => ({ ...state, dataPath: path })),
+	readDir: async () => {
+		const folders: { [folderName: string]: { depth: number; id: string } } = {};
+		const entries = await readDir(get().dataPath, {
+			baseDir: BaseDirectory.AppData,
+		});
+		for (const entry of entries) {
+			if (entry.isDirectory) {
+				const folderId = `${get().dataPath}/${entry.name}`;
+				const flattenedContents = await flattenDirectoryContents(
+					folderId,
+					BaseDirectory.AppData,
+				);
+				const fileCount = flattenedContents.filter(
+					(content) => content.type === "file",
+				).length;
+
+				folders[entry.name] = {
+					depth: fileCount,
+					id: folderId,
+				};
+			}
+		}
+
+		set({
+			folders,
+			files: await mapDirectoryToJson(get().dataPath, BaseDirectory.AppData),
+		});
+	},
+	selectFolder: (id) => {
+		set({ selectedFolder: id });
+	},
+	selectFile: (id) =>
+		set((state) => {
+			let selectedFile = null;
+			let selectedFolder = null;
+			if (id) {
+				selectedFile = findDocumentById(state.files, id);
+
+				if (selectedFile && selectedFile.type === "file") {
+					const folderPath = selectedFile.folder_id;
+					const pathSegments = folderPath.split("/");
+					const filesIndex = pathSegments.indexOf(state.dataPath);
+					if (filesIndex !== -1 && pathSegments.length > filesIndex + 1) {
+						selectedFolder = pathSegments[filesIndex + 1];
+					}
+				}
+			}
+
 			return {
 				...state,
-				tree: data,
-				flattenedTree,
-				sortedIds,
-			};
-		}),
-	updateActiveId: (activeId) =>
-		set((state) => {
-			const { flattenedTree, sortedIds } = state._flattenTree(
-				state.tree,
-				activeId,
-			);
-			return {
-				...state,
-				activeId,
-				flattenedTree,
-				sortedIds,
+				selectedFile,
+				selectedFolder,
 			};
 		}),
 }));
@@ -160,7 +210,7 @@ interface DocStore {
 	textEditor: Editor | null;
 	sheetEditor: Editor | null;
 	getEditor: () => Editor | null;
-  getEmptyContent: (filetype: string) => string;
+	getEmptyContent: (filetype: string) => string;
 	setEditorContent: (content: string) => void;
 	updateFolder: (folderId: string, foldername: string) => void;
 	updateDoc: (newDoc: DocMetadata) => void;
@@ -203,7 +253,8 @@ export const useDocStore = create<DocStore>((set, get) => ({
           </table>
         `;
 			}
-      default: return ""
+			default:
+				return "";
 		}
 	},
 	getEditor: () => {
@@ -220,7 +271,9 @@ export const useDocStore = create<DocStore>((set, get) => ({
 			}
 			case "sheet": {
 				if (content === "") {
-					get().sheetEditor?.commands.setContent(get().getEmptyContent("sheet"));
+					get().sheetEditor?.commands.setContent(
+						get().getEmptyContent("sheet"),
+					);
 				} else {
 					get().sheetEditor?.commands.setContent(content);
 				}

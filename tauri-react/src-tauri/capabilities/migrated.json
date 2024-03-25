@@ -1,7 +1,9 @@
 {
   "identifier": "main-capability",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "path:default",
     "event:default",
@@ -16,11 +18,77 @@
     "window:allow-set-title",
     "window:allow-toggle-maximize",
     "window:allow-set-fullscreen",
-    "window:allow-set-decorations", 
+    "window:allow-set-decorations",
     "window:allow-set-effects",
     "window:allow-start-dragging",
     "window:allow-minimize",
     "window:allow-show",
-    "os:allow-os-type"
+    "os:allow-os-type",
+    "fs:allow-appdata-read-recursive",
+    "fs:allow-appdata-write-recursive",
+    "fs:allow-lstat",
+    "fs:write-all",
+    "fs:read-all",
+    "store:allow-set",
+    {
+      "identifier": "fs:allow-write",
+      "allow": [
+        {
+          "path": "$APPDATA/**"
+        },
+        {
+          "path": "$APPDATA/"
+        },
+        {
+          "path": "$APPDATA/*"
+        },
+        {
+          "path": "$APPDATA/**/*"
+        },
+        {
+          "path": "$APPDATA/files/**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-watch",
+      "allow": [
+        {
+          "path": "$APPDATA/**"
+        },
+        {
+          "path": "$APPDATA/"
+        },
+        {
+          "path": "$APPDATA/*"
+        },
+        {
+          "path": "$APPDATA/**/*"
+        },
+        {
+          "path": "$APPDATA/files/**/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-unwatch",
+      "allow": [
+        {
+          "path": "$APPDATA/**"
+        },
+        {
+          "path": "$APPDATA/"
+        },
+        {
+          "path": "$APPDATA/*"
+        },
+        {
+          "path": "$APPDATA/**/*"
+        },
+        {
+          "path": "$APPDATA/files/**/*"
+        }
+      ]
+    }
   ]
 }

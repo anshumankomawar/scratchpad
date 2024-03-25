@@ -1,23 +1,32 @@
 use std::collections::HashMap;
 
 use serde_json::json;
-use tauri::{State, Wry, Manager};
-use tauri_plugin_store::{StoreCollection, with_store};
+use tauri::{Manager, State, Wry};
+use tauri_plugin_store::{with_store, StoreCollection};
 
+use crate::error::{Error, Result};
 use crate::state::TauriState;
-use crate::error::{Result, Error};
 
 #[tauri::command]
-pub async fn login(username: &str, password: &str, state: State<'_, TauriState>, app: tauri::AppHandle) -> Result<()> {
+pub async fn login(
+    username: &str,
+    password: &str,
+    state: State<'_, TauriState>,
+    app: tauri::AppHandle,
+) -> Result<()> {
     let params = [("username", &username), ("password", &password)];
-    let res = state.client.post("https://scratchpad-production.up.railway.app/login")
-    .form(&params)
-    .send()
-    .await?
-    .json::<HashMap<String, String>>()
-    .await?;
+    let res = state
+        .client
+        .post("http://localhost:8000/login")
+        .form(&params)
+        .send()
+        .await?
+        .json::<HashMap<String, String>>()
+        .await?;
 
-    let token = res.get("access_token").ok_or_else(|| Error::AuthError("token not found".into()))?;
+    let token = res
+        .get("access_token")
+        .ok_or_else(|| Error::AuthError("token not found".into()))?;
     println!("recieved {:?}", &token);
 
     let stores = app.state::<StoreCollection<Wry>>();

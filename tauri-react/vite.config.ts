@@ -19,6 +19,9 @@ export default defineConfig(async () => ({
 			plugins: [tailwindcss()],
 		},
 	},
+	define: {
+		"process.env.IS_PREACT": JSON.stringify("true"),
+	},
 
 	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
 	//

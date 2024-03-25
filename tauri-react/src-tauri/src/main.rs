@@ -37,6 +37,7 @@ fn load_store(app: &mut App, path: &PathBuf) -> Result<()> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             if cfg!(target_os = "macos") {

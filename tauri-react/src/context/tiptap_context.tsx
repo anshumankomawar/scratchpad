@@ -151,12 +151,20 @@ export function TiptapProvider({ children }: { children: React.ReactNode }) {
 		content,
 		editorProps: {
 			attributes: {
-				class: "top-14 pt-20 h-full overflow-y-scroll outline-none",
+				class:
+					"text-dull_black dark:text-dull_white top-14 pt-20 h-full overflow-y-scroll outline-none",
 			},
 		},
 	});
 
-	const tableExtensions = [StarterKit, Table, TableRow, TableHeader, TableCell, FontFamily];
+	const tableExtensions = [
+		StarterKit,
+		Table,
+		TableRow,
+		TableHeader,
+		TableCell,
+		FontFamily,
+	];
 
 	const sheetEditor = useEditor({
 		extensions: tableExtensions,
