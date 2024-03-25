@@ -3,9 +3,12 @@ import json
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 import string
+from psycopg2.extras import execute_values
+from langchain_community.embeddings.openai import OpenAIEmbeddings
 from auth.oauth import get_current_user
 from dependencies import get_db
 from models.user import User
+from routers.document import generate_chunks
 from routers.folders import get_folder_id
 from pydantic import BaseModel
 from db.supabase import create_neon_client, create_supabase_transaction
@@ -126,6 +129,36 @@ class SyncData(BaseModel):
     rename: list
 
 
+async def add_chunks(cur, document):
+    chunks = generate_chunks(document["content"])
+    embeddings = OpenAIEmbeddings()
+    records = []
+    current_page = 0
+    for chunk in chunks:
+        embedding = embeddings.embed_query(chunk)
+        metadata = json.dumps(
+            {  # Ensure metadata is a JSON-encoded string
+                "page": current_page,
+                "source": document["filename"],
+            }
+        )
+        record = (
+            document["path"],
+            chunk,
+            metadata,  # Now a string
+            embedding,
+        )
+        records.append(record)
+        current_page += 1
+
+    # Assuming `cur` is your cursor object and it's already connected to your database
+    execute_values(
+        cur,
+        'INSERT INTO "chunksV2" (document_path, content, metadata, embedding) VALUES %s',
+        records,
+    )
+
+
 @router.put("/v1/sync")
 async def sync(
     sync_data: SyncData,
@@ -134,26 +167,6 @@ async def sync(
     trans_db: Connection = Depends(create_supabase_transaction),
     neon: Connection = Depends(create_neon_client),
 ):
-    # try:
-    # cur = trans_db.cursor()
-    # print(current_user["email"])
-    # cur.execute(
-    # 'SELECT * FROM "foldersV2" WHERE email = %s', (current_user["email"],)
-    # )
-    # result = cur.fetchall()
-    # trans_db.commit()
-    # cur.close()
-    # print(result)
-    # except Exception as e:
-    # print("Error", e)
-    # cur = neon.cursor()
-    # cur.execute("SELECT NOW();")
-    # time = cur.fetchone()[0]
-    # cur.execute("SELECT version();")
-    # version = cur.fetchone()[0]
-    # print(f"Current time: {time}")
-    # print(f"PostgreSQL version: {version}")
-    # cur.close()
     cur = trans_db.cursor()
     try:
         email = current_user["email"]
@@ -178,6 +191,8 @@ async def sync(
                     ),
                 )
 
+                await add_chunks(cur, document)
+
         # Handle 'update' operations
         for document in sync_data.update:
             if document["type"] == "file":
@@ -185,6 +200,13 @@ async def sync(
                     'UPDATE "documentsV2" SET content = %s WHERE path = %s AND email = %s',
                     (document["content"], document["path"], email),
                 )
+
+                cur.execute(
+                    'DELETE FROM "chunksV2" WHERE document_path = %s',
+                    (document["path"],),
+                )
+
+                await add_chunks(cur, document)
 
         # Handle 'rename' operations
         for document in sync_data.rename:
@@ -198,6 +220,20 @@ async def sync(
                         email,
                     ),
                 )
+
+                cur.execute(
+                    """
+                    UPDATE "documentsV2"
+                    SET path = CONCAT(%s, '/', SUBSTRING(path FROM '[^/]*$'))
+                    WHERE folder_path = %s AND email = %s
+                    """,
+                    (
+                        document["newPath"],  # The base new path to replace with
+                        document["newPath"],
+                        email,  # Assuming you also want to filter by email
+                    ),
+                )
+
             elif document["type"] == "file":
                 cur.execute(
                     'UPDATE "documentsV2" SET filename = %s, path = %s WHERE path = %s AND email = %s',
@@ -206,6 +242,18 @@ async def sync(
                         document["newPath"],
                         document["oldPath"],
                         email,
+                    ),
+                )
+
+                cur.execute(
+                    """
+                    UPDATE "chunksV2"
+                    SET metadata = jsonb_set(metadata, '{source}', %s::jsonb)
+                    WHERE document_path = %s
+                    """,
+                    (
+                        f'"{document["newFilename"]}"',  # New source value, converting to JSONB
+                        document["newPath"],
                     ),
                 )
 
@@ -228,6 +276,7 @@ async def sync(
     except Exception as e:
         # Rollback the transaction in case of any error
         trans_db.rollback()
+        print("Error", e)
         raise HTTPException(status_code=500, detail=f"Error during sync operation: {e}")
 
     finally:

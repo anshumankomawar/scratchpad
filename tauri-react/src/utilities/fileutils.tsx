@@ -285,7 +285,8 @@ export async function handleNewFolder(
 	fileManager: FileManagerState,
 	path: string,
 ) {
-	await mkdir(path, {
+	const folderPath = `${fileManager.dataPath}/${path}`;
+	await mkdir(folderPath, {
 		baseDir: BaseDirectory.AppData,
 	});
 	await fileManager.readDir();
@@ -299,12 +300,12 @@ export async function handleNewFolder(
 		BaseDirectory.AppData,
 	);
 
-	const foldername = path.split("/")[1];
+	const foldername = folderPath.split("/")[1];
 
 	syncManager.addOperation({
 		type: "folder",
 		timestamp: new Date().toISOString(),
-		path: path,
+		path: folderPath,
 		filename: foldername,
 	});
 }

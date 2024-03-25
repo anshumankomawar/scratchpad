@@ -254,17 +254,7 @@ export const useDocStore = create<DocStore>((set, get) => ({
         `;
 			}
 			default:
-				return `
-<h1>Welcome to Collate</h1>
-    <hr>
-    <p><b>Get started with Collate</b> – your personal space for notes, ideas, and tasks.</p>
-    <p>Here are a few things you can do:</p>
-    <h2>Create a New Note</h2>
-    <p>Simply click on <i>New Note</i> to begin jotting down your thoughts.</p>
-    <h2>Organize Your Thoughts</h2>
-    <p>Use <u>folders</u> to categorize your notes and keep your workspace tidy.</p>
-    <h2>Explore</h2>
-    <p>Dive into Collate and discover all the tools designed to enhance your productivity.</p>`;
+				return "";
 		}
 	},
 	getEditor: () => {
@@ -360,7 +350,7 @@ export enum Panel {
 }
 
 export const usePanelStore = create<PanelState>((set) => ({
-	left: false,
+	left: true,
 	command: false,
 	right: false,
 	center: false,

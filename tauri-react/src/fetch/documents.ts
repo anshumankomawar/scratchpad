@@ -51,6 +51,24 @@ function calculateTimeDifference(prevSyncStr, currentSyncStr) {
 	}
 }
 
+function getFormattedDate(): string {
+	const now = new Date();
+
+	const options: Intl.DateTimeFormatOptions = {
+		weekday: "long", // "Monday" through "Sunday"
+		year: "numeric", // 4 digit year
+		month: "long", // "January" through "December"
+		day: "numeric", // 1, 2, ..., 31
+		hour: "numeric", // 2-digit hour
+		minute: "2-digit", // 2-digit minute
+		hour12: true, // Use 12-hour clock
+	};
+
+	const formattedDate = new Intl.DateTimeFormat("en-US", options).format(now);
+
+	return formattedDate.replace(",", " at"); // Replaces the first comma with ' at'
+}
+
 export const performSync = async () => {
 	const url = "http://localhost:8000/v1/sync";
 	try {
@@ -74,7 +92,7 @@ export const performSync = async () => {
 		const { update } = toast({
 			itemID: "sync",
 			title: "Syncing...",
-			description: "Friday, February 10, 2023 at 5:57 PM",
+			description: getFormattedDate(),
 		});
 
 		useFileManager.setState({ syncPath: "sync_swap.json" });
