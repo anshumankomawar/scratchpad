@@ -121,3 +121,44 @@ body {
   height: 100%;
   overflow: hidden;
 }
+
+.loadingBarContainer {
+  background-color: #fff;
+  /* White background */
+  border: 2px solid #000;
+  /* Black border */
+  height: 20px;
+  width: 100%;
+  /* Adjust based on your layout */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Centers the percentage text */
+  margin-top: 4px;
+  /* Space between the text and the bar */
+  color: #000;
+  /* Text color */
+  font-size: 14px;
+  /* Adjust the font size as needed */
+}
+
+.loadingBarProgress {
+  background-color: #000;
+  /* Black fill */
+  height: 100%;
+  width: 0%;
+  /* Start with no fill */
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  /* Ensure it's under the text */
+}
+
+.loadingBarText {
+  z-index: 2;
+  /* Ensure the text is above the progress bar */
+  position: relative;
+  /* Important for z-index to take effect */
+}

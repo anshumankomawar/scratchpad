@@ -68,59 +68,8 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 		const padding = { marginLeft: `${depth * indentationWidth}px` };
 		const docStore = useDocStore((state) => state);
 		const fileManager = useFileManager((state) => state);
-		const [isEditing, setIsEditing] = useState(false);
-		const [inputValue, setInputValue] = useState(props.file.filename);
 		const [isRenaming, setIsRenaming] = useState(false);
 		const [newFilename, changeNewFilename] = useState(props.file.filename);
-		const editRef = useRef(null);
-
-		const selectText = () => {
-			const el = editRef.current;
-			if (el && document.body.createTextRange) {
-				const range = document.body.createTextRange();
-				range.moveToElementText(el);
-				range.select();
-			} else if (window.getSelection && document.createRange) {
-				const range = document.createRange();
-				range.selectNodeContents(el);
-				const sel = window.getSelection();
-				sel.removeAllRanges();
-				sel.addRange(range);
-			}
-		};
-
-		useEffect(() => {
-			if (editRef?.current && isEditing === true) {
-				editRef.current.focus();
-			}
-		}, [isEditing, editRef]);
-
-		const handleBlur = () => {
-			setIsEditing(false);
-		};
-
-		const handleKeyDown = async (e) => {
-			if (e.key === "Enter" || e.key === "Escape") {
-				e.preventDefault();
-				setIsEditing(false); // Stop editing on Enter or Escape
-				if (e.key === "Enter") {
-					await rename(
-						props.file.id,
-						`${fileManager.dataPath}/${inputValue}.${props.file.filetype}`,
-						{
-							oldPathBaseDir: BaseDirectory.AppData,
-							newPathBaseDir: BaseDirectory.AppData,
-						},
-					);
-					await fileManager.readDir();
-					await fileManager.selectFile(
-						`${fileManager.dataPath}/${inputValue}.${props.file.filetype}`,
-					);
-				} else if (e.key === "Escape") {
-					setInputValue(props.file.filename);
-				}
-			}
-		};
 
 		return (
 			<Dialog open={isRenaming} modal={false}>
