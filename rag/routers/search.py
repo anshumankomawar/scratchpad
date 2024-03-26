@@ -77,7 +77,7 @@ def search_document(
         similar_queries = (
             db["client"]
             .rpc(
-                "match_queries",
+                "match_queries_v2",
                 {
                     "email": email,
                     "query_embedding": embedded_query,
@@ -111,50 +111,30 @@ def search_document(
             )
 
             data = generate_summary_openai(request, all_chunks, query)
-            # data = generate_summary_falcon(request, all_chunks, query)
-
             print("***************GENERATED DATA**************\n")
-            # insert = DocumentMetadata(filename=query, content=data)
-            # print("***************TRYING TO INSERT DATA**************\n")
-            # document_created = add_document(db, current_user, insert, True)
-            # print("***************INSERTED DATA**************\n")
-
-            # document = (
-            # db["client"]
-            # .from_("documents")
-            # .select("*")
-            # .eq("email", email)
-            # .eq("id", document_created["doc_id"])
-            # .execute()
-            # )
-            # print("***************RETRIEVED DOCUMENT**************\n")
-
-            # db["client"].from_("queries").insert(
-            # [
-            # {
-            # "email": email,
-            # "query_content": query,
-            # "embedding": embedded_query,
-            # "metadata": {},
-            # "doc": document_created["doc_id"],
-            # }
-            # ]
-            # ).execute()
+            print(data)
+            db["client"].from_("queries_V2").insert(
+                [
+                    {
+                        "email": email,
+                        "query_content": query,
+                        "embedding": embedded_query,
+                        "metadata": {},
+                        "content": data,
+                        "references": similar_chunks.data,
+                    }
+                ]
+            ).execute()
 
             return {"data": data, "references": similar_chunks_data}
         else:
-            print(
-                "***************FOUND SIMILAR QUERY, NO GENERATION REQUIRED**************\n"
-            )
+            print("***************FOUND SIMILAR QUERY**************\n")
             similar_query = similar_queries.data[0]
-            # document = (
-            # db["client"]
-            # .from_("documentsV2")
-            # .select("*")
-            # .eq("id", similar_query["doc"])
-            # .execute()
-            # )
-            return {"data": "", "references": []}
+            result = {
+                "data": similar_query["content"],
+                "references": similar_query["references"],
+            }
+            return result
     except Exception as e:
         print("Error", e)
         return {"error": "couldnt get results from search query"}

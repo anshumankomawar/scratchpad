@@ -47,7 +47,7 @@ const WelcomeScreen = () => {
 				<ActionItem
 					icon={CopyIcon}
 					action="💡 Collate Note"
-					shortcut="C"
+					shortcut="/"
 					description="Combine notes for a comprehensive overview."
 				/>
 			</div>

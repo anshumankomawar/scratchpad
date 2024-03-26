@@ -59,61 +59,67 @@ export default function CollatePanel() {
 	const docStore = useDocStore((state) => state);
 	const [displayedMessages, setDisplayedMessages] = useState([]);
 	const [isDisplaying, setIsDisplaying] = useState(false);
+	const [isFetchComplete, setIsFetchComplete] = useState(false);
 
 	useEffect(() => {
+		let intervalId;
+
+		const finishDisplaying = () => {
+			if (isFetchComplete) {
+				setIsGenerating(false);
+				setIsDisplaying(false);
+			} else {
+				const checkFetchComplete = setInterval(() => {
+					if (isFetchComplete) {
+						setIsGenerating(false);
+						setIsDisplaying(false);
+						clearInterval(checkFetchComplete);
+					}
+				}, 100);
+			}
+		};
+
 		if (isDisplaying) {
 			setIsGenerating(true);
 
-			const randomInitialMessage = selectRandomMessages(
-				initialMessagesOptions,
-				1,
-			);
-			setDisplayedMessages(randomInitialMessage);
+			const allMessages = [
+				...selectRandomMessages(initialMessagesOptions, 1),
+				...selectRandomMessages(updateMessagesOptions, 3),
+				"Ding! Order up. I mean, content generated.",
+			];
 
-			const randomUpdateMessages = selectRandomMessages(
-				updateMessagesOptions,
-				3,
-			);
 			let nextMessageIndex = 0;
-			const intervalId = setInterval(() => {
-				if (nextMessageIndex < randomUpdateMessages.length) {
+			intervalId = setInterval(() => {
+				if (nextMessageIndex < allMessages.length) {
 					setDisplayedMessages((prevMessages) => [
 						...prevMessages,
-						randomUpdateMessages[nextMessageIndex],
+						allMessages[nextMessageIndex],
 					]);
-
-					nextMessageIndex += 1;
+					nextMessageIndex++;
 				} else {
-					setDisplayedMessages((prevMessages) => [
-						...prevMessages,
-						"Ding! Order up. I mean, content generated.",
-					]);
 					clearInterval(intervalId);
+					finishDisplaying();
 				}
-			}, 1000);
-
-			return;
+			}, 500);
 		}
-
-		if (collate !== "") {
-			setIsGenerating(false);
-			setIsDisplaying(false);
-		}
-	}, [isDisplaying, collate]);
+		return () => clearInterval(intervalId);
+	}, [isDisplaying, isFetchComplete]);
 
 	async function handleSearch() {
 		const res = await collateDocument(query);
 		setCollate(res.data);
 		setReferences(res.references);
+		setIsFetchComplete(true);
 	}
 
 	useEffect(() => {
 		if (query === "") {
-			console.log("HERE");
 			setCollate("");
 			setReferences([]);
-			setIsGenerating(false);
+			setDisplayedMessages([]);
+			setIsFetchComplete(false);
 			setIsDisplaying(false);
+			setIsGenerating(false);
 		}
 	}, [query]);
 
@@ -128,6 +134,8 @@ export default function CollatePanel() {
 						onChange={(e) => setQuery(e.target.value)}
 						onKeyUp={async (e) => {
 							if (e.key === "Enter") {
+								setReferences([]);
+								setDisplayedMessages([]);
 								setIsDisplaying(true);
 								await handleSearch();
 							}
@@ -169,9 +177,9 @@ export default function CollatePanel() {
 								<Skeleton className="h-[100px] w-full rounded-xl" />
 							</div>
 						) : (
-							references.map((ref) => (
-								<div className="h-min w-full py-2">
-									<div className="w-full flex flex-col items-start justify-center text-dull_black dark:text-dull_white text-xs px-2 border-l">
+							references.map((ref, index) => (
+								<div className="h-min w-full py-2" key={index}>
+									<div className="w-full flex flex-col items-start justify-center text-dull_black dark:text-dull_white text-xs px-2 border-l-2">
 										<div className="flex items-center justify-start pb-2 w-full">
 											{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
 											<div
