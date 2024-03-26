@@ -95,7 +95,6 @@ export async function deleteFolder(
 
 	if (fileManager.selectedFolder === foldername) {
 		fileManager.selectFolder(null);
-		editor.commands.setContent("");
 	}
 
 	if (fileManager.selectedFile?.foldername === foldername) {
@@ -163,6 +162,10 @@ export async function updateFileContent(
 ) {
 	const encoder = new TextEncoder();
 	const data = encoder.encode(editor?.getHTML());
+	if (fileManager.selectedFile?.content === editor?.getHTML()) {
+		return;
+	}
+
 	await writeFile(fileManager.selectedFile.id, data, {
 		baseDir: BaseDirectory.AppData,
 	});

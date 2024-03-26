@@ -128,8 +128,10 @@ export const Item = forwardRef<HTMLDivElement, Props>(
 								{...handleProps}
 							>
 								<Inbox className="flex-none w-6 h-4 pr-1 stroke-dull_black dark:stroke-dull_white" />
+								{/*<div className="text-xs pr-2">📝</div>*/}
 								<div className="flex flex-grow min-w-0 pr-4">
 									<div className="rounded-md text-ellipsis text-xs overflow-hidden truncate font-medium flex-grow hover:cursor-pointer text-left text-dull_black dark:text-dull_white">
+										{" "}
 										{foldername}
 									</div>
 								</div>

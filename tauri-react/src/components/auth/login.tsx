@@ -7,6 +7,8 @@ export type LoginComponentProps = {
 	setEmail: (email: string) => void;
 	password: string;
 	setPassword: (password: string) => void;
+	isLogin: boolean;
+	setIsLogin: (value: boolean) => void;
 };
 
 export default function LoginComponent(props: LoginComponentProps) {

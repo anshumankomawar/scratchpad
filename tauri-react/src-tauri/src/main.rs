@@ -20,7 +20,7 @@ mod util;
 use error::Result;
 use fetch::document::{add_folder, delete_document, get_documents, save_document, update_document};
 use fetch::search::search_user_documents;
-use fetch::{auth::login, user::get_user};
+use fetch::{auth::login, auth::register, user::get_user};
 use state::TauriState;
 use util::check;
 
@@ -63,7 +63,8 @@ fn main() {
             get_documents,
             update_document,
             add_folder,
-            delete_document
+            delete_document,
+            register
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

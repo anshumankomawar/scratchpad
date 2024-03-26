@@ -1,10 +1,10 @@
 import { useDndStore, useDocStore, useFileManager } from "@/app_state";
 import { type StoreContext } from "@/auth";
 import Header from "@/components/header/header";
-import LoginComponent from "@/components/login/login";
+import LoginComponent from "@/components/auth/login";
 import { Toaster } from "@/components/ui/toaster";
 import { useTipTapEditor } from "@/context/tiptap_context";
-import { login } from "@/fetch/auth";
+import { login, register } from "@/fetch/auth";
 import {
 	DndContext,
 	KeyboardSensor,
@@ -24,6 +24,8 @@ import { useEffect, useState } from "react";
 import { exists, BaseDirectory, mkdir, writeFile } from "@tauri-apps/plugin-fs";
 import { syncData } from "@/fetch/documents";
 import { getCurrent } from "@tauri-apps/api/window";
+import { Button } from "@/components/ui/button";
+import RegisterComponent from "@/components/auth/register";
 
 export interface MyRouterContext {
 	auth: StoreContext;
@@ -43,37 +45,40 @@ interface LoaderData {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	loader: async ({ context }) => {
 		const token = await context.auth.store.get("token");
-		const files = useFileManager.getState();
-		files.setDataPath("anshu@gmail.com");
+		const username = await context.auth.store.get("username");
+		if (token && username) {
+			const files = useFileManager.getState();
+			files.setDataPath(username);
 
-		const filesExists = await exists(useFileManager.getState().dataPath, {
-			baseDir: BaseDirectory.AppData,
-		});
-
-		const syncExists = await exists("sync.json", {
-			baseDir: BaseDirectory.AppData,
-		});
-
-		if (!filesExists) {
-			await mkdir(useFileManager.getState().dataPath, {
+			const filesExists = await exists(useFileManager.getState().dataPath, {
 				baseDir: BaseDirectory.AppData,
 			});
-		}
 
-		if (!syncExists) {
-			const encoder = new TextEncoder();
-			const data = encoder.encode(
-				'{"add": [], "delete": [], "update": [], "rename": []}',
-			);
-			await writeFile("sync.json", data, { baseDir: BaseDirectory.AppData });
-			await writeFile("sync_swap.json", data, {
+			const syncExists = await exists("sync.json", {
 				baseDir: BaseDirectory.AppData,
 			});
-		}
 
-		syncData();
-		await useFileManager.getState().readDir();
-		await getCurrent().show();
+			if (!filesExists) {
+				await mkdir(useFileManager.getState().dataPath, {
+					baseDir: BaseDirectory.AppData,
+				});
+			}
+
+			if (!syncExists) {
+				const encoder = new TextEncoder();
+				const data = encoder.encode(
+					'{"add": [], "delete": [], "update": [], "rename": []}',
+				);
+				await writeFile("sync.json", data, { baseDir: BaseDirectory.AppData });
+				await writeFile("sync_swap.json", data, {
+					baseDir: BaseDirectory.AppData,
+				});
+			}
+
+			syncData();
+			await useFileManager.getState().readDir();
+			await getCurrent().show();
+		}
 		return { token };
 	},
 	component: () => {
@@ -88,6 +93,9 @@ function PublicRoute() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const router = useRouter();
+	const [confirmEmail, setConfirmEmail] = useState("");
+	const [confirmPassword, setConfirmPassoword] = useState("");
+	const [isLogin, setIsLogin] = useState(true);
 
 	const handleLogin = async () => {
 		setIsSubmitting(true);
@@ -95,16 +103,43 @@ function PublicRoute() {
 		setIsSubmitting(false);
 	};
 
+	const handleRegister = async () => {
+		setIsSubmitting(true);
+		if (email === confirmEmail && password === confirmPassword) {
+			await register(email, password, router);
+		}
+		setIsSubmitting(false);
+	};
+
 	return (
 		<>
-			<LoginComponent
-				handleLogin={handleLogin}
-				isSubmitting={isSubmitting}
-				email={email}
-				setEmail={setEmail}
-				password={password}
-				setPassword={setPassword}
-			/>
+			{isLogin ? (
+				<LoginComponent
+					handleLogin={handleLogin}
+					isSubmitting={isSubmitting}
+					email={email}
+					setEmail={setEmail}
+					password={password}
+					setPassword={setPassword}
+					isLogin={isLogin}
+					setIsLogin={setIsLogin}
+				/>
+			) : (
+				<RegisterComponent
+					handleLogin={handleRegister}
+					isSubmitting={isSubmitting}
+					email={email}
+					setEmail={setEmail}
+					password={password}
+					setPassword={setPassword}
+					confirmEmail={confirmEmail}
+					setConfirmEmail={setConfirmEmail}
+					confirmPassword={confirmPassword}
+					setConfirmPassword={setConfirmPassoword}
+					isLogin={isLogin}
+					setIsLogin={setIsLogin}
+				/>
+			)}
 			<Toaster />
 		</>
 	);

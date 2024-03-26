@@ -16,9 +16,12 @@ import {
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/context/theme_context";
 import { useStore } from "@/auth";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import SettingsPage from "../settings/settings";
 import AccountPage from "../account/account";
+import { performSync, syncData } from "@/fetch/documents";
+import { BaseDirectory } from "@tauri-apps/plugin-fs";
+import SyncManager from "@/utilities/sync";
 
 export default function Header() {
 	const panel = usePanelStore((state) => state);
@@ -26,11 +29,47 @@ export default function Header() {
 	const store = useStore();
 	const navigate = useNavigate({ from: "/" });
 	const fileManager = useFileManager((state) => state);
+	const router = useRouter();
 
 	const handleLogout = async () => {
+		if (!fileManager.isSyncing) {
+			await performSync();
+		}
 		await store.store.delete("token");
-		navigate({ to: "/" });
+		await store.store.delete("username");
+		router.invalidate();
+		useFileManager.setState({
+			baseDir: BaseDirectory.AppData,
+			files: {},
+			folders: {},
+			selectedFile: null,
+			selectedFolder: null,
+			syncPath: "sync.json",
+			dataPath: "",
+			isSyncing: false,
+			lastSync: null,
+		});
+		useDocStore.setState({
+			doc: {
+				filename: "",
+				foldername: "unfiled",
+				id: "",
+				folder_id: "",
+				filetype: "",
+				content: "",
+			},
+			textEditor: null,
+			sheetEditor: null,
+		});
 	};
+
+	const syncManager = SyncManager.getInstance(
+		fileManager.syncPath,
+		BaseDirectory.AppData,
+	);
+
+	//syncManager.resetSyncFile();
+	//syncManager.resetSwapFile();
 
 	return (
 		<div

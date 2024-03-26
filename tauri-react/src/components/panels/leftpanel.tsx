@@ -40,7 +40,6 @@ export const LeftPanel = ({ editor, child }) => {
 
 	const handleNewDocument = async () => {
 		const doc_id = await saveDocument(doc.filename, doc.foldername);
-		console.log(doc_id);
 		await documents.refetch();
 		editor.commands.setContent("");
 		editor.chain().focus().setTextSelection(0).run();
