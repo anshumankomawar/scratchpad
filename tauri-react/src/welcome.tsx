@@ -1,11 +1,17 @@
 import React from "react";
-import { CommandIcon, FileTextIcon, FileIcon, CopyIcon } from "lucide-react";
+import {
+	CommandIcon,
+	FileTextIcon,
+	FileIcon,
+	CopyIcon,
+	SearchIcon,
+} from "lucide-react";
 
 const ActionItem = ({ icon: Icon, action, shortcut, description }) => (
 	<div className="flex flex-col justify-between w-full py-2">
-		<div className="flex items-center justify-between items-center ">
+		<div className="flex items-center justify-between items-center px-12">
 			<div className="flex flex-col items-start">
-				<p className="text-sm">{action}</p>
+				<p className="text-xs">{action}</p>
 				<p className="w-full text-xs mt-1 text-neutral-500">{description}</p>
 			</div>
 			<kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-accent px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
@@ -31,12 +37,18 @@ const WelcomeScreen = () => {
 
 			{/* Actions and descriptions */}
 			<div className="text-left w-full max-w-md">
-				<p className="text-xl mb-4">Collate</p>
+				{/*<p className="text-xl mb-4">Collate</p>*/}
 				<ActionItem
 					icon={FileTextIcon}
 					action="📝 Create a New Note"
 					shortcut="N"
 					description="Start a new note to capture your thoughts."
+				/>
+				<ActionItem
+					icon={SearchIcon}
+					action="🔍 Open the Command Pallete"
+					shortcut="N"
+					description="Type what you need and command away!"
 				/>
 				<ActionItem
 					icon={FileIcon}
