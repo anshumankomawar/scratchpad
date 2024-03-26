@@ -53,6 +53,8 @@ export default function CollatePanel() {
 	const [query, setQuery] = useState("");
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [collate, setCollate] = useState("");
+	const [preCollate, setPreCollate] = useState("");
+	const [preReferences, setPreReferences] = useState("");
 	const [references, setReferences] = useState([]);
 	const documents = useDocuments();
 	const fileManager = useFileManager((state) => state);
@@ -64,16 +66,19 @@ export default function CollatePanel() {
 	useEffect(() => {
 		let intervalId;
 
-		const finishDisplaying = () => {
+		const finishDisplaying = (intervalId) => {
 			if (isFetchComplete) {
 				setIsGenerating(false);
 				setIsDisplaying(false);
+				setCollate(preCollate);
+				setReferences(preReferences);
 			} else {
 				const checkFetchComplete = setInterval(() => {
 					if (isFetchComplete) {
 						setIsGenerating(false);
 						setIsDisplaying(false);
 						clearInterval(checkFetchComplete);
+						clearInterval(intervalId);
 					}
 				}, 100);
 			}
@@ -98,7 +103,7 @@ export default function CollatePanel() {
 					nextMessageIndex++;
 				} else {
 					clearInterval(intervalId);
-					finishDisplaying();
+					finishDisplaying(intervalId);
 				}
 			}, 500);
 		}
@@ -107,8 +112,8 @@ export default function CollatePanel() {
 
 	async function handleSearch() {
 		const res = await collateDocument(query);
-		setCollate(res.data);
-		setReferences(res.references);
+		setPreCollate(res.data);
+		setPreReferences(res.references);
 		setIsFetchComplete(true);
 	}
 
