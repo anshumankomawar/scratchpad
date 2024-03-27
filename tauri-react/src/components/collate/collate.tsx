@@ -13,7 +13,7 @@ import {
 import { useDocuments } from "@/fetch/documents";
 import { Save, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDocStore, useFileManager } from "@/app_state";
+import { useCollateStore, useDocStore, useFileManager } from "@/app_state";
 
 const initialMessagesOptions = [
 	"Warming up the hamsters...",
@@ -50,12 +50,10 @@ const selectRandomMessages = (messagesArray, numberOfMessages) => {
 };
 
 export default function CollatePanel() {
+	const collateState = useCollateStore((state) => state);
 	const [query, setQuery] = useState("");
-	const [isGenerating, setIsGenerating] = useState(false);
-	const [collate, setCollate] = useState("");
 	const [preCollate, setPreCollate] = useState("");
 	const [preReferences, setPreReferences] = useState("");
-	const [references, setReferences] = useState([]);
 	const documents = useDocuments();
 	const fileManager = useFileManager((state) => state);
 	const docStore = useDocStore((state) => state);
@@ -68,14 +66,14 @@ export default function CollatePanel() {
 
 		const finishDisplaying = (intervalId) => {
 			if (isFetchComplete) {
-				setIsGenerating(false);
+				collateState.setHasGenerated(false);
 				setIsDisplaying(false);
-				setCollate(preCollate);
-				setReferences(preReferences);
+				collateState.setCollate(preCollate);
+				collateState.setReferences(preReferences);
 			} else {
 				const checkFetchComplete = setInterval(() => {
 					if (isFetchComplete) {
-						setIsGenerating(false);
+						collateState.setHasGenerated(false);
 						setIsDisplaying(false);
 						clearInterval(checkFetchComplete);
 						clearInterval(intervalId);
@@ -85,7 +83,7 @@ export default function CollatePanel() {
 		};
 
 		if (isDisplaying) {
-			setIsGenerating(true);
+			collateState.setHasGenerated(true);
 
 			const allMessages = [
 				...selectRandomMessages(initialMessagesOptions, 1),
@@ -119,12 +117,12 @@ export default function CollatePanel() {
 
 	useEffect(() => {
 		if (query === "") {
-			setCollate("");
-			setReferences([]);
+			collateState.setCollate("");
+			collateState.setReferences([]);
 			setDisplayedMessages([]);
 			setIsFetchComplete(false);
 			setIsDisplaying(false);
-			setIsGenerating(false);
+			collateState.setHasGenerated(false);
 		}
 	}, [query]);
 
@@ -139,7 +137,8 @@ export default function CollatePanel() {
 						onChange={(e) => setQuery(e.target.value)}
 						onKeyUp={async (e) => {
 							if (e.key === "Enter") {
-								setReferences([]);
+								collateState.setCollate("");
+								collateState.setReferences([]);
 								setDisplayedMessages([]);
 								setIsDisplaying(true);
 								await handleSearch();
@@ -150,7 +149,7 @@ export default function CollatePanel() {
 				</div>
 				<div className="grid grid-cols-3 h-full py-2">
 					<div className="col-span-2 w-full h-full px-2 pt-2">
-						{isGenerating ? (
+						{collateState.hasGenerated ? (
 							<div>
 								{displayedMessages.map((message, index) => (
 									<div
@@ -166,12 +165,12 @@ export default function CollatePanel() {
 							</div>
 						) : (
 							<div className="w-full h-full text-sm text-dull_black dark:text-dull_white">
-								{collate}
+								{collateState.collate}
 							</div>
 						)}
 					</div>
 					<div className="h-full w-full space-y-2 overflow-y-auto pb-16">
-						{isGenerating ? (
+						{collateState.hasGenerated ? (
 							<div className="flex flex-col space-y-2 py-2">
 								<Skeleton className="h-[100px] w-full rounded-xl" />
 								<Skeleton className="h-[100px] w-full rounded-xl" />
@@ -182,7 +181,7 @@ export default function CollatePanel() {
 								<Skeleton className="h-[100px] w-full rounded-xl" />
 							</div>
 						) : (
-							references.map((ref, index) => (
+							collateState.references.map((ref, index) => (
 								<div className="h-min w-full py-2" key={index}>
 									<div className="w-full flex flex-col items-start justify-center text-dull_black dark:text-dull_white text-xs px-2 border-l-2">
 										<div className="flex items-center justify-start pb-2 w-full">
