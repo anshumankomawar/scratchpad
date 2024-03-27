@@ -46,6 +46,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	loader: async ({ context }) => {
 		const token = await context.auth.store.get("token");
 		const username = await context.auth.store.get("username");
+		await getCurrent().show();
 		if (token && username) {
 			const files = useFileManager.getState();
 			files.setDataPath(username);
@@ -74,10 +75,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 					baseDir: BaseDirectory.AppData,
 				});
 			}
-
 			syncData();
 			await useFileManager.getState().readDir();
-			await getCurrent().show();
 		}
 		return { token };
 	},
