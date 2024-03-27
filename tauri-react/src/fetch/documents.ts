@@ -31,7 +31,6 @@ export const saveDocument = async (filename, folder_id, filetype) => {
 };
 
 function calculateTimeDifference(prevSyncStr, currentSyncStr) {
-	const url = "http://localhost:8000/v1/sync";
 	try {
 		const prevSync = new Date(prevSyncStr);
 		const currentSync = new Date(currentSyncStr);
@@ -70,7 +69,7 @@ function getFormattedDate(): string {
 }
 
 export const performSync = async () => {
-	const url = "http://localhost:8000/v1/sync";
+	const url = "https://scratchpad-production.up.railway.app/v1/sync";
 	try {
 		const store = new Store("config.json");
 		const syncManager = SyncManager.getInstance(
