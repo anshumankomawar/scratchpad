@@ -39,7 +39,7 @@ pub async fn save_document(
 
     let res = state
         .client
-        .post("http://localhost:8000/documentsV2")
+        .post("https://scratchpad-production.up.railway.app/documentsV2")
         .json(&params)
         .header(AUTHORIZATION, format!("Bearer {}", token))
         .send()
@@ -63,7 +63,7 @@ pub async fn delete_document(
 
     let res = state
         .client
-        .delete("http://localhost:8000/document")
+        .delete("https://scratchpad-production.up.railway.app/document")
         .query(&[("id", fileId)])
         .header(AUTHORIZATION, format!("Bearer {}", token))
         .send()
@@ -83,7 +83,7 @@ pub async fn add_folder(
 
     let res = state
         .client
-        .post("http://localhost:8000/folders")
+        .post("https://scratchpad-production.up.railway.app/folders")
         .json(&params)
         .header(AUTHORIZATION, format!("Bearer {}", token))
         .send()
@@ -116,7 +116,7 @@ pub async fn update_document(
 
     let res = state
         .client
-        .patch("http://localhost:8000/document")
+        .patch("https://scratchpad-production.up.railway.app/document")
         .json(&params)
         .header(AUTHORIZATION, format!("Bearer {}", token))
         .send()
@@ -164,7 +164,7 @@ pub async fn get_documents(
 
     let res = state
         .client
-        .get("http://localhost:8000/documentsV2")
+        .get("https://scratchpad-production.up.railway.app/documentsV2")
         .header("Authorization", format!("Bearer {}", token))
         .send()
         .await?

@@ -16,7 +16,7 @@ pub async fn get_user(state: State<'_, TauriState>, app: tauri::AppHandle) -> Re
 
     let res = state
         .client
-        .get("http://localhost:8000/user")
+        .get("https://scratchpad-production.up.railway.app/user")
         .header(AUTHORIZATION, format!("Bearer {}", token))
         .send()
         .await?

@@ -17,7 +17,7 @@ pub async fn login(
     let params = [("username", &username), ("password", &password)];
     let res = state
         .client
-        .post("http://localhost:8000/login")
+        .post("https://scratchpad-production.up.railway.app/login")
         .form(&params)
         .send()
         .await?
@@ -50,7 +50,7 @@ pub async fn register(
     let params = [("username", &username), ("password", &password)];
     let res = state
         .client
-        .post("http://localhost:8000/register")
+        .post("https://scratchpad-production.up.railway.app/register")
         .query(&params)
         .send()
         .await?

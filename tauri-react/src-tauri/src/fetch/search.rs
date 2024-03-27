@@ -32,7 +32,7 @@ pub async fn search_user_documents(
 
     let res = state
         .client
-        .post("http://localhost:8000/search")
+        .post("https://scratchpad-production.up.railway.app/search")
         .query(&[("query", query)])
         .header(AUTHORIZATION, format!("Bearer {}", token))
         .send()
