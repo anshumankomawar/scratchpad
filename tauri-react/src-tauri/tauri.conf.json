@@ -19,8 +19,8 @@
     ]
   },
   "build": {
-    "beforeBuildCommand": "bun --bun run build",
-    "beforeDevCommand": "bun --bun run dev",
+    "beforeBuildCommand": "bun --bun run --verbose build",
+    "beforeDevCommand": "bun --bun run --verbose dev",
     "devUrl": "http://localhost:1420",
     "frontendDist": "../dist"
   },
